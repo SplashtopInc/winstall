@@ -18,8 +18,7 @@ export default function Explainer() {
             >
               Microsoft's new package manager
             </a>{" "}
-            for Windows 10. Windows Package Manager is currently in preview, and
-            it is not available by default in Windows 10.
+            for Windows 10, Windows 11, and Windows Server 2025, whether it be on 64-bit, 32-bit, ARM64, or ARM32.
           </p>
         </section>
 
