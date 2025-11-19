@@ -410,7 +410,7 @@ const Tags = ({ tags }) => {
 const Copy = ({ id, version, latestVersion }) => {
   const [showingCheck, setShowingCheck] = useState(false);
 
-  let str = `winget install --id=${id} ${version == latestVersion ? "" : `-v "${version}"`} -e`;
+  let str = `winget install -e --id ${id}${version == latestVersion ? "" : ` -v "${version}"`}`;
 
   return (
     <div
