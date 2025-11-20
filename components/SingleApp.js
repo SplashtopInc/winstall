@@ -56,7 +56,7 @@ let SingleApp = ({ app, all, onVersionChange = false, large = false, showTime = 
       if(selected){
         setSelected(false);
       }
-      
+
       return;
     };
 
@@ -64,7 +64,7 @@ let SingleApp = ({ app, all, onVersionChange = false, large = false, showTime = 
       setVersion(found.selectedVersion);
     }
 
-    setSelected(true);    
+    setSelected(true);
   }, [selectedApps, app._id]);
 
   let handleAppSelect = () => {
@@ -75,7 +75,7 @@ let SingleApp = ({ app, all, onVersionChange = false, large = false, showTime = 
     }
 
     let found = selectedApps.findIndex((a) => a._id === app._id);
-    
+
     if (found !== -1) {
       let updatedSelectedApps = selectedApps.filter(
         (a, index) => index !== found
@@ -83,7 +83,7 @@ let SingleApp = ({ app, all, onVersionChange = false, large = false, showTime = 
 
       setSelectedApps(updatedSelectedApps);
       setSelected(false);
-      
+
     } else if(app){
       setSelected(true);
 
@@ -356,7 +356,7 @@ const ExtraMetadata = ({ app }) => {
           </li>
         )
       }
-      
+
       {
         app.license && (
           <li>
@@ -410,8 +410,8 @@ const Tags = ({ tags }) => {
 const Copy = ({ id, version, latestVersion }) => {
   const [showingCheck, setShowingCheck] = useState(false);
 
-  let str = `winget install --id=${id} ${version == latestVersion ? "" : `-v "${version}"`} -e`;
-  
+  let str = `winget install -e --id ${id}${version == latestVersion ? "" : ` -v "${version}"`}`;
+
   return (
     <div
       className={`${styles.copy} ${showingCheck ? styles.active : ""}`}
