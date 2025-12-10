@@ -137,7 +137,7 @@ function Store({ data, error }) {
   const Title = () => {
     return (
       <>
-        {!searchInput && <h1>All apps {`(${apps.length})`}</h1>}
+        {!searchInput && <h1>All apps {`(${apps.length.toLocaleString()})`}</h1>}
         {searchInput && (
           <>
             {searchInput.startsWith("tags: ") && (
