@@ -40,14 +40,14 @@ function SelectionBar({ router }) {
             <button className="clear small" onClick={() => handleClear()} title="Clear selections">
               <FiTrash />
             </button>
-            { !hideCreatePack && (
+            {/* { !hideCreatePack && (
               <Link href="/packs/create">
                 <button disabled={selectedApps.length >= 5 ? false : true}>
                   <FiShare />
                   <em>{selectedApps.length >= 5 ? "Create Pack" : `Need ${Math.abs(5 - selectedApps.length)} more ${Math.abs(5 - selectedApps.length) === 1 ? "app" : "apps"} to create a pack.`}</em>
                 </button>
               </Link>
-            )}
+            )} */}
             <Link href="/generate">
               <button>
                 <FiCodepen />

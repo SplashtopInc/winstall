@@ -8,7 +8,7 @@ import Recommendations from "../components/Recommendations";
 import Footer from "../components/Footer";
 import { shuffleArray } from "../utils/helpers";
 import popularAppsList from "../data/popularApps.json";
-import FeaturePromoter from "../components/FeaturePromoter";
+// import FeaturePromoter from "../components/FeaturePromoter";
 import Link from "next/link";
 import { FiPlus, FiPackage } from "react-icons/fi";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
@@ -34,7 +34,7 @@ function Home({ popular, apps, recommended, error}) {
             </p>
             <Search apps={apps} limit={4}/>
           </div>
-         
+
           <div className="art">
               <img
                 src="/assets/logo.svg"
@@ -43,8 +43,8 @@ function Home({ popular, apps, recommended, error}) {
               />
             </div>
         </div>
-       
-      
+
+
       </div>
 
       <DonateCard />
@@ -54,14 +54,14 @@ function Home({ popular, apps, recommended, error}) {
 
       {/* <RecentApps apps={recents} /> */}
 
-      <FeaturePromoter art="/assets/packsPromo.svg" promoId="packs">
-            <h3>Introducing Packs</h3>
-            <h1>Curate and share the apps you use daily.</h1>
-            <div className="box2">
-                <Link href="/packs/create"><button className="button spacer accent" id="starWine"><FiPlus/> Create a pack</button></Link>
-                <Link href="/packs/"><button className="button"><FiPackage/> View packs</button></Link>
-            </div>
-      </FeaturePromoter>
+      {/* <FeaturePromoter art="/assets/packsPromo.svg" promoId="packs">
+        <h3>Introducing Packs</h3>
+        <h1>Curate and share the apps you use daily.</h1>
+        <div className="box2">
+            <Link href="/packs/create"><button className="button spacer accent" id="starWine"><FiPlus/> Create a pack</button></Link>
+            <Link href="/packs/"><button className="button"><FiPackage/> View packs</button></Link>
+        </div>
+      </FeaturePromoter> */}
 
       <Footer />
     </div>
@@ -76,7 +76,7 @@ export async function getStaticProps(){
 
   if(appsError) console.error(appsError);
   if(recommendedError) console.error(recommendedError);
- 
+
   if(appsError || recommendedError) return { props: { error: `Could not fetch data from Winstall API.`} };
 
 
@@ -108,7 +108,7 @@ export async function getStaticProps(){
   })
 
   await Promise.all(getPackData);
-  
+
   return (
     {
       props: {
