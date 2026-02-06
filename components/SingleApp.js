@@ -25,7 +25,7 @@ import {
 
 
 import AppIcon from "./AppIcon";
-import { compareVersion, timeAgo } from "../utils/helpers";
+import { buildSiteUrl, compareVersion, timeAgo } from "../utils/helpers";
 
 
 let SingleApp = ({ app, all, onVersionChange = false, large = false, showTime = false, pack = false, displaySelect = false, preventGlobalSelect, hideBorder=false, preSelected=false}) => {
@@ -144,7 +144,8 @@ let SingleApp = ({ app, all, onVersionChange = false, large = false, showTime = 
   };
 
   const handleShare = () => {
-    const link = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Checkout ${app.name} by ${app.publisher} on @winstallHQ:`)}&url=${encodeURIComponent(`https://winstall.app/apps/${app._id}`)}`
+     const shareUrl = buildSiteUrl(`/apps/${app._id}`);
+     const link = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Checkout ${app.name} by ${app.publisher} on @winstallHQ:`)}&url=${encodeURIComponent(shareUrl)}`
 
     window.open(link)
   }

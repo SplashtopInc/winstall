@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import styles from "../styles/create.module.scss";
 import Link from "next/link";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
+import { buildSiteUrl } from "../utils/helpers";
 
 const CreatePackForm = ({ user, packApps, editMode, defaultValues, isDisabled }) => {
     const { handleSubmit, register, errors } = useForm({ defaultValues });
@@ -63,9 +64,10 @@ const CreatePackForm = ({ user, packApps, editMode, defaultValues, isDisabled })
     };
 
     if(created){
-        return (
-        <p>Your pack has been sucesfully {editMode ? "updated" : "created"}! You can view it here: <Link href="/packs/[id]" as={`/packs/${created._id}`}><a>winstall.app/packs/{created._id}</a></Link></p>
-        )
+      const packUrl = buildSiteUrl(`/packs/${created._id}`);
+      return (
+      <p>Your pack has been sucesfully {editMode ? "updated" : "created"}! You can view it here: <Link href="/packs/[id]" as={`/packs/${created._id}`}><a>{packUrl}</a></Link></p>
+      )
     }
 
     return (
@@ -99,7 +101,7 @@ const CreatePackForm = ({ user, packApps, editMode, defaultValues, isDisabled })
           />
           {errors.description && <span className={styles.formError}>Please check the description of your pack!</span>}
         </label>
-          
+
         <div className={styles.checkboxContainer}>
           <label>
             <input type="checkbox" name="isUnlisted" ref={register()} defaultChecked={true}/>
@@ -110,7 +112,7 @@ const CreatePackForm = ({ user, packApps, editMode, defaultValues, isDisabled })
 
         <label>
           Pack accent
-          
+
           <div className={styles.accents}>
             <label htmlFor="winterNeva"><input defaultChecked={true} type="radio" id="winterNeva" name="accent" value="winterNeva" ref={register({ required: true })} /><p>Winter Neva</p></label>
             <label htmlFor="deepBlue"><input type="radio" id="deepBlue" name="accent" value="deepBlue" ref={register({ required: true })} /><p>Deep Blue</p></label>

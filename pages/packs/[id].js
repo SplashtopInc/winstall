@@ -10,7 +10,7 @@ import { useEffect, useState, useContext } from "react";
 import PageWrapper from "../../components/PageWrapper";
 import PackAppsList from "../../components/PackAppsList";
 import SelectedContext from "../../ctx/SelectedContext";
-import { timeAgo } from "../../utils/helpers";
+import { buildSiteUrl, timeAgo } from "../../utils/helpers";
 import {
   FiCodepen,
   FiPackage,
@@ -157,10 +157,11 @@ function PackDetail({ pack, creator, error }) {
   };
 
   const handleShare = () => {
+    const shareUrl = buildSiteUrl(`/packs/${pack._id}`);
     const link = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
       `Checkout the "${pack.title}" pack by @${creator.screen_name}!`
     )}&url=${encodeURIComponent(
-      `https://winstall.app/packs/${pack._id}`
+      shareUrl
     )}&via=winstallHQ`;
 
     window.open(link);

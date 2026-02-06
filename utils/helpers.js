@@ -45,7 +45,7 @@ export let checkTheme = () => {
         isLight = false
       }
     })
-  } 
+  }
 
   return isLight;
 }
@@ -105,3 +105,23 @@ export let timeAgo = (isoDate) => {
   if (value != 1) unit = unit + "s";
   return value + " " + unit + " " + direction;
 }
+
+export const getSiteOrigin = () => {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return window.location.origin;
+  }
+
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
+  }
+
+  return "";
+};
+
+export const buildSiteUrl = (path = "") => {
+  const origin = getSiteOrigin();
+  if (!origin) return path || "";
+
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${origin}${normalizedPath}`;
+};
