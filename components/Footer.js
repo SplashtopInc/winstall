@@ -35,32 +35,24 @@ export default function Footer() {
   return (
     <div className={styles.footer}>
       <a
-        href="https://winget.pro"
+        href="https://www.splashtop.com"
         target="_blank"
         className={styles.brand}
       >
         <img
-          src={"/assets/winget-pro.svg"}
-          alt="winget.pro logo"
+          src={"/assets/splashtop-small.png"}
+          alt="splashtop logo"
           draggable={false}
         />
         <div>
-          <p>A service by winget.Pro</p>
-          <a
-            href="https://builtbymeh.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.brand}
-          >
-            <em>built by Mehedi Hassan</em>
-          </a>
+          <p>A service by Splashtop Inc.</p>
         </div>
       </a>
 
       <ul>
         <li>
           <a
-            href="https://github.com/omaha-consulting/winstall"
+            href="https://github.com/SplashtopInc/winstall"
             target="_blank"
             rel="noopener noreferrer"
           >
