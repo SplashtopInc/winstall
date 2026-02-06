@@ -1,0 +1,39 @@
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ '**' ]  # This specifies all branches
+
+name: Sonarqube SAST Scan
+jobs:
+  sonarqube:
+    runs-on: self-hosted
+    container:
+      image: sonarsource/sonar-scanner-cli:11.5.0.2154_7.3.0
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: SAST SonarQube Scan
+        run: |
+          sonar-scanner \
+            -Dsonar.projectKey=${{ github.event.repository.name }} \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.sources=${PWD} \
+            -Dsonar.projectVersion=${{ github.ref_name }} \
+            -Dsonar.exclusions="${{ vars.SONAR_EXCLUSIONS }}" \
+            -Dsonar.qualitygate.wait=true \
+            -Dsonar.working.directory=../target/.sonar \
+            -Dsonar.sarifReportPaths=result.sarif \
+            -X
+
+      - name: Upload report-task.txt
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarqube-report
+          path: |
+            *.sarif
+            report-*.txt
+          retention-days: 3
