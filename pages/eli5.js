@@ -87,7 +87,7 @@ export default function Explainer() {
           <p>
             winstall is completely open-source, and you can{" "}
             <a
-              href="https://github.com/omaha-consulting/winstall"
+              href="https://github.com/SplashtopInc/winstall"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -95,7 +95,7 @@ export default function Explainer() {
             </a>{" "}
             If you run into any issues, please report it{" "}
             <a
-              href="https://github.com/omaha-consulting/winstall/issues/new"
+              href="https://github.com/SplashtopInc/winstall/issues/new"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -109,22 +109,23 @@ export default function Explainer() {
         <section>
           <h2>Project history</h2>
           <p>
-            winstall was originally created by
-            {" "}<a
+            winstall was originally created by{" "}
+            <a
               href="https://builtbymeh.com"
               target="_blank"
               rel="noopener noreferrer"
             >
               Mehedi Hassan
             </a>{" "}
-            as a side project, but is now owned and maintained by{" "}
+            as a side project and is now owned and maintained by Splashtop. {""}
             <a
-              href="https://winget.pro"
+              href="https://www.splashtop.com/products/autonomous-endpoint-management"
               target="_blank"
+              rel="noopener noreferrer"
             >
-              winget.Pro
+              Splashtop AEM
             </a>{" "}
-            - with winget.Pro, you can have your own, securely hosted repositories for the Windows Package Manager. Our private winget repository gives you better control over who receives your software.
+            automates your entire application lifecycle— from vendor and custom packaging to seamless continuous updates— saving time and reduce vulnerability risks.
           </p>
 
         </section>
