@@ -10,7 +10,7 @@
     .brand {
         display: flex;
         justify-content: flex-start;
-        align-items: flex-start;
+        align-items: center;
 
         p {
             margin: 0px;
@@ -40,7 +40,7 @@
     img {
         width: 30px;
         transition: 0.3s all ease-in-out;
-        padding-top: 5px;
+        padding-top: 0;
         cursor: pointer;
         margin-right: 10px;
 
