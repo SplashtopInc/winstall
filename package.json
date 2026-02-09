@@ -5,7 +5,7 @@
   "dependencies": {
     "fuse.js": "^6.0.3",
     "next": "^12.0.8",
-    "next-auth": "^4.23.1",
+    "next-auth": "^4.24.12",
     "next-pwa": "^5.6.0",
     "nprogress": "^0.2.0",
     "react": "^17.0.2",
