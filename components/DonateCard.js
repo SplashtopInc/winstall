@@ -8,7 +8,7 @@ const DonateCard = ({ addMargin = "both" }) => {
             <h2>Deploy Once, Update Forever with Splashtop</h2>
             <p>Splashtop AEM automates your entire application lifecycle —from vendor and custom packaging to seamless continuous updates —saving time and reduce vulnerability risks.</p>
             <div className={styles.buttons}>
-                <a className="button spacer accent donate" id="starWine" href="https://www.splashtop.com/products/autonomous-endpoint-management" rel="sponsored"><FiPlus /> Free trial</a>
+                <a className="button spacer accent donate" id="starWine" href="https://www.splashtop.com/products/autonomous-endpoint-management?utm_source=winstall.app&utm_medium=banner&utm_campaign=260206_WW_WW_EN_WinstallBanner" rel="sponsored"><FiPlus /> Free trial</a>
             </div>
         </div>
     )

@@ -119,7 +119,7 @@ export default function Explainer() {
             </a>{" "}
             as a side project and is now owned and maintained by Splashtop. {""}
             <a
-              href="https://www.splashtop.com/products/autonomous-endpoint-management"
+              href="https://www.splashtop.com/products/autonomous-endpoint-management?utm_source=winstall.app&utm_medium=banner&utm_campaign=260206_WW_WW_EN_WinstallBanner"
               target="_blank"
               rel="noopener noreferrer"
             >
