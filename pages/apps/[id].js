@@ -83,9 +83,9 @@ export async function getStaticProps({ params }) {
     try{
         let { response: app } = await fetchWinstallAPI(`/apps/${params.id}`);
 
-        return { props: app ? { app } : {} }
+    return { props: app ? { app } : {}, revalidate: 3600 }
     } catch(err) {
-        return { props: {} };
+    return { props: {}, revalidate: 3600 };
     }
 }
 
