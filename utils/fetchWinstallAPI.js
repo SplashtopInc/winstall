@@ -3,7 +3,7 @@
  * @param {*} path - path of the resource
  * @param {*} givenOptions - any additional header options
  * @param {*} throwErr - flag to indicate whether an error should be thrown
- * @returns 
+ * @returns
  */
 const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
   const url = `${process.env.NEXT_PUBLIC_WINGET_API_BASE}${path}`;
@@ -31,16 +31,22 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
 
 
     if (!res.ok) {
+      let errorBody;
       // if `throwErr` is true we fail deployments
       if (throwErr) {
-        throw new Error((await res.json()).error);
+        errorBody = await res.json();
+        console.error(`[fetchWinstallAPI] ${res.status} ${res.statusText} ${url}`, errorBody);
+        throw new Error(errorBody.error);
       }
 
-      error = (await res.json()).error;
+      errorBody = await res.json();
+      console.error(`[fetchWinstallAPI] ${res.status} ${res.statusText} ${url}`, errorBody);
+      error = errorBody.error;
     } else {
       response = await res.json();
     }
   } catch (err) {
+    console.error(`[fetchWinstallAPI] request failed ${url}`, err);
     error = err.message;
 
     // if `throwErr` is true we fail deployments
