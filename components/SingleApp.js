@@ -28,14 +28,12 @@ import AppIcon from "./AppIcon";
 import { compareVersion, timeAgo } from "../utils/helpers";
 
 
-let SingleApp = ({ app, all, onVersionChange = false, large = false, showTime = false, pack = false, displaySelect = false, preventGlobalSelect, hideBorder=false, preSelected=false}) => {
+let SingleApp = ({ app, all, onVersionChange = false, large = false, showTime = false, pack = false, displaySelect = false, preventGlobalSelect, hideBorder=false, preSelected=false, initialVersion}) => {
   const [selected, setSelected] = useState(false);
   const { selectedApps, setSelectedApps } = useContext(SelectedContext);
+  const router = useRouter();
 
-  const [version, setVersion] = useState(app.latestVersion);
-
-  if (!app.selectedVersion) app.selectedVersion = version;
-
+  // Sort versions if available
   if (app.versions && app.versions.length > 1) {
     app.versions = app.versions.sort((a, b) =>
       compareVersion(b.version, a.version)
@@ -43,6 +41,32 @@ let SingleApp = ({ app, all, onVersionChange = false, large = false, showTime = 
     // make sure latest version is sorted
     app.latestVersion = app.versions[0].version;
   }
+
+  // Get initial version from prop (passed from URL path) or use latestVersion
+  const getInitialVersion = () => {
+    if (large && initialVersion && app.versions) {
+      const isValidVersion = app.versions.some(v => v.version === initialVersion);
+      if (isValidVersion) {
+        return initialVersion;
+      }
+    }
+    return app.latestVersion;
+  };
+
+  const [version, setVersion] = useState(getInitialVersion());
+
+  // Update version when initialVersion prop changes (e.g., navigation between versions)
+  useEffect(() => {
+    if (large && initialVersion && app.versions) {
+      const isValidVersion = app.versions.some(v => v.version === initialVersion);
+      if (isValidVersion && initialVersion !== version) {
+        setVersion(initialVersion);
+        app.selectedVersion = initialVersion;
+      }
+    }
+  }, [initialVersion, large, app.versions]);
+
+  if (!app.selectedVersion) app.selectedVersion = version;
 
   useEffect(() => {
     if(preSelected){
@@ -111,12 +135,21 @@ let SingleApp = ({ app, all, onVersionChange = false, large = false, showTime = 
           id="v-selector"
           name="Select app version"
           onChange={(e) => {
-            setVersion(e.target.value);
-            app.selectedVersion = e.target.value;
+            const newVersion = e.target.value;
+            setVersion(newVersion);
+            app.selectedVersion = newVersion;
+
+            // Update URL with version path (only in large/detail mode)
+            if (large) {
+              const newPath = newVersion === app.latestVersion 
+                ? `/apps/${app._id}` 
+                : `/apps/${app._id}/${newVersion}`;
+              router.replace(newPath, undefined, { shallow: true });
+            }
 
             if (selected) {
               let found = selectedApps.find((a) => a._id === app._id);
-              found.selectedVersion = e.target.value;
+              found.selectedVersion = newVersion;
 
               if(onVersionChange) onVersionChange();
             }
@@ -144,7 +177,8 @@ let SingleApp = ({ app, all, onVersionChange = false, large = false, showTime = 
   };
 
   const handleShare = () => {
-    const link = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Checkout ${app.name} by ${app.publisher} on @winstallHQ:`)}&url=${encodeURIComponent(`https://winstall.app/apps/${app._id}`)}`
+    const versionPath = version !== app.latestVersion ? `/${encodeURIComponent(version)}` : '';
+    const link = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Checkout ${app.name} by ${app.publisher} on @winstallHQ:`)}&url=${encodeURIComponent(`https://winstall.app/apps/${app._id}${versionPath}`)}`
 
     window.open(link)
   }

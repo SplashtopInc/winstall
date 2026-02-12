@@ -1,16 +1,16 @@
-import styles from "../../styles/home.module.scss";
+import styles from "../../../styles/home.module.scss";
 
-import SingleApp from "../../components/SingleApp";
+import SingleApp from "../../../components/SingleApp";
 
-import Footer from "../../components/Footer";
-import Error from "../../components/Error";
+import Footer from "../../../components/Footer";
+import Error from "../../../components/Error";
 
 import Skeleton from "react-loading-skeleton";
 
 import { useRouter } from "next/router";
-import MetaTags from "../../components/MetaTags";
-import fetchWinstallAPI from "../../utils/fetchWinstallAPI";
-import DonateCard from "../../components/DonateCard";
+import MetaTags from "../../../components/MetaTags";
+import fetchWinstallAPI from "../../../utils/fetchWinstallAPI";
+import DonateCard from "../../../components/DonateCard";
 
 function AppSkeleton() {
     return (
@@ -30,7 +30,7 @@ function AppSkeleton() {
     );
 }
 
-function AppDetail({ app, popular}) {
+function AppDetail({ app, initialVersion }) {
     const router = useRouter();
     const fallbackMessage = {
         title: "Sorry! We could not load this app.",
@@ -50,10 +50,10 @@ function AppDetail({ app, popular}) {
             ) : (
               <div>
                 <MetaTags
-                  title={`Install ${app.name} with winget - winstall`}
+                  title={`Install ${app.name} v${initialVersion} with winget - winstall`}
                   desc={app.desc}
                 />
-                <ul className="largeApp"><SingleApp app={app} large={true}/></ul>
+                <ul className="largeApp"><SingleApp app={app} large={true} initialVersion={initialVersion}/></ul>
                 <DonateCard addMargin="top"/>
               </div>
             )}
@@ -83,7 +83,18 @@ export async function getStaticProps({ params }) {
     try{
         let { response: app } = await fetchWinstallAPI(`/apps/${params.id}`);
 
-        return { props: app ? { app } : {} }
+        if (!app) {
+            return { props: {} };
+        }
+
+        // Validate that the version exists for this app
+        const versionExists = app.versions && app.versions.some(v => v.version === params.version);
+        
+        if (!versionExists) {
+            return { props: {} };
+        }
+
+        return { props: { app, initialVersion: params.version } }
     } catch(err) {
         return { props: {} };
     }
