@@ -7,7 +7,7 @@ import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { buildSiteUrl } from "../utils/helpers";
 
 const CreatePackForm = ({ user, packApps, editMode, defaultValues, isDisabled }) => {
-    const { handleSubmit, register, errors } = useForm({ defaultValues });
+    const { handleSubmit, register, formState: { errors } } = useForm({ defaultValues });
     const [creating, setCreating] = useState(false);
     const [created, setCreated] = useState();
     const [error, setError] = useState("");
@@ -78,11 +78,11 @@ const CreatePackForm = ({ user, packApps, editMode, defaultValues, isDisabled })
             name="title"
             type="text"
             placeholder="Give your pack a name"
-            ref={register({
+            autoComplete="off"
+            {...register("title", {
               required: true,
               validate: (value) => { return value.replace(/\s/g, '').length === 0 ? false : true; }
             })}
-            autoComplete="off"
           />
           {errors.title && <span className={styles.formError}>Please check the name of your pack!</span>}
         </label>
@@ -92,19 +92,19 @@ const CreatePackForm = ({ user, packApps, editMode, defaultValues, isDisabled })
           <input
             name="description"
             type="text"
-            ref={register({
-                required: true,
-                validate: (value) => { return value.replace(/\s/g, '').length === 0 ? false : true; }
-            })}
             placeholder="Give your pack a short description"
             autoComplete="off"
+            {...register("description", {
+              required: true,
+              validate: (value) => { return value.replace(/\s/g, '').length === 0 ? false : true; }
+            })}
           />
           {errors.description && <span className={styles.formError}>Please check the description of your pack!</span>}
         </label>
 
         <div className={styles.checkboxContainer}>
           <label>
-            <input type="checkbox" name="isUnlisted" ref={register()} defaultChecked={true}/>
+            <input type="checkbox" name="isUnlisted" defaultChecked={true} {...register("isUnlisted")} />
             <p>Hide this pack from the public directory on winstall.</p>
           </label>
           <em>Your pack will still be accessible to anyone with a direct link.</em>
@@ -114,11 +114,11 @@ const CreatePackForm = ({ user, packApps, editMode, defaultValues, isDisabled })
           Pack accent
 
           <div className={styles.accents}>
-            <label htmlFor="winterNeva"><input defaultChecked={true} type="radio" id="winterNeva" name="accent" value="winterNeva" ref={register({ required: true })} /><p>Winter Neva</p></label>
-            <label htmlFor="deepBlue"><input type="radio" id="deepBlue" name="accent" value="deepBlue" ref={register({ required: true })} /><p>Deep Blue</p></label>
-            <label htmlFor="starWine"><input type="radio" id="starWine" name="accent" value="starWine" ref={register({ required: true })} /><p>Star Wine</p></label>
-            <label htmlFor="purpleDivision"><input type="radio" id="purpleDivision" name="accent" value="purpleDivision" ref={register({ required: true })} /><p>Purple Divison</p></label>
-            <label htmlFor="loveKiss"><input type="radio" id="loveKiss" name="accent" value="loveKiss" ref={register({ required: true })} /><p>Love Kiss</p></label>
+            <label htmlFor="winterNeva"><input defaultChecked={true} type="radio" id="winterNeva" name="accent" value="winterNeva" {...register("accent", { required: true })} /><p>Winter Neva</p></label>
+            <label htmlFor="deepBlue"><input type="radio" id="deepBlue" name="accent" value="deepBlue" {...register("accent", { required: true })} /><p>Deep Blue</p></label>
+            <label htmlFor="starWine"><input type="radio" id="starWine" name="accent" value="starWine" {...register("accent", { required: true })} /><p>Star Wine</p></label>
+            <label htmlFor="purpleDivision"><input type="radio" id="purpleDivision" name="accent" value="purpleDivision" {...register("accent", { required: true })} /><p>Purple Divison</p></label>
+            <label htmlFor="loveKiss"><input type="radio" id="loveKiss" name="accent" value="loveKiss" {...register("accent", { required: true })} /><p>Love Kiss</p></label>
           </div>
 
           {errors.accent && <span className={styles.formError}>Please check the accent of your pack!</span>}
