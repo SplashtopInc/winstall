@@ -11,10 +11,10 @@ let PopularApps = ({ apps, all }) => {
   const { popular, setPopular } = useContext(PopularContext);
 
   useEffect(() => {
-    if(popular.length === 0){
+    if (popular.length === 0 && Array.isArray(apps) && apps.length > 0) {
       setPopular(apps.slice(0, 16));
     }
-  })
+  }, [apps, popular.length, setPopular]);
 
   return (
     <PopularContext.Consumer>

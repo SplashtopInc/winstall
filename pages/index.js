@@ -80,9 +80,35 @@ export async function getStaticProps(){
   if(appsError || recommendedError) return { props: { error: `Could not fetch data from Winstall API.`} };
 
 
-  // get all apps with id -> filter popular apps for those with an id
-  const appsWithId = new Set(Object.values(apps).map((x) => x._id))
-  popular = popular.filter((a) => appsWithId.has(a._id))
+  const normalizeAppsPayload = (payload) => {
+    if (!payload) return [];
+
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload.apps)) return payload.apps;
+    if (Array.isArray(payload.items)) return payload.items;
+    if (Array.isArray(payload.data)) return payload.data;
+
+    return [];
+  };
+
+  const appsList = normalizeAppsPayload(apps);
+
+  const popularResults = await Promise.all(
+    popular.map(async (entry) => {
+      const { response: appData } = await fetchWinstallAPI(`/apps/${entry._id}`);
+      if (!appData) return null;
+
+      return {
+        ...appData,
+        _id: entry._id,
+        path: appData.path || entry.path,
+        name: appData.name || entry.name,
+        img: entry.img,
+      };
+    })
+  );
+
+  popular = popularResults.filter(Boolean);
 
   // get the new pack data, and versions data, etc.
   const getPackData = recommended.map(async (pack) => {
@@ -113,7 +139,7 @@ export async function getStaticProps(){
     {
       props: {
         popular,
-        apps,
+        apps: appsList,
         recommended
       }
     }
