@@ -2,10 +2,10 @@ import{ useState, useEffect } from "react";
 import styles from "../styles/search.module.scss";
 
 import { DebounceInput } from "react-debounce-input";
-import Fuse from "fuse.js";
 
 import SingleApp from "../components/SingleApp";
 import ListPackages from "../components/ListPackages";
+import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 
 import { FiSearch, FiHelpCircle } from "react-icons/fi";
 import { forceVisible } from 'react-lazyload';
@@ -14,20 +14,21 @@ import { useRouter } from "next/router";
 function Search({ apps, onSearch, label, placeholder, preventGlobalSelect, isPackView, alreadySelected=[], limit=-1}) {
   const [results, setResults] = useState([])
   const [searchInput, setSearchInput] = useState();
-  const defaultKeys = [{ name: "moniker", weight: 2 }, { name: "name", weight: 2 }, "path", "desc", "publisher", "tags"];
-  const [keys, setKeys] = useState(defaultKeys);
   const router = useRouter();
   const [urlQuery, setUrlQuery] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const options = (keys) => {
-    return {
-      minMatchCharLength: 3,
-      threshold: 0.3,
-      keys
-    }
-  }
+  const normalizeAppsPayload = (payload) => {
+    if (!payload) return [];
 
-  let fuse = new Fuse(apps, options(defaultKeys));
+    if (Array.isArray(payload)) return payload;
+
+    if (Array.isArray(payload.items)) return payload.items;
+
+    if (Array.isArray(payload.data)) return payload.data;
+
+    return [];
+  };
 
   useEffect(() => {
     // if we have a ?q param on the url, we deal with it
@@ -42,37 +43,38 @@ function Search({ apps, onSearch, label, placeholder, preventGlobalSelect, isPac
     }
   })
 
-  const handleSearchInput = (e, q) => {
+  const handleSearchInput = async (e, q) => {
     const inputVal = e ? e.target.value : q;
 
     if(onSearch) onSearch(inputVal);
 
-    let query = inputVal;
-
-    if(query === ""){
-      forceVisible(); // for some reason lazy load doesn't detect when the new elements roll in, so we force visible to all imgs
-    }
-
-    let prefixes = ["name", "tags", "publisher", "desc"];
-    let checkPrefix = prefixes.filter(prefix => query.startsWith(`${prefix}:`));
-
-
-    if(checkPrefix.length !== 0){
-      setKeys(checkPrefix);
-      query = query.replace(`${checkPrefix[0]}:`, "")
-      fuse = new Fuse(apps, options(checkPrefix));
-    } else if(keys !== defaultKeys){
-      setKeys(defaultKeys)
-      fuse = new Fuse(apps, options(defaultKeys));
+    if(inputVal === ""){
+      forceVisible();
+      setSearchInput("");
+      setResults([]);
+      return;
     }
 
     setSearchInput(inputVal);
 
-    if (query<= 3) return;
+    if (inputVal.length < 3) return;
 
-    let results = fuse.search(query.toLowerCase().replace(/\s/g, ""));
+    const query = inputVal.trim();
+    const resultLimit = limit && limit > 0 ? limit : 60;
 
-    setResults([...results.map((r) => r.item).slice(0, (limit ? limit : results.length))]);
+    setIsLoading(true);
+    const { response, error } = await fetchWinstallAPI(
+      `/apps/search?q=${encodeURIComponent(query)}&limit=${resultLimit}`
+    );
+    setIsLoading(false);
+
+    if (error) {
+      setResults([]);
+      return;
+    }
+
+    const items = normalizeAppsPayload(response);
+    setResults(items.slice(0, resultLimit));
   };
 
 
@@ -96,7 +98,7 @@ function Search({ apps, onSearch, label, placeholder, preventGlobalSelect, isPac
             placeholder={placeholder || "Search for apps here"}
           />
         </div>
-        
+
         <div className={styles.tip}>
           <a href="#" title="Search tips"><FiHelpCircle /></a>
           <div className={styles.tipData}>
@@ -135,7 +137,11 @@ function Search({ apps, onSearch, label, placeholder, preventGlobalSelect, isPac
           )}
         </ListPackages>
       ) : (
-          <>{searchInput ? <p className={styles.noresults}>Could not find any apps.</p> : ""}</>
+          <>
+            {searchInput && !isLoading ? (
+              <p className={styles.noresults}>Could not find any apps.</p>
+            ) : ""}
+          </>
         )}
     </div>
   );

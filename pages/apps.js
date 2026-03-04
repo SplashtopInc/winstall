@@ -24,20 +24,98 @@ function Store({ data, error }) {
 
   const [apps, setApps] = useState([]);
   const [searchInput, setSearchInput] = useState();
-  const [offset, setOffset] = useState(0);
   const [sort, setSort] = useState();
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [totalKnown, setTotalKnown] = useState(false);
+  const [currentOffset, setCurrentOffset] = useState(0);
+  const [clientError, setClientError] = useState("");
 
   const appsPerPage = 60;
+  const totalPages = totalKnown ? Math.ceil(total / appsPerPage) : 0;
 
-  const totalPages = Math.ceil(apps.length / appsPerPage);
+  const normalizeAppsPayload = (payload) => {
+    if (!payload) return { items: [], total: 0, totalKnown: false, offset: 0, limit: 0 };
+
+    if (Array.isArray(payload)) {
+      return { items: payload, total: payload.length, totalKnown: false, offset: 0, limit: payload.length };
+    }
+
+    if (Array.isArray(payload.items)) {
+      return {
+        items: payload.items,
+        total: typeof payload.total === "number" ? payload.total : payload.items.length,
+        totalKnown: typeof payload.total === "number",
+        offset: typeof payload.offset === "number" ? payload.offset : 0,
+        limit: typeof payload.limit === "number" ? payload.limit : payload.items.length,
+      };
+    }
+
+    if (Array.isArray(payload.apps)) {
+      return {
+        items: payload.apps,
+        total: typeof payload.total === "number" ? payload.total : payload.apps.length,
+        totalKnown: typeof payload.total === "number",
+        offset: typeof payload.offset === "number" ? payload.offset : 0,
+        limit: typeof payload.limit === "number" ? payload.limit : payload.apps.length,
+      };
+    }
+
+    if (Array.isArray(payload.data)) {
+      return {
+        items: payload.data,
+        total: typeof payload.total === "number" ? payload.total : payload.data.length,
+        totalKnown: typeof payload.total === "number",
+        offset: typeof payload.offset === "number" ? payload.offset : 0,
+        limit: typeof payload.limit === "number" ? payload.limit : payload.data.length,
+      };
+    }
+
+    return { items: [], total: 0, totalKnown: false, offset: 0, limit: 0 };
+  };
+
+  const loadPage = async (targetPage, shouldThrow = false) => {
+    const offset = (targetPage - 1) * appsPerPage;
+    setClientError("");
+
+    const { response, error: fetchError } = await fetchWinstallAPI(
+      `/apps?offset=${offset}&limit=${appsPerPage}`,
+      {},
+      shouldThrow
+    );
+
+    if (fetchError) {
+      setClientError(fetchError);
+      return;
+    }
+
+    const normalized = normalizeAppsPayload(response);
+    if (normalized.items.length) {
+      applySort(normalized.items, Router.query.sort || "update-desc");
+    }
+    setApps(normalized.items);
+    setTotal(normalized.total);
+    setTotalKnown(normalized.totalKnown);
+    setCurrentOffset(normalized.offset);
+  };
 
   useEffect(() => {
     // Default to showing most recently updated first to entice Google to index
     // them, and to demonstrate to users that the site is being kept up-to-date.
     let sortOrder = Router.query.sort || "update-desc";
-    applySort(data, sortOrder);
     setSort(sortOrder);
-    setApps(data);
+
+    const initialPage = parseInt(Router.query.page) || 1;
+    setPage(initialPage);
+
+    const normalized = normalizeAppsPayload(data);
+    if (normalized.items.length) {
+      applySort(normalized.items, sortOrder);
+      setApps(normalized.items);
+      setTotal(normalized.total);
+      setTotalKnown(normalized.totalKnown);
+      setCurrentOffset(normalized.offset);
+    }
 
     let handlePagination = (e) => {
       if (e.keyCode === 39) {
@@ -57,46 +135,38 @@ function Store({ data, error }) {
 
     document.addEventListener("keydown", handlePagination);
 
-    setPagination(apps.length);
-
     return () => document.removeEventListener("keydown", handlePagination);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const setPagination = (appCount) => {
-    let requestedPage = parseInt(Router.query.page);
-    if (requestedPage) {
-      let maxPages = Math.round(appCount / appsPerPage) + 1;
-
-      // we check if its a valid page number
-      if (requestedPage > maxPages || requestedPage < 2) return;
-
-      // if it is, we continue
-      let calculateOffset = appsPerPage * (requestedPage - 1);
-      setOffset(calculateOffset);
-    }
-  };
+  useEffect(() => {
+    if (page === 1 && apps.length > 0) return;
+    loadPage(page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
 
   let handleNext = () => {
     window.scrollTo(0, 0);
-    setOffset((offset) => offset + appsPerPage);
+    const nextPage = page + 1;
+    setPage(nextPage);
 
     Router.replace({
       pathname: "/apps",
       query: {
-        page: Math.round((offset + appsPerPage - 1) / appsPerPage) + 1,
+        page: nextPage,
       },
     });
   };
 
   let handlePrevious = () => {
     window.scrollTo(0, 0);
-    setOffset((offset) => offset - appsPerPage);
+    const previousPage = Math.max(1, page - 1);
+    setPage(previousPage);
 
     Router.replace({
       pathname: "/apps",
       query: {
-        page: Math.round((offset + appsPerPage - 1) / appsPerPage) - 1,
+        page: previousPage,
       },
     });
   };
@@ -109,7 +179,7 @@ function Store({ data, error }) {
           id={!small ? "previous" : ""}
           onClick={handlePrevious}
           title="Previous page of apps"
-          disabled={offset > 0 ? (disable ? "disabled" : null) : "disabled"}
+          disabled={page > 1 ? (disable ? "disabled" : null) : "disabled"}
         >
           <FiChevronLeft />
           {!small ? "Previous" : ""}
@@ -120,7 +190,13 @@ function Store({ data, error }) {
           title="Next page of apps"
           onClick={handleNext}
           disabled={
-            offset + appsPerPage < apps.length
+            totalKnown
+              ? page < totalPages
+                ? disable
+                  ? "disabled"
+                  : null
+                : "disabled"
+              : apps.length === appsPerPage
               ? disable
                 ? "disabled"
                 : null
@@ -137,7 +213,12 @@ function Store({ data, error }) {
   const Title = () => {
     return (
       <>
-        {!searchInput && <h1>All apps {`(${apps.length.toLocaleString()})`}</h1>}
+        {!searchInput && (
+          <h1>
+            All apps
+            {totalKnown ? ` (${total.toLocaleString()})` : ""}
+          </h1>
+        )}
         {searchInput && (
           <>
             {searchInput.startsWith("tags: ") && (
@@ -150,6 +231,7 @@ function Store({ data, error }) {
     );
   };
 
+  if (clientError) return <Error title="Oops!" subtitle={clientError} />;
   if (!apps) return <></>;
 
   return (
@@ -173,9 +255,11 @@ function Store({ data, error }) {
         {!searchInput && (
           <>
             <p>
-              Showing {apps.slice(offset, offset + appsPerPage).length} apps
-              (page {Math.round((offset + appsPerPage - 1) / appsPerPage)} of{" "}
-              {totalPages}).
+              {apps.length === 0
+                ? "No apps to show"
+                : totalKnown
+                ? `Showing ${currentOffset + 1}-${currentOffset + apps.length} of ${total.toLocaleString()} apps (page ${page} of ${totalPages}).`
+                : `Showing ${currentOffset + 1}-${currentOffset + apps.length} apps (page ${page}).`}
             </p>
             <ListSort
               apps={apps}
@@ -188,7 +272,7 @@ function Store({ data, error }) {
 
       {!searchInput && (
         <ul className={`${styles.all} ${styles.storeList}`}>
-          {apps.slice(offset, offset + appsPerPage).map((app, index) => (
+          {apps.map((app, index) => (
             <React.Fragment key={app._id}>
               <SingleApp
                 app={app}
@@ -215,14 +299,19 @@ function Store({ data, error }) {
 }
 
 export async function getStaticProps() {
-  let { response: apps, error } = await fetchWinstallAPI(`/apps`, {}, true);
+  let { response, error } = await fetchWinstallAPI(
+    `/apps?offset=0&limit=60`,
+    {},
+    true
+  );
 
   if (error) return { props: { error } };
 
   return {
     props: {
-      data: apps ?? null,
+      data: response ?? null,
     },
+    revalidate: 600,
   };
 }
 

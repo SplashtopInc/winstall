@@ -7,6 +7,9 @@
  */
 const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
   const url = `${process.env.NEXT_PUBLIC_WINGET_API_BASE}${path}`;
+  const isDebug = process.env.WINSTALL_API_DEBUG === "1";
+  const timeoutMs = Number(process.env.WINSTALL_API_TIMEOUT_MS || 15000);
+  const method = givenOptions?.method || "GET";
 
   let additionalOptions = { ...givenOptions };
   let headerOptions;
@@ -17,8 +20,15 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
   }
 
   let response, error;
+  const startedAt = Date.now();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
+    if (isDebug) {
+      console.log(`[fetchWinstallAPI] request ${method} ${url} (timeout ${timeoutMs}ms)`);
+    }
+
     const res = await fetch(url, {
       headers: {
         AuthKey: process.env.NEXT_PUBLIC_WINGET_API_KEY,
@@ -27,7 +37,13 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
       },
       ...additionalOptions,
       redirect: "follow",
+      signal: controller.signal,
     });
+
+    if (isDebug) {
+      const elapsedMs = Date.now() - startedAt;
+      console.log(`[fetchWinstallAPI] response ${res.status} ${res.statusText} ${url} (${elapsedMs}ms)`);
+    }
 
 
     if (!res.ok) {
@@ -46,13 +62,17 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
       response = await res.json();
     }
   } catch (err) {
-    console.error(`[fetchWinstallAPI] request failed ${url}`, err);
-    error = err.message;
+    const elapsedMs = Date.now() - startedAt;
+    const errName = err?.name || "Error";
+    console.error(`[fetchWinstallAPI] request failed ${url} (${elapsedMs}ms)`, err);
+    error = errName === "AbortError" ? `Request timed out after ${timeoutMs}ms` : err.message;
 
     // if `throwErr` is true we fail deployments
     if (throwErr) {
       throw new Error(err);
     }
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   return { response, error };
