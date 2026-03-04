@@ -16,7 +16,7 @@
     "react-lazyload": "^3.2.0",
     "react-loading-skeleton": "^2.0.1",
     "react-modal": "^3.11.2",
-    "react-scripts": "3.4.1",
+    "react-scripts": "5.0.1",
     "react-toggle": "^4.1.1",
     "react-beautiful-dnd": "^13.0.0",
     "yaml": "^1.10.0"
