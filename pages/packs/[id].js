@@ -288,18 +288,23 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   try {
-    let { response: pack } = await fetchWinstallAPI(`/packs/${params.id}`);
-    const { response: creator, error } = await callTwitterAPI(
+    let { response: pack, error: packError } = await fetchWinstallAPI(`/packs/${params.id}`);
+    if (packError) {
+      return { props: { error: typeof packError === "string" ? packError : JSON.stringify(packError) } };
+    }
+    const { response: creator, error: creatorError } = await callTwitterAPI(
       `https://api.twitter.com/2/users/${pack.creator}`
     );
 
-    if (error)
+    if (creatorError)
       return {
         props: {
           error:
-            error.errors.length > 0
-              ? error.errors[0].message
-              : "Could not get user data.",
+            creatorError && creatorError.errors && creatorError.errors.length > 0
+              ? creatorError.errors[0].message
+              : typeof creatorError === "string"
+                ? creatorError
+                : JSON.stringify(creatorError),
         },
       };
 
@@ -307,14 +312,10 @@ export async function getStaticProps({ params }) {
 
     const getIndividualApps = appsList.map(async (app, index) => {
       return new Promise(async (resolve) => {
-
-        let { response: appData, error } = await fetchWinstallAPI(
+        let { response: appData, error: appError } = await fetchWinstallAPI(
           `/apps/${app._id}`
         );
-
-
-        if (error) appData = null;
-
+        if (appError) appData = null;
         appsList[index] = appData;
         resolve();
       });
@@ -326,7 +327,7 @@ export async function getStaticProps({ params }) {
 
     return { props: pack ? { pack, creator } : {}, revalidate: 600 };
   } catch (error) {
-    return { props: { error } };
+    return { props: { error: typeof error === "string" ? error : JSON.stringify(error) } };
   }
 }
 
