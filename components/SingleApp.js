@@ -150,6 +150,25 @@ let SingleApp = ({ app, all, onVersionChange = false, large = false, showTime = 
     window.open(link)
   }
 
+  const handleInstallerType = (installerType) => {
+    switch (installerType) {
+      case "appx":
+      case "exe":
+      case "msi":
+      case "msix":
+      case "zip":
+        return `.${installerType}`
+
+      case "nullsoft":
+      case "inno":
+      case "portable":
+        return ".exe"
+
+      case "wix":
+        return ".msi"
+    }
+  }
+
   return (
     <li
       key={app._id}
@@ -266,7 +285,7 @@ let SingleApp = ({ app, all, onVersionChange = false, large = false, showTime = 
               <FiDownload />
               Download{" "}
               {app.versions[0].installerType
-                ? `(.${app.versions[0].installerType.toLowerCase()})`
+                ? `(.${handleInstallerType(app.versions[0].installerType.toLowerCase()})`
                 : ""}
             </a>
           </li>
