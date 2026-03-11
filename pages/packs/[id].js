@@ -10,7 +10,7 @@ import { useEffect, useState, useContext } from "react";
 import PageWrapper from "../../components/PageWrapper";
 import PackAppsList from "../../components/PackAppsList";
 import SelectedContext from "../../ctx/SelectedContext";
-import { buildSiteUrl, timeAgo } from "../../utils/helpers";
+import { buildSiteUrl, timeAgo, normalizeTwitterUser } from "../../utils/helpers";
 import {
   FiCodepen,
   FiPackage,
@@ -292,21 +292,11 @@ export async function getStaticProps({ params }) {
     if (packError) {
       return { props: { error: typeof packError === "string" ? packError : JSON.stringify(packError) } };
     }
-    const { response: creator, error: creatorError } = await callTwitterAPI(
+    const { response: creatorResponse } = await callTwitterAPI(
       `https://api.twitter.com/2/users/${pack.creator}`
     );
 
-    if (creatorError)
-      return {
-        props: {
-          error:
-            creatorError && creatorError.errors && creatorError.errors.length > 0
-              ? creatorError.errors[0].message
-              : typeof creatorError === "string"
-                ? creatorError
-                : JSON.stringify(creatorError),
-        },
-      };
+    const creator = normalizeTwitterUser(creatorResponse, pack.creator);
 
     let appsList = pack.apps;
 

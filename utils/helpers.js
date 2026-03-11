@@ -125,3 +125,26 @@ export const buildSiteUrl = (path = "") => {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   return `${origin}${normalizedPath}`;
 };
+
+const DEFAULT_TWITTER_AVATAR = "/assets/logo.svg";
+
+export const normalizeTwitterUser = (rawUser, fallbackId = "") => {
+  if (!rawUser || typeof rawUser !== "object") {
+    return {
+      id_str: String(fallbackId || ""),
+      screen_name: String(fallbackId || ""),
+      profile_image_url_https: DEFAULT_TWITTER_AVATAR,
+    };
+  }
+
+  const user = rawUser.data && typeof rawUser.data === "object" ? rawUser.data : rawUser;
+  const id = user.id_str || user.id || fallbackId;
+  const screenName = user.screen_name || user.username || fallbackId;
+  const avatar = user.profile_image_url_https || user.profile_image_url || DEFAULT_TWITTER_AVATAR;
+
+  return {
+    id_str: String(id || ""),
+    screen_name: String(screenName || ""),
+    profile_image_url_https: avatar,
+  };
+};

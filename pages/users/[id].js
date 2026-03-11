@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
 import Error from "../../components/Error";
 import fetchWinstallAPI from "../../utils/fetchWinstallAPI";
+import { normalizeTwitterUser } from "../../utils/helpers";
 
 function UserProfile({ uid }) {
   const [user, setUser] = useState();
@@ -15,20 +16,21 @@ function UserProfile({ uid }) {
 
   useEffect(() => {
     getSession().then(async (session) => {
-      const { response, error } = await fetch("/api/twitter/", {
+      const { response } = await fetch("/api/twitter/", {
         method: "GET",
         headers: {
           endpoint: `https://api.twitter.com/2/users/${uid}`,
         },
       }).then((res) => res.json());
 
-      if (!error) {
-        if (!session || session.user.id !== parseInt(uid)) {
-          setTitle(`Packs created by @${response.screen_name}`);
-          getPacks(uid);
-        }
-        setUser(response);
+      const normalizedUser = normalizeTwitterUser(response, uid);
+
+      if (!session || session.user.id !== parseInt(uid)) {
+        setTitle(`Packs created by @${normalizedUser.screen_name}`);
+        getPacks(uid);
       }
+
+      setUser(normalizedUser);
     });
   }, []);
 
