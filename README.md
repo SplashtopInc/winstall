@@ -1,6 +1,6 @@
 # winstall
 
-## A web app for browsing Windows Package Manager apps, and create a batch-installation command using an intuitive interface.  
+## A web app for browsing Windows Package Manager apps, and create a batch-installation command using an intuitive interface.
 
 How does it work?
 -----------------------
@@ -35,4 +35,4 @@ The list of popular apps are fetched from a `.json` file with a pre-populated se
 
 History
 ------------
-winstall was originally created by [Mehedi Hassan](https://github.com/MehediH) as a side project, but is now owned and maintained by [winget.Pro](https://winget.pro) - with [winget.Pro](https://winget.pro), you can have your own, securely hosted repositories for the Windows Package Manager.
+winstall was originally created by [Mehedi Hassan](https://github.com/MehediH) as a side project, and is now owned and maintained by Splashtop. Splashtop AEM automates your entire application lifecycle— from vendor and custom packaging to seamless continuous updates— saving time and reduce vulnerability risks.
