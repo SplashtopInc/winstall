@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
-    "next": "^16.1.6",
+    "next": "^16.1.7",
     "next-auth": "5.0.0-beta.30",
     "@ducanh2912/next-pwa": "^10.2.9",
     "nprogress": "^0.2.0",
