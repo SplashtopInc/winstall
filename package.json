@@ -33,6 +33,10 @@
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.5.0",
     "@types/react": "^18.3.18",
-    "sass": "^1.49.0"
+    "sass": "^1.80.0"
+  },
+  "engines": {
+    "node": ">=18.18.0",
+    "npm": ">=9.0.0"
   }
 }
