@@ -5,9 +5,9 @@ export const callTwitterAPI = async (endpoint, method="GET") => {
         const res = await fetch(endpoint, {
             method: method,
             headers: {
-                "Authorization": `Bearer ${process.env.NEXT_PUBLIC_TWITTER_BEARER}`
+                "Authorization": `Bearer ${process.env.TWITTER_BEARER}`
             }
-        }); 
+        });
 
         if(res.status !== 200) {
             error = await res.json();
