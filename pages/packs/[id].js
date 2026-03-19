@@ -284,6 +284,11 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   try {
     let { response: pack } = await fetchWinstallAPI(`/packs/${params.id}`);
+
+    if (!pack) {
+      return { props: { error: 'Pack not found' }, revalidate: 600 };
+    }
+
     const { response: creator, error } = await callTwitterAPI(
       `https://api.twitter.com/2/users/${pack.creator}`
     );

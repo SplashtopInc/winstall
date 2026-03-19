@@ -114,7 +114,8 @@ export async function getStaticProps(){
   popular = popularResults.filter(Boolean);
 
   // get the new pack data, and versions data, etc.
-  const getPackData = recommended.map(async (pack) => {
+  const recommendedList = Array.isArray(recommended) ? recommended : [];
+  const getPackData = recommendedList.map(async (pack) => {
     return new Promise(async(resolve) => {
       const appsList = pack.apps;
 
@@ -144,8 +145,9 @@ export async function getStaticProps(){
         popular,
         apps: appsList,
         appsTotal,
-        recommended
-      }
+        recommended: recommendedList
+      },
+      revalidate: 600
     }
   )
 }

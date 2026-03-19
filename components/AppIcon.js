@@ -1,7 +1,15 @@
 import styles from "../styles/singleApp.module.scss";
 import popularAppsList from "../data/popularApps.json";
+import { useState, useEffect } from "react";
+import { getRuntimeConfig } from "../utils/runtimeConfig";
 
 const AppIcon = ({id, name, icon}) => {
+    const [apiBase, setApiBase] = useState('');
+
+    useEffect(() => {
+        getRuntimeConfig().then(config => setApiBase(config.apiBase));
+    }, []);
+
     // if the app is listed in popularApps, use the image specified there
     const popularApps = Object.values(popularAppsList).filter((app) => app._id === id);
     if (popularApps.length === 1) {
@@ -49,8 +57,8 @@ const AppIcon = ({id, name, icon}) => {
     return (
       <AppPicture
         name={name}
-        srcSetPng={`${process.env.NEXT_PUBLIC_WINGET_API_BASE}/icons/${icon}.png`}
-        srcSetWebp={`${process.env.NEXT_PUBLIC_WINGET_API_BASE}/icons/next/${icon}.webp`}
+        srcSetPng={`${apiBase}/icons/${icon}.png`}
+        srcSetWebp={`${apiBase}/icons/next/${icon}.webp`}
       />
     );
 }

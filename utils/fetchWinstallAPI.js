@@ -1,3 +1,5 @@
+import { getRuntimeConfig } from "./runtimeConfig";
+
 /**
  * Helper method for requesting resources from the winstall-api.
  * @param {*} path - path of the resource
@@ -6,7 +8,8 @@
  * @returns
  */
 const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
-  const url = `${process.env.NEXT_PUBLIC_WINGET_API_BASE}${path}`;
+  const config = await getRuntimeConfig();
+  const url = `${config.apiBase}${path}`;
   const isDebug = process.env.WINSTALL_API_DEBUG === "1";
   const timeoutMs = Number(process.env.WINSTALL_API_TIMEOUT_MS || 15000);
   const method = givenOptions?.method || "GET";
@@ -31,8 +34,8 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
 
     const res = await fetch(url, {
       headers: {
-        AuthKey: process.env.NEXT_PUBLIC_WINGET_API_KEY,
-        AuthSecret: process.env.NEXT_PUBLIC_WINGET_API_SECRET,
+        AuthKey: config.apiKey,
+        AuthSecret: config.apiSecret,
         ...headerOptions,
       },
       ...additionalOptions,
@@ -78,10 +81,18 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
   } catch (err) {
     const elapsedMs = Date.now() - startedAt;
     const errName = err?.name || "Error";
+    const isConnRefused = err?.cause?.code === "ECONNREFUSED";
+    const isBuildTime = process.env.NODE_ENV === "production" && !process.env.PORT;
+
+    // During Docker build, API is unavailable. Return empty data instead of failing.
+    if (isConnRefused && isBuildTime) {
+      console.warn(`[fetchWinstallAPI] build-time: API unavailable, returning empty data for ${url}`);
+      return { response: null, error: null };
+    }
+
     console.error(`[fetchWinstallAPI] request failed ${url} (${elapsedMs}ms)`, err);
     error = errName === "AbortError" ? `Request timed out after ${timeoutMs}ms` : err.message;
 
-    // if `throwErr` is true we fail deployments
     if (throwErr) {
       throw new Error(err);
     }

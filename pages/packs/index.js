@@ -111,13 +111,12 @@ export default function Packs({ packs, error }) {
 export async function getStaticProps() {
     let { response: packs, error } = await fetchWinstallAPI(`/packs`);
 
-    if (error) {
+    if (error || !packs) {
         console.error('[getStaticProps /packs] Failed to fetch packs:', error);
-        // Return empty array on build error to allow build to continue
         return {
             props: {
                 packs: [],
-                error: 'Failed to load packs'
+                error: error || 'Failed to load packs'
             },
             revalidate: 600
         };

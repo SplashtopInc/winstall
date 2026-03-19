@@ -6,9 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_WINGET_API_BASE: ${NEXT_PUBLIC_WINGET_API_BASE}
-        NEXT_PUBLIC_WINGET_API_KEY: ${NEXT_PUBLIC_WINGET_API_KEY}
-        NEXT_PUBLIC_WINGET_API_SECRET: ${NEXT_PUBLIC_WINGET_API_SECRET}
+        # No build-time args needed
     image: winstall-app:latest
     container_name: winstall
     restart: unless-stopped
@@ -23,10 +21,10 @@ services:
       - TWITTER_ID=${TWITTER_ID}
       - TWITTER_SECRET=${TWITTER_SECRET}
       - TWITTER_BEARER=${TWITTER_BEARER}
-      # Build-time vars need to be passed again for runtime
-      - NEXT_PUBLIC_WINGET_API_BASE=${NEXT_PUBLIC_WINGET_API_BASE}
-      - NEXT_PUBLIC_WINGET_API_KEY=${NEXT_PUBLIC_WINGET_API_KEY}
-      - NEXT_PUBLIC_WINGET_API_SECRET=${NEXT_PUBLIC_WINGET_API_SECRET}
+      # Winstall API (runtime)
+      - WINSTALL_API_BASE=${WINSTALL_API_BASE}
+      - WINSTALL_API_KEY=${WINSTALL_API_KEY}
+      - WINSTALL_API_SECRET=${WINSTALL_API_SECRET}
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
       interval: 30s
