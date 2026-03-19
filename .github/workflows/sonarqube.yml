@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ '**' ]  # This specifies all branches
 
-name: Sonarqube SAST Scan
+name: SonarQube SAST Scan
 jobs:
   sonarqube:
     runs-on: self-hosted
