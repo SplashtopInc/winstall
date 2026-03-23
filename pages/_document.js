@@ -3,7 +3,7 @@ import Document, { Html, Head, Main, NextScript } from "next/document";
 class MyDocument extends Document {
   render() {
     return (
-      <Html lang="en">
+      <Html lang="en" data-scroll-behavior="smooth">
         <Head>
           <script src="https://cmp.osano.com/169nu5TMub7Nk2Epy/7c82a576-285f-4b1c-8d4b-a1a4da5b7346/osano.js"></script>
           <script
