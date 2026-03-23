@@ -50,8 +50,8 @@ function AppDetail({ app, popular}) {
             ) : (
               <div>
                 <MetaTags
-                  title={`Install ${app.name} via WinGet. Copy the winget install command instantly. ${app.description} | winstall`}
-                  desc={app.desc}
+                  title={`Install ${app.name} with WinGet | winstall`}
+                  desc={`Install ${app.name} via WinGet. Copy the winget install command instantly. ${app.description}`}
                   path={`/apps/${app._id}`}
                 />
                 <ul className="largeApp"><SingleApp app={app} large={true}/></ul>
