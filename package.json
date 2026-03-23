@@ -5,7 +5,7 @@
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",
     "@hello-pangea/dnd": "^18.0.1",
-    "next": "^15.5.13",
+    "next": "^15.5.14",
     "next-auth": "^4.24.12",
     "nprogress": "^0.2.0",
     "react": "^18.3.1",
