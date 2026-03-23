@@ -161,7 +161,7 @@ export async function getStaticProps() {
 
   return {
     props: {
-      allApps: apps ?? null,
+      allApps: apps?.data ?? null,
     },
     revalidate: 600,
   };

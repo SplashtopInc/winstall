@@ -123,17 +123,21 @@ export async function getStaticProps(){
 
   const normalizeAppsPayload = (payload) => {
     if (!payload) return [];
-
+    // New unified structure: { data, total, offset, limit }
+    if (Array.isArray(payload.data)) return payload.data;
+    // Legacy fallback
     if (Array.isArray(payload)) return payload;
     if (Array.isArray(payload.apps)) return payload.apps;
     if (Array.isArray(payload.items)) return payload.items;
-    if (Array.isArray(payload.data)) return payload.data;
 
     return [];
   };
 
   const appsList = normalizeAppsPayload(apps);
   const appsTotal = typeof apps?.total === "number" ? apps.total : appsList.length;
+
+  // Normalize recommended packs
+  const recommendedList = normalizeAppsPayload(recommended);
 
   // Use exponential backoff for revalidate when data is unavailable
   const hasData = appsList.length > 0;
@@ -171,7 +175,6 @@ export async function getStaticProps(){
   popular = popularResults.filter(Boolean);
 
   // get the new pack data, and versions data, etc.
-  const recommendedList = Array.isArray(recommended) ? recommended : [];
   const getPackData = recommendedList.map(async (pack) => {
     return new Promise(async(resolve) => {
       const appsList = pack.apps;

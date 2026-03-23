@@ -109,9 +109,9 @@ export default function Packs({ packs, error }) {
 
 
 export async function getStaticProps() {
-    let { response: packs, error } = await fetchWinstallAPI(`/packs`);
+    let { response: packsData, error } = await fetchWinstallAPI(`/packs`);
 
-    if (error || !packs) {
+    if (error || !packsData?.data) {
         console.error('[getStaticProps /packs] Failed to fetch packs:', error);
         return {
             props: {
@@ -124,6 +124,7 @@ export async function getStaticProps() {
 
     const officialPacks = process.env.NEXT_OFFICIAL_PACKS_CREATOR;
 
+    let packs = packsData.data;
     packs = packs.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     packs = packs.sort((a, b) => a.creator === officialPacks ? -1 : 1)
 

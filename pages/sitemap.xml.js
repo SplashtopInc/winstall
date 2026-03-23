@@ -1,62 +1,18 @@
-import fetchWinstallAPI from "../utils/fetchWinstallAPI";
-
-function generateSiteMap(urlPrefix, apps, packs, users) {
+function generateSiteMapIndex(urlPrefix) {
   return `<?xml version="1.0" encoding="UTF-8"?>
-   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-     ${['apps', 'packs', 'eli5', 'privacy']
-       .map((page) => {
-         return `
-       <url>
-           <loc>${urlPrefix}/${page}</loc>
-       </url>
-     `;
-       })
-       .join('')}
-     ${apps
-       .map(({ _id, updatedAt }) => {
-         return `
-       <url>
-           <loc>${urlPrefix}/apps/${escapeXml(_id)}</loc>
-           <lastmod>${updatedAt}</lastmod>
-       </url>
-     `;
-       })
-       .join('')}
-     ${packs
-       .map(({ _id, updatedAt }) => {
-         return `
-       <url>
-           <loc>${urlPrefix}/packs/${_id}</loc>
-           <lastmod>${updatedAt}</lastmod>
-       </url>
-     `;
-       })
-       .join('')}
-     ${users
-       .map(( id ) => {
-         return `
-       <url>
-           <loc>${urlPrefix}/users/${id}</loc>
-       </url>
-     `;
-       })
-       .join('')}
-   </urlset>
+   <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+     <sitemap>
+       <loc>${urlPrefix}/sitemap-static.xml</loc>
+     </sitemap>
+     <sitemap>
+       <loc>${urlPrefix}/sitemap-apps.xml</loc>
+     </sitemap>
+     <sitemap>
+       <loc>${urlPrefix}/sitemap-packs.xml</loc>
+     </sitemap>
+   </sitemapindex>
  `;
 }
-
-const escapeXml = (str) => {
-  return str.replace(/[&<>"']/g, (char) => {
-    switch (char) {
-      case '&': return '&amp;';
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '"': return '&quot;';
-      case "'": return '&apos;';
-      default: return char;
-    }
-  });
-};
 
 function SiteMap() {
 }
@@ -66,26 +22,7 @@ export async function getServerSideProps({ req, res }) {
   const host = req.headers['host'];
   const urlPrefix = protocol + "://" + host;
 
-  let { response: apps, error: err1 } = await fetchWinstallAPI(`/apps`);
-  if (err1) {
-    console.error('[sitemap] Failed to fetch apps:', err1);
-    res.statusCode = 500;
-    res.end('Error generating sitemap');
-    return { props: {} };
-  }
-
-  let { response: packs, error: err2 } = await fetchWinstallAPI(`/packs`);
-  if (err2) {
-    console.error('[sitemap] Failed to fetch packs:', err2);
-    res.statusCode = 500;
-    res.end('Error generating sitemap');
-    return { props: {} };
-  }
-
-  const users = Array.from(new Set(packs.map(pack => pack.creator)));
-  users.forEach(pack => {console.log(pack);});
-
-  const sitemap = generateSiteMap(urlPrefix, apps, packs, users);
+  const sitemap = generateSiteMapIndex(urlPrefix);
 
   res.setHeader('Content-Type', 'text/xml');
   res.write(sitemap);
