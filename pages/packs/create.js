@@ -61,7 +61,7 @@ function Create({ allApps }) {
   if (!user) {
     return (
       <PageWrapper>
-        <MetaTags title="Create a pack - winstall" />
+        <MetaTags title="Create a pack - winstall" path="/packs/create" />
         <FeaturePromoter art="/assets/packsPromo.svg" disableHide={true}>
           <h3>One more thing...</h3>
           <h1>Welcome! Login with Twitter to be able to create a pack.</h1>
@@ -78,7 +78,7 @@ function Create({ allApps }) {
 
   return (
     <PageWrapper>
-      <MetaTags title="Create a pack - winstall" />
+      <MetaTags title="Create a pack - winstall" path="/packs/create" />
 
       <div className={styles.content}>
         <h1>Create a pack</h1>

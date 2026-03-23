@@ -211,6 +211,7 @@ function PackDetail({ pack, creator, error }) {
             <MetaTags
               title={`${pack.title} - winstall`}
               desc={`Includes ${pack.apps[0].name}, ${pack.apps[1].name}, ${pack.apps[2].name}, and more!`}
+              path={`/packs/${pack._id}`}
             />
 
             <h1>{pack.title}</h1>

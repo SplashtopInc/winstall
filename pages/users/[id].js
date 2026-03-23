@@ -47,9 +47,9 @@ function UserProfile({ uid }) {
   return (
     <PageWrapper>
       {user && user.errors ? (
-        <MetaTags title={`winstall`} />
+        <MetaTags title={`winstall`} path={`/users/${uid}`} />
       ) : (
-        <MetaTags title={`${title} - winstall`} />
+        <MetaTags title={`${title} - winstall`} path={`/users/${uid}`} />
       )}
 
       {user && user.errors ? (

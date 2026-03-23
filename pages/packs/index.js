@@ -58,7 +58,7 @@ export default function Packs({ packs, error }) {
 
     return (
         <PageWrapper>
-            <MetaTags title="Packs - winstall" desc="Checkout the community's app collections for your new Windows 10 machine." />
+            <MetaTags title="Packs - winstall" desc="Checkout the community's app collections for your new Windows 10 machine." path="/packs" />
 
             <div>
                 <FeaturePromoter art="/assets/packsPromo.svg" promoId="packs" disableHide={true}>

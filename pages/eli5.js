@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 export default function Explainer() {
   return (
     <div>
-      <MetaTags title="winstall - how does it work?" />
+      <MetaTags title="winstall - how does it work?" path="/eli5" />
       <article>
         <section>
           <h2>How does this app work?</h2>

@@ -52,6 +52,7 @@ function AppDetail({ app, popular}) {
                 <MetaTags
                   title={`Install ${app.name} with winget - winstall`}
                   desc={app.desc}
+                  path={`/apps/${app._id}`}
                 />
                 <ul className="largeApp"><SingleApp app={app} large={true}/></ul>
                 <DonateCard addMargin="top"/>

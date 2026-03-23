@@ -113,7 +113,7 @@ export default function Edit() {
 
   return (
     <PageWrapper>
-      <MetaTags title="Edit pack - winstall" />
+      <MetaTags title="Edit pack - winstall" path="/packs/edit" />
 
       <div className={styles.content}>
         <h1>Edit Pack</h1>

@@ -28,7 +28,7 @@ function Home({ popular, appsTotal, recommended, error}) {
 
   return (
     <div>
-      <MetaTags title="Browse the winget repository - winstall" />
+      <MetaTags title="Browse the winget repository - winstall" path="/" />
       <div className={styles.intro}>
         <div className="illu-box">
           <div>
@@ -116,7 +116,7 @@ export async function getStaticProps(){
   const popularResults = await Promise.all(
     popular.slice(0, 16).map(async (entry) => {
       const { response: appData } = await fetchWinstallAPI(`/apps/${entry._id}?exclude=versions`);
-      
+
       if (!appData) {
         // Fallback to static popularApps.json data
         return entry;

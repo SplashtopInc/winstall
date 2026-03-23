@@ -24,7 +24,7 @@ function Generate() {
     if(selectedApps.length === 0){
       return (
         <div className="generate-container">
-          <MetaTags title="winstall - GUI for Windows Package Manager" />
+          <MetaTags title="winstall - GUI for Windows Package Manager" path="/generate" />
           <div className="illu-box">
             <div className={styles.generate}>
               <h1>Your don't have any apps selected.</h1>

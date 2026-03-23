@@ -236,7 +236,7 @@ function Store({ data, error }) {
 
   return (
     <div>
-      <MetaTags title="Apps - winstall" />
+      <MetaTags title="Apps - winstall" path="/apps" />
 
       <div className={styles.controls}>
         <Title />
