@@ -9,7 +9,7 @@ import CreatePackForm from "../../components/CreatePackForm";
 import PackAppsList from "../../components/PackAppsList";
 import fetchWinstallAPI from "../../utils/fetchWinstallAPI";
 
-export default function Edit({ allApps }) {
+export default function Edit() {
   const [user, setUser] = useState();
   const [loading, setLoading] = useState(true);
   const [packId, setPackId] = useState();
@@ -142,7 +142,6 @@ export default function Edit({ allApps }) {
 
         <PackAppsList
           notLoggedIn={user === null}
-          allApps={allApps}
           providedApps={packApps}
           reorderEnabled={true}
           onListUpdate={updatePackApps}
@@ -153,16 +152,8 @@ export default function Edit({ allApps }) {
 }
 
 export async function getStaticProps() {
-  let { response: apps, error } = await fetchWinstallAPI(`/apps`);
-
-  if (error) {
-    console.error('[getStaticProps /packs/edit] Failed to fetch apps:', error);
-  }
-
   return {
-    props: {
-      allApps: apps?.data ?? null,
-    },
+    props: {},
     revalidate: 600,
   };
 }

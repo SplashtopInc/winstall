@@ -93,7 +93,6 @@ function Create({ allApps }) {
               notLoggedIn={user === null}
               providedApps={packApps}
               reorderEnabled={true}
-              allApps={allApps}
               onListUpdate={updatePackApps}
             />
           </>
@@ -104,16 +103,8 @@ function Create({ allApps }) {
 }
 
 export async function getStaticProps() {
-  let { response: apps, error } = await fetchWinstallAPI(`/apps`);
-
-  if (error) {
-    console.error('[getStaticProps /packs/create] Failed to fetch apps:', error);
-  }
-
   return {
-    props: {
-      allApps: apps?.data ?? null,
-    },
+    props: {},
     revalidate: 600,
   };
 }

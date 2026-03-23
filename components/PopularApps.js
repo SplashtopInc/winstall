@@ -7,7 +7,7 @@ import PopularContext from "../ctx/PopularContext";
 import { FiPackage } from "react-icons/fi";
 import { useEffect, useContext } from "react";
 
-let PopularApps = ({ apps, all }) => {
+let PopularApps = ({ apps }) => {
   const { popular, setPopular } = useContext(PopularContext);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ let PopularApps = ({ apps, all }) => {
           </h3>
           <ListPackages popular>
             {popular.map((app) => (
-              <PrettyApp app={app} key={app._id} all={all} />
+              <PrettyApp app={app} key={app._id} />
             ))}
           </ListPackages>
         </div>

@@ -50,7 +50,7 @@ function App({ app, index, onListUpdate }) {
   );
 }
 
-function PackAppsList({ notLoggedIn = false, providedApps, reorderEnabled, onListUpdate, allApps}){
+function PackAppsList({ notLoggedIn = false, providedApps, reorderEnabled, onListUpdate}){
 
     const [apps, setApps] = useState([]);
     const [, updateState] = useState();
@@ -141,7 +141,7 @@ function PackAppsList({ notLoggedIn = false, providedApps, reorderEnabled, onLis
             <h2>Add Apps</h2>
             <FiXCircle onClick={closeModal}/>
           </div>
-          <Search apps={allApps} preventGlobalSelect={handleSelect} isPackView={true} alreadySelected={apps} limit={4}/>
+          <Search label="Search for apps to add" preventGlobalSelect={handleSelect} isPackView={true} alreadySelected={apps} limit={4}/>
         </Modal>
 
         {notLoggedIn ? <p>You need to login first before you can view the apps in this pack.</p> : (

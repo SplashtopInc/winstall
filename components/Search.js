@@ -8,7 +8,7 @@ import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { FiSearch, FiHelpCircle } from "react-icons/fi";
 import { useRouter } from "next/router";
 
-function Search({ apps, onSearch, label, placeholder, preventGlobalSelect, isPackView, alreadySelected=[], limit=-1}) {
+function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView, alreadySelected=[], limit=-1}) {
   const [results, setResults] = useState([])
   const [searchInput, setSearchInput] = useState("");
   const router = useRouter();
@@ -29,14 +29,14 @@ function Search({ apps, onSearch, label, placeholder, preventGlobalSelect, isPac
 
   useEffect(() => {
     // if we have a ?q param on the url, we deal with it
-    if (apps.length !== 0 && router.query && router.query.q && urlQuery !== router.query.q){
+    if (router.isReady && router.query && router.query.q && urlQuery !== router.query.q){
       setSearchInput(router.query.q);
       setUrlQuery(router.query.q)
     } else if(results != 0 && urlQuery && router.query && !router.query.q){
       // if we previously had a query, going back should reset it.
       setSearchInput("");
       setResults([]);
-      onSearch();
+      if(onSearch) onSearch();
     }
   })
 
@@ -78,12 +78,9 @@ function Search({ apps, onSearch, label, placeholder, preventGlobalSelect, isPac
     setResults(items.slice(0, resultLimit));
   };
 
-
-  if (!apps) return <></>;
-
   return (
     <div>
-      <label htmlFor="search" className={styles.searchLabel}>{label || `${Math.floor(apps.length / 50) * 50}+ packages and growing.`}</label>
+      <label htmlFor="search" className={styles.searchLabel}>{label || "Search for apps"}</label>
       <div className={styles.searchBox}>
         <div className={styles.searchInner}>
           <FiSearch />

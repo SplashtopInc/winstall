@@ -14,49 +14,11 @@ import { FiPlus, FiPackage } from "react-icons/fi";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import Error from "../components/Error";
 import DonateCard from "../components/DonateCard";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { getRevalidateTime } from "../utils/revalidateCache";
 
-function Home({ popular, apps, appsTotal, recommended, error}) {
-  const [data, setData] = useState({ popular, apps, appsTotal, recommended });
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    // If data is empty, try to load it client-side
-    if (data.apps.length === 0 && !loading && !error) {
-      setLoading(true);
-
-      const loadData = async () => {
-        const { response: appsData } = await fetchWinstallAPI('/apps');
-        if (appsData) {
-          const normalizeAppsPayload = (payload) => {
-            if (!payload) return [];
-            if (Array.isArray(payload)) return payload;
-            if (Array.isArray(payload.apps)) return payload.apps;
-            if (Array.isArray(payload.items)) return payload.items;
-            if (Array.isArray(payload.data)) return payload.data;
-            return [];
-          };
-
-          const appsList = normalizeAppsPayload(appsData);
-          const total = typeof appsData?.total === "number" ? appsData.total : appsList.length;
-
-          // Use popularApps.json as fallback for popular apps
-          const popularList = data.popular.length > 0 ? data.popular : shuffleArray(Object.values(popularAppsList)).slice(0, 16);
-
-          setData({
-            apps: appsList,
-            appsTotal: total,
-            popular: popularList,
-            recommended: data.recommended
-          });
-        }
-        setLoading(false);
-      };
-
-      loadData();
-    }
-  }, [data, loading, error]);
+function Home({ popular, appsTotal, recommended, error}) {
+  const [data] = useState({ popular, appsTotal, recommended });
 
   if(error) {
     return <Error title="Oops!" subtitle={error}/>
@@ -76,7 +38,7 @@ function Home({ popular, apps, appsTotal, recommended, error}) {
             <p className={styles.lead}>
               Install Windows apps quickly with Windows Package Manager.
             </p>
-            <Search apps={data.apps} label={searchLabel} limit={4}/>
+            <Search label={searchLabel} limit={4}/>
           </div>
 
           <div className="art">
@@ -94,7 +56,7 @@ function Home({ popular, apps, appsTotal, recommended, error}) {
       <DonateCard />
 
 
-      <PopularApps apps={data.popular} all={data.apps} />
+      <PopularApps apps={data.popular} />
 
       {/* <RecentApps apps={recents} /> */}
 
@@ -123,31 +85,23 @@ export async function getStaticProps(){
 
   const normalizeAppsPayload = (payload) => {
     if (!payload) return [];
-    // New unified structure: { data, total, offset, limit }
     if (Array.isArray(payload.data)) return payload.data;
-    // Legacy fallback
     if (Array.isArray(payload)) return payload;
     if (Array.isArray(payload.apps)) return payload.apps;
     if (Array.isArray(payload.items)) return payload.items;
-
     return [];
   };
 
-  const appsList = normalizeAppsPayload(apps);
-  const appsTotal = typeof apps?.total === "number" ? apps.total : appsList.length;
-
-  // Normalize recommended packs
+  const appsTotal = typeof apps?.total === "number" ? apps.total : 0;
   const recommendedList = normalizeAppsPayload(recommended);
 
-  // Use exponential backoff for revalidate when data is unavailable
-  const hasData = appsList.length > 0;
+  const hasData = appsTotal > 0;
   const revalidate = getRevalidateTime('index', hasData);
 
   if (!hasData) {
     return {
       props: {
         popular: [],
-        apps: [],
         appsTotal: 0,
         recommended: []
       },
@@ -157,17 +111,21 @@ export async function getStaticProps(){
 
   if(appsError || recommendedError) return { props: { error: `Could not fetch data from Winstall API.`}, revalidate: getRevalidateTime('index-error', false) };
 
+  // Fetch popular apps from API with exclude=versions to avoid large payload
+  // Fallback to popularApps.json if API is unavailable
   const popularResults = await Promise.all(
-    popular.map(async (entry) => {
-      const { response: appData } = await fetchWinstallAPI(`/apps/${entry._id}`);
-      if (!appData) return null;
+    popular.slice(0, 16).map(async (entry) => {
+      const { response: appData } = await fetchWinstallAPI(`/apps/${entry._id}?exclude=versions`);
+      
+      if (!appData) {
+        // Fallback to static popularApps.json data
+        return entry;
+      }
 
       return {
         ...appData,
         _id: entry._id,
-        path: appData.path || entry.path,
-        name: appData.name || entry.name,
-        img: entry.img,
+        img: entry.img, // Preserve img from popularApps.json for consistency
       };
     })
   );
@@ -203,7 +161,6 @@ export async function getStaticProps(){
     {
       props: {
         popular,
-        apps: appsList,
         appsTotal,
         recommended: recommendedList
       },

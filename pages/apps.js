@@ -245,7 +245,6 @@ function Store({ data, error }) {
       </div>
 
       <Search
-        apps={apps}
         onSearch={(q) => setSearchInput(q)}
         label={"Search for apps"}
         placeholder={"Enter you search term here"}

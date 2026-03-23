@@ -4,7 +4,7 @@ import SelectedContext from "../ctx/SelectedContext";
 import Link from "next/link";
 import { FiPlus } from "react-icons/fi";
 
-let PrettyApp = ({ app, all }) => {
+let PrettyApp = ({ app }) => {
   const [selected, setSelected] = useState(false);
   const { selectedApps, setSelectedApps } = useContext(SelectedContext);
 
@@ -25,14 +25,7 @@ let PrettyApp = ({ app, all }) => {
       setSelected(false);
     } else {
       setSelected(true);
-
-      if (all) {
-        app = all.find((i) => app._id == i._id);
-
-        setSelectedApps([...selectedApps, app]);
-      } else {
-        setSelectedApps([...selectedApps, app]);
-      }
+      setSelectedApps([...selectedApps, app]);
     }
   };
 
