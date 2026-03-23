@@ -24,7 +24,7 @@ function Generate() {
     if(selectedApps.length === 0){
       return (
         <div className="generate-container">
-          <MetaTags title="winstall - GUI for Windows Package Manager" path="/generate" />
+          <MetaTags title="Generate a WinGet Install Script | winstall" path="/generate" desc="Turn your selected apps into a WinGet install script or PowerShell command for faster Windows app deployment." />
           <div className="illu-box">
             <div className={styles.generate}>
               <h1>Your don't have any apps selected.</h1>
@@ -51,7 +51,7 @@ function Generate() {
 
     return (
       <div className="generate-container">
-        <MetaTags title="winstall - GUI for Windows Package Manager" />
+        <MetaTags title="Generate a WinGet Install Script | winstall" path="/generate" desc="Turn your selected apps into a WinGet install script or PowerShell command for faster Windows app deployment." />
         <div className="illu-box">
           <div className={styles.generate}>
             <h1>Your apps are ready to be installed.</h1>

@@ -28,7 +28,7 @@ function Home({ popular, appsTotal, recommended, error}) {
 
   return (
     <div>
-      <MetaTags title="Browse the winget repository - winstall" path="/" />
+      <MetaTags title="WinGet Packages Directory for Windows Apps | winstall" path="/" desc="Browse 11k+ WinGet packages, select apps, and generate install scripts for fast Windows setup with Windows Package Manager." />
       <div className={styles.intro}>
         <div className="illu-box">
           <div>

@@ -69,7 +69,7 @@ function OwnProfile() {
       {user && user.errors ? (
         <MetaTags title={`winstall`} path="/users/you" />
       ) : (
-        <MetaTags title={`Your packs - winstall`} path="/users/you" />
+        <MetaTags title={`Your packs | winstall`} path="/users/you" />
       )}
 
       <div>

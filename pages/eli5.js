@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 export default function Explainer() {
   return (
     <div>
-      <MetaTags title="winstall - how does it work?" path="/eli5" />
+      <MetaTags title="How WinGet and Winstall Work | winstall" path="/eli5" desc="Learn how winstall works with Windows Package Manager, how to install WinGet, and how to generate app install scripts." />
       <article>
         <section>
           <h2>How does this app work?</h2>

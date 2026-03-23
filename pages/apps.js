@@ -236,7 +236,7 @@ function Store({ data, error }) {
 
   return (
     <div>
-      <MetaTags title="Apps - winstall" path="/apps" />
+      <MetaTags title="Browse All WinGet Apps and Packages | winstall" path="/apps" desc="Search and sort the full WinGet app catalog to find Windows apps and packages available through Windows Package Manager." />
 
       <div className={styles.controls}>
         <Title />

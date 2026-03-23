@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 export default function Privacy() {
   return (
     <div>
-      <MetaTags title="Privacy Policy - winstall" path="/privacy" />
+      <MetaTags title="Winstall Privacy Policy | winstall" path="/privacy" desc="Read the winstall privacy policy, including how analytics data is handled and what information is stored for packs." />
       <article>
         <section>
           <h2>Privacy Policy</h2>

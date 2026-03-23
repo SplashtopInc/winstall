@@ -50,7 +50,7 @@ function AppDetail({ app, popular}) {
             ) : (
               <div>
                 <MetaTags
-                  title={`Install ${app.name} with winget - winstall`}
+                  title={`Install ${app.name} with winget | winstall`}
                   desc={app.desc}
                   path={`/apps/${app._id}`}
                 />

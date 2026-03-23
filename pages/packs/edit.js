@@ -113,7 +113,7 @@ export default function Edit() {
 
   return (
     <PageWrapper>
-      <MetaTags title="Edit pack - winstall" path="/packs/edit" />
+      <MetaTags title="Edit Your WinGet App Pack | winstall" path="/packs/edit" desc="Update your WinGet app pack, manage included apps, and keep your Windows install bundle current." />
 
       <div className={styles.content}>
         <h1>Edit Pack</h1>

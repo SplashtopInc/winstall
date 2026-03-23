@@ -49,7 +49,7 @@ function UserProfile({ uid }) {
       {user && user.errors ? (
         <MetaTags title={`winstall`} path={`/users/${uid}`} />
       ) : (
-        <MetaTags title={`${title} - winstall`} path={`/users/${uid}`} />
+        <MetaTags title={`${title} | winstall`} path={`/users/${uid}`} />
       )}
 
       {user && user.errors ? (
