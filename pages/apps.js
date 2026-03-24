@@ -30,6 +30,7 @@ function Store({ data, error }) {
   const [totalKnown, setTotalKnown] = useState(false);
   const [currentOffset, setCurrentOffset] = useState(0);
   const [clientError, setClientError] = useState("");
+  const [apiBase, setApiBase] = useState("");
 
   const appsPerPage = 60;
   const totalPages = totalKnown ? Math.ceil(total / appsPerPage) : 0;
@@ -92,6 +93,17 @@ function Store({ data, error }) {
     const normalized = normalizeAppsPayload(response);
     if (normalized.items.length) {
       applySort(normalized.items, Router.query.sort || "update-desc");
+      
+      // Transform icons to full URLs for client-side pagination
+      if (apiBase) {
+        normalized.items.forEach(app => {
+          if (app.icon && !app.icon.startsWith('http') && !app.iconUrl) {
+            const iconName = app.icon.replace('.png', '');
+            app.iconUrl = `${apiBase}/icons/next/${iconName}.webp`;
+            app.iconPng = `${apiBase}/icons/${iconName}.png`;
+          }
+        });
+      }
     }
     setApps(normalized.items);
     setTotal(normalized.total);
@@ -100,6 +112,12 @@ function Store({ data, error }) {
   };
 
   useEffect(() => {
+    // Fetch API base URL once for client-side icon transformation
+    fetch('/api/runtime-config')
+      .then(res => res.json())
+      .then(config => setApiBase(config.apiBase))
+      .catch(() => setApiBase(''));
+
     // Default to showing most recently updated first to entice Google to index
     // them, and to demonstrate to users that the site is being kept up-to-date.
     let sortOrder = Router.query.sort || "update-desc";

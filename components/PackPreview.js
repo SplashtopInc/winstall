@@ -9,7 +9,12 @@ export default function PackPreview({ pack, hideMeta, showDelete=false, auth, de
     const [appIcons, setIcons] = useState([]);
 
     useEffect(() => {
-        const appIcons = pack.apps.filter(a => a.icon != "" ).map(a => ({ icon: a.icon, _id: a._id }));
+        const appIcons = pack.apps.filter(a => a.icon != "" ).map(a => ({ 
+            icon: a.icon, 
+            iconUrl: a.iconUrl,
+            iconPng: a.iconPng,
+            _id: a._id 
+        }));
 
         setIcons([...appIcons].slice(0, 4));
 
@@ -50,7 +55,7 @@ export default function PackPreview({ pack, hideMeta, showDelete=false, auth, de
                 <header className={`${styles.packIcons} ${appIcons.length <= 2? styles.singleIcon : ""}`} id={pack.accent}>
                     <ul style={{gridTemplateColumns: `repeat(${appIcons.length > 4 ? "4": appIcons.length},1fr)`}}>
                         {
-                            appIcons.map((app, index) => <li key={index}><AppIcon icon={app.icon} id={app._id}/></li>)
+                            appIcons.map((app, index) => <li key={index}><AppIcon icon={app.icon} iconUrl={app.iconUrl} iconPng={app.iconPng} id={app._id}/></li>)
                         }
                         { appIcons.length === 0 && (
                             <li><FiPackage/></li>

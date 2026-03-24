@@ -14,11 +14,20 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
   const router = useRouter();
   const [urlQuery, setUrlQuery] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [apiBase, setApiBase] = useState("");
 
   const normalizeAppsPayload = (payload) => {
     if (!payload?.data) return [];
     return payload.data;
   };
+
+  useEffect(() => {
+    // Fetch API base URL once for client-side icon transformation
+    fetch('/api/runtime-config')
+      .then(res => res.json())
+      .then(config => setApiBase(config.apiBase))
+      .catch(() => setApiBase(''));
+  }, []);
 
   useEffect(() => {
     // if we have a ?q param on the url, we deal with it
@@ -68,6 +77,18 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
     }
 
     const items = normalizeAppsPayload(response);
+    
+    // Transform icons to full URLs for search results
+    if (apiBase) {
+      items.forEach(app => {
+        if (app.icon && !app.icon.startsWith('http') && !app.iconUrl) {
+          const iconName = app.icon.replace('.png', '');
+          app.iconUrl = `${apiBase}/icons/next/${iconName}.webp`;
+          app.iconPng = `${apiBase}/icons/${iconName}.png`;
+        }
+      });
+    }
+    
     setResults(items.slice(0, resultLimit));
   };
 

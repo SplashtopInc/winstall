@@ -14,10 +14,16 @@ function OwnProfile() {
   const [packs, setPacks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState("Loading...");
+  const [apiBase, setApiBase] = useState("");
 
   const router = useRouter();
 
   useEffect(() => {
+    fetch('/api/runtime-config')
+      .then(res => res.json())
+      .then(config => setApiBase(config.apiBase))
+      .catch(() => setApiBase(''));
+
     getSession().then(async (session) => {
       if (!session) {
         router.push(`/`);
@@ -53,6 +59,19 @@ function OwnProfile() {
     }
 
     if (packs) {
+      if (apiBase) {
+        packs.forEach(pack => {
+          if (pack.apps) {
+            pack.apps.forEach(app => {
+              if (app.icon && !app.icon.startsWith('http') && !app.iconUrl) {
+                const iconName = app.icon.replace('.png', '');
+                app.iconUrl = `${apiBase}/icons/next/${iconName}.webp`;
+                app.iconPng = `${apiBase}/icons/${iconName}.png`;
+              }
+            });
+          }
+        });
+      }
       setPacks(packs);
       setLoading(false);
       localStorage.setItem("ownPacks", JSON.stringify(packs));

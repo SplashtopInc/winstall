@@ -131,7 +131,7 @@ const App = ({ data }) => {
     <div className={`${styles.appContainer} ${selected ? styles.selected : null}`}>
 
       <Link href="/apps/[id]" as={`/apps/${data._id}`} prefetch={false}>
-        <AppIcon name={data.name} icon={data.icon} id={data._id}/>
+        <AppIcon name={data.name} icon={data.icon} iconUrl={data.iconUrl} iconPng={data.iconPng} id={data._id}/>
         <h4>{data.name}</h4>
       </Link>
     </div>

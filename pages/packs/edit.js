@@ -17,8 +17,14 @@ export default function Edit() {
   const [notFound, setNotFound] = useState(false);
   const [accessDenied, denyAccess] = useState(false);
   const [packApps, setPackApps] = useState([]);
+  const [apiBase, setApiBase] = useState("");
 
   useEffect(() => {
+    fetch('/api/runtime-config')
+      .then(res => res.json())
+      .then(config => setApiBase(config.apiBase))
+      .catch(() => setApiBase(''));
+
     getSession().then(async (session) => {
       if (session && session.user) setUser(session.user);
 
@@ -51,6 +57,12 @@ export default function Edit() {
           );
 
           if (error) appData = null;
+
+          if (appData && apiBase && appData.icon && !appData.icon.startsWith('http')) {
+            const iconName = appData.icon.replace('.png', '');
+            appData.iconUrl = `${apiBase}/icons/next/${iconName}.webp`;
+            appData.iconPng = `${apiBase}/icons/${iconName}.png`;
+          }
 
           appsList[index] = appData;
           resolve();
