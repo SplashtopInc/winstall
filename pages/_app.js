@@ -23,16 +23,6 @@ function winstall({ Component, pageProps: { session, ...pageProps } }) {
   useEffect(() => {
     checkTheme();
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then(registration => {
-          console.log('SW registered:', registration);
-        })
-        .catch(error => {
-          console.log('SW registration failed:', error);
-        });
-    }
-
     // Track page views on route change
     const handleRouteChange = (url) => {
       trackPageView(url);

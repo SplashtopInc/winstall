@@ -3,8 +3,10 @@
   "version": "2.0.0",
   "private": true,
   "dependencies": {
-    "@ducanh2912/next-pwa": "^10.2.9",
     "@hello-pangea/dnd": "^18.0.1",
+    "@serwist/next": "^9.5.7",
+    "@serwist/precaching": "^9.5.7",
+    "@serwist/sw": "^9.5.7",
     "next": "^15.5.13",
     "next-auth": "^4.24.12",
     "nprogress": "^0.2.0",
@@ -33,7 +35,8 @@
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.5.0",
     "@types/react": "^18.3.18",
-    "sass": "^1.80.0"
+    "sass": "^1.80.0",
+    "typescript": "6.0.2"
   },
   "engines": {
     "node": ">=18.18.0",

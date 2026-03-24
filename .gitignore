@@ -26,10 +26,12 @@ diff.js
 
 .env
 
-**/public/workbox-*.js
+# Service Worker generated files (Serwist)
 **/public/sw.js
-**/public/workbox-*.js.map
-**/public/sw.js.map
+**/public/swe-worker-*.js
+
+# Next.js TypeScript
+next-env.d.ts
 
 # Playwright
 node_modules/
