@@ -77,7 +77,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
     }
 
     const items = normalizeAppsPayload(response);
-    
+
     // Transform icons to full URLs for search results
     if (apiBase) {
       items.forEach(app => {
@@ -88,7 +88,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
         }
       });
     }
-    
+
     setResults(items.slice(0, resultLimit));
   };
 
