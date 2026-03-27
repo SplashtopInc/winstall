@@ -29,9 +29,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-    networks:
-      - winstall-network
-
-networks:
-  winstall-network:
-    driver: bridge
