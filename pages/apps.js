@@ -319,8 +319,6 @@ export async function getStaticProps() {
   const { getRuntimeConfig } = require('../utils/runtimeConfig');
   const config = await getRuntimeConfig();
 
-  console.log('[getStaticProps /apps] config.apiBase:', config.apiBase);
-
   let { response, error } = await fetchWinstallAPI(
     `/apps?offset=0&limit=60`
   );
@@ -336,14 +334,6 @@ export async function getStaticProps() {
     };
   }
 
-  console.log('[getStaticProps /apps] response structure:', {
-    isArray: Array.isArray(response),
-    hasItems: !!response?.items,
-    hasApps: !!response?.apps,
-    hasData: !!response?.data,
-    dataLength: response?.data?.length
-  });
-
   // Transform icons to full URLs
   if (response && config.apiBase) {
     const transformIcon = (app) => {
@@ -357,24 +347,13 @@ export async function getStaticProps() {
 
     if (Array.isArray(response)) {
       response = response.map(transformIcon);
-      console.log('[getStaticProps /apps] Transformed Array response');
     } else if (response.items) {
       response.items = response.items.map(transformIcon);
-      console.log('[getStaticProps /apps] Transformed response.items');
     } else if (response.apps) {
       response.apps = response.apps.map(transformIcon);
-      console.log('[getStaticProps /apps] Transformed response.apps');
     } else if (response.data) {
       response.data = response.data.map(transformIcon);
-      console.log('[getStaticProps /apps] Transformed response.data, sample app:', {
-        _id: response.data[0]?._id,
-        icon: response.data[0]?.icon,
-        iconUrl: response.data[0]?.iconUrl,
-        iconPng: response.data[0]?.iconPng
-      });
     }
-  } else {
-    console.log('[getStaticProps /apps] Skipping transform - no response or no apiBase');
   }
 
   return {
