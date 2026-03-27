@@ -4,10 +4,12 @@ services:
       context: .
       dockerfile: Dockerfile
     image: ${WINSTALL_APP_TAG:-winstall/app-latest}
-    container_name: winstall
+    container_name: winstall-app
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - .env
     environment:
