@@ -3,15 +3,13 @@ import popularAppsList from "../data/popularApps.json";
 import { useState, useEffect } from "react";
 
 const AppIcon = ({id, name, icon, iconUrl, iconPng}) => {
-    const [runtimeApiBase, setRuntimeApiBase] = useState('');
+    const [apiBase, setApiBase] = useState('');
 
     useEffect(() => {
-        // For client-side dynamic content without iconUrl (search, pagination)
-        if (!iconUrl && icon && !icon.startsWith('http') && typeof window !== 'undefined') {
-            fetch('/api/runtime-config')
+        if (!iconUrl && icon && !icon.startsWith('http')) {
+            fetch('/api/config')
                 .then(res => res.json())
-                .then(config => setRuntimeApiBase(config.apiBase))
-                .catch(() => setRuntimeApiBase(''));
+                .then(config => setApiBase(config.apiBase));
         }
     }, [iconUrl, icon]);
 
@@ -70,13 +68,23 @@ const AppIcon = ({id, name, icon, iconUrl, iconPng}) => {
         );
     }
 
-    // Fallback for dynamic content
-    const baseUrl = runtimeApiBase || '';
+    // Fallback for dynamic content - wait for API base URL
+    if (!apiBase) {
+        return (
+          <img
+            src="/generic-app-icon.svg"
+            alt="Package icon"
+            width="25"
+            height="25"
+          />
+        );
+    }
+
     return (
       <AppPicture
         name={name}
-        srcSetPng={`${baseUrl}/icons/${icon}.png`}
-        srcSetWebp={`${baseUrl}/icons/next/${icon}.webp`}
+        srcSetPng={`${apiBase}/icons/${icon}.png`}
+        srcSetWebp={`${apiBase}/icons/next/${icon}.webp`}
       />
     );
 }

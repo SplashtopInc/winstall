@@ -15,6 +15,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
   const [urlQuery, setUrlQuery] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [apiBase, setApiBase] = useState("");
+  const [apiBaseFetched, setApiBaseFetched] = useState(false);
 
   const normalizeAppsPayload = (payload) => {
     if (!payload?.data) return [];
@@ -22,14 +23,15 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
   };
 
   useEffect(() => {
-    // Fetch API base URL once for client-side icon transformation
-    fetch('/api/runtime-config')
-      .then(res => res.json())
-      .then(config => setApiBase(config.apiBase))
-      .catch(() => setApiBase(''));
-  }, []);
+    if (!apiBaseFetched) {
+      fetch('/api/config')
+        .then(res => res.json())
+        .then(config => {
+          setApiBase(config.apiBase);
+          setApiBaseFetched(true);
+        });
+    }
 
-  useEffect(() => {
     // if we have a ?q param on the url, we deal with it
     if (router.isReady && router.query && router.query.q && urlQuery !== router.query.q){
       setSearchInput(router.query.q);
@@ -78,7 +80,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
 
     const items = normalizeAppsPayload(response);
 
-    // Transform icons to full URLs for search results
+    // Transform icons to full URLs for search results using runtime apiBase
     if (apiBase) {
       items.forEach(app => {
         if (app.icon && !app.icon.startsWith('http') && !app.iconUrl) {

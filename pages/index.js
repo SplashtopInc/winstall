@@ -14,14 +14,71 @@ import { FiPlus, FiPackage } from "react-icons/fi";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import Error from "../components/Error";
 import DonateCard from "../components/DonateCard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getRevalidateTime } from "../utils/revalidateCache";
 
-function Home({ popular, appsTotal, recommended, error}) {
-  const [data] = useState({ popular, appsTotal, recommended });
+function Home({ popular, appsTotal, recommended, error, buildTime, officialPacksCreator }) {
+  const [data, setData] = useState({ popular: popular || [], appsTotal: appsTotal || 0, recommended: recommended || [] });
+  const [isLoading, setIsLoading] = useState(buildTime || (!popular && !error));
+  const [clientError, setClientError] = useState(null);
 
-  if(error) {
-    return <Error title="Oops!" subtitle={error}/>
+  useEffect(() => {
+    if (buildTime || (!popular && !error)) {
+      setIsLoading(true);
+
+      Promise.all([
+        fetchWinstallAPI(`/apps`).then(({ response }) => response),
+        fetchWinstallAPI(`/packs/users/${officialPacksCreator}`).then(({ response }) => response)
+      ])
+        .then(([appsResponse, packsResponse]) => {
+          const total = typeof appsResponse?.total === "number" ? appsResponse.total : 0;
+
+          const normalizePayload = (payload) => {
+            if (!payload) return [];
+            if (Array.isArray(payload.data)) return payload.data;
+            if (Array.isArray(payload)) return payload;
+            if (Array.isArray(payload.apps)) return payload.apps;
+            if (Array.isArray(payload.items)) return payload.items;
+            return [];
+          };
+
+          setData({
+            popular: popular || [],
+            appsTotal: total,
+            recommended: normalizePayload(packsResponse)
+          });
+          setIsLoading(false);
+        })
+        .catch(err => {
+          setClientError(err.message || "Failed to load data");
+          setIsLoading(false);
+        });
+    }
+  }, [buildTime, popular, error, officialPacksCreator]);
+
+  if (isLoading) {
+    return (
+      <div>
+        <MetaTags title="Browse the winget repository - winstall" path="/" />
+        <div className={styles.intro}>
+          <div className="illu-box">
+            <div>
+              <h1>Browse the winget repository.</h1>
+              <p className={styles.lead}>Loading...</p>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <Error title="Oops!" subtitle={error} />;
+  }
+
+  if (clientError) {
+    return <Error title="Oops!" subtitle={clientError} />;
   }
 
   const searchLabel = `${Math.floor(data.appsTotal / 50) * 50}+ packages and growing.`;
@@ -78,22 +135,27 @@ export async function getStaticProps(){
   const { getRuntimeConfig } = require('../utils/runtimeConfig');
   const config = await getRuntimeConfig();
 
-  const transformIcon = (app) => {
-    if (app && app.icon && config.apiBase && !app.icon.startsWith('http')) {
-      const iconName = app.icon.replace('.png', '');
-      app.iconUrl = `${config.apiBase}/icons/next/${iconName}.webp`;
-      app.iconPng = `${config.apiBase}/icons/${iconName}.png`;
-    }
-    return app;
-  };
+  const officialPacksCreator = process.env.NEXT_OFFICIAL_PACKS_CREATOR || '1301830924120788997';
+
+  // No API at build time: return empty to trigger ISR on first request
+  if (!config.apiBase) {
+    console.warn('[getStaticProps /] Build-time: no API configured, will trigger ISR on first request');
+    return {
+      props: {
+        popular: shuffleArray(Object.values(popularAppsList)).slice(0, 16),
+        appsTotal: 0,
+        recommended: [],
+        buildTime: true,
+        officialPacksCreator
+      },
+      revalidate: 1
+    };
+  }
 
   let popular = shuffleArray(Object.values(popularAppsList));
 
   let { response: apps, error: appsError } = await fetchWinstallAPI(`/apps`);
-  let { response: recommended, error: recommendedError } = await fetchWinstallAPI(`/packs/users/${process.env.NEXT_OFFICIAL_PACKS_CREATOR}`);
-
-  if(appsError) console.error(appsError);
-  if(recommendedError) console.error(recommendedError);
+  let { response: recommended, error: recommendedError } = await fetchWinstallAPI(`/packs/users/${officialPacksCreator}`);
 
   const normalizeAppsPayload = (payload) => {
     if (!payload) return [];
@@ -106,22 +168,26 @@ export async function getStaticProps(){
 
   const appsTotal = typeof apps?.total === "number" ? apps.total : 0;
   const recommendedList = normalizeAppsPayload(recommended);
-
   const hasData = appsTotal > 0;
-  const revalidate = getRevalidateTime('index', hasData);
 
-  if (!hasData) {
+  // Runtime API error: use exponential backoff to avoid hammering failing API
+  if (!hasData || appsError || recommendedError) {
+    const errorMsg = appsError || recommendedError || 'Failed to load data from API server';
+    const revalidate = getRevalidateTime('index', false);
+
+    console.warn(`[getStaticProps /] Runtime: no data, will retry in ${revalidate}s`);
+
     return {
       props: {
-        popular: [],
+        popular: popular.slice(0, 16),
         appsTotal: 0,
-        recommended: []
+        recommended: [],
+        error: errorMsg,
+        officialPacksCreator
       },
       revalidate
     };
   }
-
-  if(appsError || recommendedError) return { props: { error: `Could not fetch data from Winstall API.`}, revalidate: getRevalidateTime('index-error', false) };
 
   const popularResults = await Promise.all(
     popular.slice(0, 16).map(async (entry) => {
@@ -131,17 +197,16 @@ export async function getStaticProps(){
         return entry;
       }
 
-      return transformIcon({
+      return {
         ...appData,
         _id: entry._id,
         img: entry.img,
-      });
+      };
     })
   );
 
   popular = popularResults.filter(Boolean);
 
-  // get the new pack data, and versions data, etc.
   const getPackData = recommendedList.map(async (pack) => {
     return new Promise(async(resolve) => {
       const appsList = pack.apps;
@@ -151,10 +216,6 @@ export async function getStaticProps(){
           let { response: appData, error } = await fetchWinstallAPI(`/apps/${app._id}`);
 
           if(error) appData = null;
-
-          if(appData) {
-            appData = transformIcon(appData);
-          }
 
           appsList[index] = appData;
           resolve();
@@ -170,16 +231,18 @@ export async function getStaticProps(){
 
   await Promise.all(getPackData);
 
-  return (
-    {
-      props: {
-        popular,
-        appsTotal,
-        recommended: recommendedList
-      },
-      revalidate: 600
-    }
-  )
+  const revalidate = getRevalidateTime('index', true);
+  console.log(`[getStaticProps /] Success: ${appsTotal} apps, ${recommendedList.length} packs, revalidate in ${revalidate}s`);
+
+  return {
+    props: {
+      popular,
+      appsTotal,
+      recommended: recommendedList,
+      officialPacksCreator
+    },
+    revalidate
+  };
 }
 
 export default Home;

@@ -20,10 +20,9 @@ export default function Edit() {
   const [apiBase, setApiBase] = useState("");
 
   useEffect(() => {
-    fetch('/api/runtime-config')
+    fetch('/api/config')
       .then(res => res.json())
-      .then(config => setApiBase(config.apiBase))
-      .catch(() => setApiBase(''));
+      .then(config => setApiBase(config.apiBase));
 
     getSession().then(async (session) => {
       if (session && session.user) setUser(session.user);

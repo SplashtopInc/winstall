@@ -19,10 +19,9 @@ function OwnProfile() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch('/api/runtime-config')
+    fetch('/api/config')
       .then(res => res.json())
-      .then(config => setApiBase(config.apiBase))
-      .catch(() => setApiBase(''));
+      .then(config => setApiBase(config.apiBase));
 
     getSession().then(async (session) => {
       if (!session) {
@@ -59,6 +58,7 @@ function OwnProfile() {
     }
 
     if (packs) {
+      // Transform icons to full URLs using runtime apiBase
       if (apiBase) {
         packs.forEach(pack => {
           if (pack.apps) {

@@ -131,19 +131,7 @@ export async function getStaticProps() {
     packs = packs.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     packs = packs.sort((a, b) => a.creator === officialPacks ? -1 : 1)
 
-    if (config.apiBase) {
-        packs.forEach(pack => {
-            if (pack.apps) {
-                pack.apps.forEach(app => {
-                    if (app.icon && !app.icon.startsWith('http')) {
-                        const iconName = app.icon.replace('.png', '');
-                        app.iconUrl = `${config.apiBase}/icons/next/${iconName}.webp`;
-                        app.iconPng = `${config.apiBase}/icons/${iconName}.png`;
-                    }
-                });
-            }
-        });
-    }
+    // Don't transform icons here - let AppIcon component handle it on client side
 
     return {
         props: {

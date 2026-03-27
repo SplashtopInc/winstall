@@ -16,12 +16,11 @@ import {
 
 import { useRouter } from "next/router";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
+import { getRevalidateTime } from "../utils/revalidateCache";
 import Error from "../components/Error";
 import DonateCard from "../components/DonateCard";
 
-function Store({ data, error }) {
-  if (error) return <Error title="Oops!" subtitle={error} />;
-
+function Store({ data, error, buildTime }) {
   const router = useRouter();
   const [apps, setApps] = useState([]);
   const [searchInput, setSearchInput] = useState();
@@ -33,6 +32,8 @@ function Store({ data, error }) {
   const [clientError, setClientError] = useState("");
   const [apiBase, setApiBase] = useState("");
   const [loadedPage, setLoadedPage] = useState(null);
+  const [apiBaseFetched, setApiBaseFetched] = useState(false);
+  const [isLoading, setIsLoading] = useState(buildTime || (!data && !error));
 
   const appsPerPage = 60;
   const totalPages = totalKnown ? Math.ceil(total / appsPerPage) : 0;
@@ -96,7 +97,7 @@ function Store({ data, error }) {
     if (normalized.items.length) {
       applySort(normalized.items, router.query.sort || "update-desc");
 
-      // Transform icons to full URLs for client-side pagination
+      // Transform icons to full URLs for client-side pagination using runtime apiBase
       if (apiBase) {
         normalized.items.forEach(app => {
           if (app.icon && !app.icon.startsWith('http') && !app.iconUrl) {
@@ -115,11 +116,14 @@ function Store({ data, error }) {
   };
 
   useEffect(() => {
-    // Fetch API base URL once for client-side icon transformation
-    fetch('/api/runtime-config')
-      .then(res => res.json())
-      .then(config => setApiBase(config.apiBase))
-      .catch(() => setApiBase(''));
+    if (!apiBaseFetched) {
+      fetch('/api/config')
+        .then(res => res.json())
+        .then(config => {
+          setApiBase(config.apiBase);
+          setApiBaseFetched(true);
+        });
+    }
 
     // Default to showing most recently updated first to entice Google to index
     // them, and to demonstrate to users that the site is being kept up-to-date.
@@ -137,6 +141,10 @@ function Store({ data, error }) {
       setTotalKnown(normalized.totalKnown);
       setCurrentOffset(normalized.offset);
       setLoadedPage(1);
+      setIsLoading(false);
+    } else if (buildTime || (!data && !error)) {
+      setIsLoading(true);
+      loadPage(1).then(() => setIsLoading(false));
     }
 
     let handlePagination = (e) => {
@@ -272,7 +280,21 @@ function Store({ data, error }) {
     );
   };
 
+  if (isLoading) {
+    return (
+      <div>
+        <MetaTags title="Apps - winstall" path="/apps" />
+        <div className={styles.controls}>
+          <h1>Loading apps...</h1>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) return <Error title="Oops!" subtitle={error} />;
   if (clientError) return <Error title="Oops!" subtitle={clientError} />;
+
   if (!apps) return <></>;
 
   return (
@@ -342,48 +364,55 @@ export async function getStaticProps() {
   const { getRuntimeConfig } = require('../utils/runtimeConfig');
   const config = await getRuntimeConfig();
 
-  let { response, error } = await fetchWinstallAPI(
-    `/apps?offset=0&limit=60`
-  );
+  let { response, error } = await fetchWinstallAPI(`/apps?offset=0&limit=60`);
 
-  if (error) {
-    console.error('[getStaticProps /apps] Failed to fetch apps:', error);
+  // Normalize response to get items
+  const normalizeAppsPayload = (payload) => {
+    if (!payload) return [];
+    if (Array.isArray(payload.data)) return payload.data;
+    if (Array.isArray(payload.items)) return payload.items;
+    if (Array.isArray(payload.apps)) return payload.apps;
+    if (Array.isArray(payload)) return payload;
+    return [];
+  };
+
+  const items = normalizeAppsPayload(response);
+  const hasData = items.length > 0;
+
+  if (!hasData) {
+    // No API at build time: return empty to trigger ISR on first request
+    if (!config.apiBase) {
+      console.warn('[getStaticProps /apps] Build-time: no API configured, will trigger ISR on first request');
+      return {
+        props: {
+          data: null,
+          error: null,
+          buildTime: true
+        },
+        revalidate: 1
+      };
+    }
+
+    // Runtime API error: use exponential backoff to avoid hammering failing API
+    const revalidate = getRevalidateTime('apps', false);
+    console.warn(`[getStaticProps /apps] Runtime: no data, will retry in ${revalidate}s`);
     return {
       props: {
         data: null,
-        error: 'Failed to load apps'
+        error: error || 'Failed to load apps from API server'
       },
-      revalidate: 600
+      revalidate
     };
   }
 
-  // Transform icons to full URLs
-  if (response && config.apiBase) {
-    const transformIcon = (app) => {
-      if (app.icon && !app.icon.startsWith('http')) {
-        const iconName = app.icon.replace('.png', '');
-        app.iconUrl = `${config.apiBase}/icons/next/${iconName}.webp`;
-        app.iconPng = `${config.apiBase}/icons/${iconName}.png`;
-      }
-      return app;
-    };
-
-    if (Array.isArray(response)) {
-      response = response.map(transformIcon);
-    } else if (response.items) {
-      response.items = response.items.map(transformIcon);
-    } else if (response.apps) {
-      response.apps = response.apps.map(transformIcon);
-    } else if (response.data) {
-      response.data = response.data.map(transformIcon);
-    }
-  }
+  const revalidate = getRevalidateTime('apps', true);
+  console.log(`[getStaticProps /apps] Success: ${items.length} apps, revalidate in ${revalidate}s`);
 
   return {
     props: {
       data: response ?? null,
     },
-    revalidate: 600,
+    revalidate,
   };
 }
 

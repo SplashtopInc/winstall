@@ -310,11 +310,7 @@ export async function getStaticProps({ params }) {
     let appsList = pack.apps;
 
     const transformIcon = (app) => {
-      if (app && app.icon && config.apiBase && !app.icon.startsWith('http')) {
-        const iconName = app.icon.replace('.png', '');
-        app.iconUrl = `${config.apiBase}/icons/next/${iconName}.webp`;
-        app.iconPng = `${config.apiBase}/icons/${iconName}.png`;
-      }
+      // No transformation needed - AppIcon will handle it
       return app;
     };
 
