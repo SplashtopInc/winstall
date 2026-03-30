@@ -19,7 +19,8 @@ FROM node:22-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production \
-    PORT=3000
+    PORT=3000 \
+    NEXT_TELEMETRY_DISABLED=1
 
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
