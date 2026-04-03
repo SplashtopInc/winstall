@@ -53,6 +53,7 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
       headers.AuthSecret = config.apiSecret;
     }
 
+    // Use global fetch - smart proxy dispatcher handles NO_PROXY automatically
     const res = await fetch(url, {
       headers,
       ...additionalOptions,

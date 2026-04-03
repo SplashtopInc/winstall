@@ -1,3 +1,8 @@
+// Configure proxy on server-side before any imports
+if (typeof window === 'undefined') {
+  require('../utils/proxyConfig');
+}
+
 import "../styles/base.scss";
 import { useState, useEffect } from "react";
 

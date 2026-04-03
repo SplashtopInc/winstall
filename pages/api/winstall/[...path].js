@@ -27,10 +27,11 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Use global fetch - smart proxy dispatcher handles NO_PROXY automatically
     const response = await fetch(url, {
       method: req.method,
       headers,
-      body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
+      body: req.method !== "GET" && req.method !== "HEAD" ? JSON.stringify(req.body) : undefined,
     });
 
     const data = await response.json();

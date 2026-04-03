@@ -1,5 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import { getSession, signIn } from "next-auth/react";
+import { useRouter } from "next/router";
 
 import styles from "../../styles/create.module.scss";
 
@@ -18,6 +19,8 @@ function Create({ allApps }) {
   const { selectedApps, setSelectedApps } = useContext(SelectedContext);
   const [user, setUser] = useState();
   const [packApps, setPackApps] = useState([]);
+  const router = useRouter();
+  const authError = router.query.error;
 
   useEffect(() => {
     setPackApps(selectedApps);
@@ -51,7 +54,7 @@ function Create({ allApps }) {
 
     await localStorage.setItem("winstallLogin", appsBackup);
 
-    signIn("twitter");
+    signIn("twitter", { callbackUrl: "/packs/create" });
   };
 
   const updatePackApps = (apps) => {
@@ -65,6 +68,11 @@ function Create({ allApps }) {
         <FeaturePromoter art="/assets/packsPromo.svg" disableHide={true}>
           <h3>One more thing...</h3>
           <h1>Welcome! Login with Twitter to be able to create a pack.</h1>
+          {authError && (
+            <p style={{ color: "red", marginBottom: "1rem" }}>
+              Authentication failed. Please try again.
+            </p>
+          )}
           <button className={styles.button} onClick={handleLogin}>
             <div>
               <FiTwitter />
