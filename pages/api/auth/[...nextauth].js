@@ -3,16 +3,24 @@ import "../../../utils/proxyConfig";
 
 import NextAuth from "next-auth";
 import TwitterProvider from "next-auth/providers/twitter";
-import { HttpsProxyAgent } from "https-proxy-agent";
+import tunnel from "tunnel";
 
 const proxyUrl = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
-const httpOptions = proxyUrl ? {
-  agent: new HttpsProxyAgent(proxyUrl, {
-    keepAlive: true,
-    keepAliveMsecs: 1000,
-  }),
-  timeout: 10000,
-} : { timeout: 10000 };
+
+let httpOptions = { timeout: 10000 };
+
+if (proxyUrl) {
+  const proxyUrlObj = new URL(proxyUrl);
+
+  const tunnelingAgent = tunnel.httpsOverHttp({
+    proxy: {
+      host: proxyUrlObj.hostname,
+      port: parseInt(proxyUrlObj.port) || 3128,
+    }
+  });
+
+  httpOptions.agent = tunnelingAgent;
+}
 
 export default NextAuth({
   providers: [
@@ -20,7 +28,7 @@ export default NextAuth({
       clientId: process.env.TWITTER_CLIENT_ID,
       clientSecret: process.env.TWITTER_CLIENT_SECRET,
       version: "2.0",
-      httpOptions, // Pass proxy configuration to openid-client
+      httpOptions,
     }),
   ],
 
