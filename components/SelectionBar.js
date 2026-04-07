@@ -8,6 +8,7 @@ import { FiTrash, FiCodepen, FiShare } from "react-icons/fi";
 function SelectionBar({ router }) {
     const { selectedApps, setSelectedApps } = useContext(SelectedContext);
     const [ hideCreatePack, setHideCreatePack ] = useState(false);
+    const twitterLoginEnabled = process.env.NEXT_PUBLIC_TWITTER_LOGIN === 'true';
 
     useEffect(() => {
       if(router.pathname === "/packs/create"){
@@ -40,7 +41,7 @@ function SelectionBar({ router }) {
             <button className="clear small" onClick={() => handleClear()} title="Clear selections">
               <FiTrash />
             </button>
-            { !hideCreatePack && (
+            { twitterLoginEnabled && !hideCreatePack && (
               <Link href="/packs/create">
                 <button disabled={selectedApps.length >= 5 ? false : true}>
                   <FiShare />
