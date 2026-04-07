@@ -7,6 +7,7 @@
     "@serwist/next": "^9.5.7",
     "@serwist/precaching": "^9.5.7",
     "@serwist/sw": "^9.5.7",
+    "jsonwebtoken": "^9.0.3",
     "next": "^15.5.13",
     "next-auth": "^4.24.12",
     "nprogress": "^0.2.0",

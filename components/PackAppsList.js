@@ -65,8 +65,8 @@ function PackAppsList({ notLoggedIn = false, providedApps, reorderEnabled, onLis
         return (
           <ul className={`${styles.appsList} ${styles.noDragList}`}>
             {apps.map((app, index) => (
-              <React.Fragment>
-                <div className={styles.appCard} key={app._id}>
+              <React.Fragment key={app._id}>
+                <div className={styles.appCard}>
                   <SingleApp app={app} pack={true}/>
                 </div>
 

@@ -176,7 +176,6 @@ function PackDetail({ pack, creator, error }) {
     const { response } = await fetchWinstallAPI(`/packs/${pack._id}`, {
       method: "DELETE",
       headers: {
-        Authorization: `${user.accessToken},${user.refreshToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ creator: pack.creator }),
@@ -297,15 +296,24 @@ export async function getStaticProps({ params }) {
       `https://api.twitter.com/2/users/${pack.creator}`
     );
 
-    if (error)
-      return {
-        props: {
-          error:
-            error.errors.length > 0
-              ? error.errors[0].message
-              : "Could not get user data.",
-        },
+    // If Twitter API fails, continue without creator info
+    // (Twitter API has rate limits and may not always be available)
+    let creatorInfo = creator;
+
+    if (error) {
+      console.warn('[getStaticProps] Twitter API error for user', pack.creator, ':',
+        typeof error === 'string' ? error :
+        error?.detail || error?.title || error?.message || JSON.stringify(error)
+      );
+      // Use fallback creator info with just the ID
+      creatorInfo = {
+        data: {
+          id: pack.creator,
+          username: 'User',
+          name: 'Unknown User'
+        }
       };
+    }
 
     let appsList = pack.apps;
 
@@ -337,9 +345,15 @@ export async function getStaticProps({ params }) {
       pack.apps = appsList.filter((app) => app != null);
     });
 
-    return { props: pack ? { pack, creator } : {}, revalidate: 600 };
+    return { props: pack ? { pack, creator: creatorInfo } : {}, revalidate: 600 };
   } catch (error) {
-    return { props: { error } };
+    console.error('[getStaticProps] Error:', error);
+    return {
+      props: {
+        error: error?.message || 'Failed to load pack'
+      },
+      revalidate: 60
+    };
   }
 }
 

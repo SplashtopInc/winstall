@@ -47,7 +47,7 @@ function OwnProfile() {
       `/packs/profile/${user.id}`,
       {
         headers: {
-          Authorization: `${user.accessToken},${user.refreshToken}`,
+          'Content-Type': 'application/json',
         },
       }
     );

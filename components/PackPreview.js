@@ -26,7 +26,6 @@ export default function PackPreview({ pack, hideMeta, showDelete=false, auth, de
         const { response } = await fetchWinstallAPI(`/packs/${pack._id}`, {
             method: "DELETE",
             headers: {
-                'Authorization': `${auth.accessToken},${auth.refreshToken}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ creator: pack.creator })

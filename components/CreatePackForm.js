@@ -34,7 +34,6 @@ const CreatePackForm = ({ user, packApps, editMode, defaultValues, isDisabled })
         const requestOptions = {
           method: editMode ? 'PATCH' : 'POST',
           headers: {
-              'Authorization': `${user.accessToken},${user.refreshToken}`,
               'Content-Type': 'application/json'
           },
           body: JSON.stringify({
