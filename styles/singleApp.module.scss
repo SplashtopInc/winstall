@@ -448,6 +448,12 @@
             white-space: nowrap;
         }
     }
+
+    .shareButtonFailed{
+        span{
+            color: var(--error);
+        }
+    }
 }
 
 @media(max-width: 690px){

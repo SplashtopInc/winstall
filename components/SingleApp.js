@@ -419,14 +419,19 @@ const Tags = ({ tags }) => {
 }
 
 const ShareCard = ({ app, shareCardRef }) => {
-  const [linkCopied, setLinkCopied] = useState(false);
+  const [copyStatus, setCopyStatus] = useState('idle');
   const shareUrl = buildSiteUrl(`/apps/${app._id}`);
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(shareUrl);
-    setLinkCopied(true);
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopyStatus('copied');
+    } catch (error) {
+      setCopyStatus('failed');
+    }
+
     setTimeout(() => {
-      setLinkCopied(false);
+      setCopyStatus('idle');
     }, 5000);
   };
 
@@ -459,9 +464,18 @@ const ShareCard = ({ app, shareCardRef }) => {
         <FaLinkedin size={24} />
         <span>LinkedIn</span>
       </button>
-      <button onClick={handleCopyLink} className={styles.shareButton}>
+      <button
+        onClick={handleCopyLink}
+        className={`${styles.shareButton} ${copyStatus === 'failed' ? styles.shareButtonFailed : ''}`}
+      >
         <img src="/link.png" alt="Link" width={24} height={24} />
-        <span>{linkCopied ? 'Link copied' : 'Copy link'}</span>
+        <span>
+          {copyStatus === 'copied'
+            ? 'Link copied'
+            : copyStatus === 'failed'
+              ? 'Copy failed'
+              : 'Copy link'}
+        </span>
       </button>
     </div>
   );
