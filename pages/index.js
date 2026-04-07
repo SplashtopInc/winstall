@@ -120,8 +120,8 @@ function Home({ popular, appsTotal, recommended, error, buildTime, officialPacks
               <h3>Introducing Packs</h3>
               <h1>Curate and share the apps you use daily.</h1>
               <div className="box2">
-                  <Link href="/packs/create"><button className="button spacer accent" id="starWine"><FiPlus/> Create a pack</button></Link>
-                  <Link href="/packs/"><button className="button"><FiPackage/> View packs</button></Link>
+                  <Link href="/packs/create" className="button spacer accent" id="starWine"><FiPlus/> Create a pack</Link>
+                  <Link href="/packs/" className="button"><FiPackage/> View packs</Link>
               </div>
         </FeaturePromoter>
       )}
