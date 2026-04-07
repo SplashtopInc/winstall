@@ -464,6 +464,7 @@ const ShareCard = ({ app, shareCardRef }) => {
         <FaLinkedin size={24} />
         <span>LinkedIn</span>
       </button>
+      <div className={styles.shareDivider} />
       <button
         onClick={handleCopyLink}
         className={`${styles.shareButton} ${copyStatus === 'failed' ? styles.shareButtonFailed : ''}`}
