@@ -428,6 +428,7 @@
         &:hover{
             background-color: var(--main-bg);
             transform: translateY(-2px);
+            opacity: 0.75;
         }
 
         &:active{
@@ -441,9 +442,8 @@
         }
 
         span{
-            font-size: 14px;
+            font-size: 16px;
             text-align: left;
-            font-family: 'Nunito', sans-serif;
             white-space: nowrap;
         }
     }
@@ -455,16 +455,15 @@
         opacity: 0.8;
     }
 
-
-:global(.dark) .shareCard{
-    background-color: var(--card-bg);
-}
-
     .shareButtonFailed{
         span{
             color: var(--error);
         }
     }
+}
+
+:global(.dark) .shareCard{
+    background-color: var(--card-bg);
 }
 
 @media(max-width: 690px){

@@ -22,8 +22,9 @@ import {
   FiCopy,
   FiCheckCircle
 } from "react-icons/fi";
-import { FaTwitter, FaFacebook, FaLinkedin } from "react-icons/fa";
-
+import { FaFacebook, FaLinkedin } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import { IoIosLink } from "react-icons/io";
 
 import AppIcon from "./AppIcon";
 import { buildSiteUrl, compareVersion, timeAgo } from "../utils/helpers";
@@ -453,15 +454,15 @@ const ShareCard = ({ app, shareCardRef }) => {
   return (
     <div className={styles.shareCard} ref={shareCardRef}>
       <button onClick={shareToTwitter} className={styles.shareButton}>
-        <FaTwitter size={24} />
+        <FaXTwitter size={24} />
         <span>Twitter</span>
       </button>
       <button onClick={shareToFacebook} className={styles.shareButton}>
-        <FaFacebook size={24} />
+        <FaFacebook size={24} color="#1877F2" />
         <span>Facebook</span>
       </button>
       <button onClick={shareToLinkedIn} className={styles.shareButton}>
-        <FaLinkedin size={24} />
+        <FaLinkedin size={24} color="#0A66C2" />
         <span>LinkedIn</span>
       </button>
       <div className={styles.shareDivider} />
@@ -469,7 +470,7 @@ const ShareCard = ({ app, shareCardRef }) => {
         onClick={handleCopyLink}
         className={`${styles.shareButton} ${copyStatus === 'failed' ? styles.shareButtonFailed : ''}`}
       >
-        <img src="/link.png" alt="Link" width={24} height={24} />
+        <IoIosLink size={24} />
         <span>
           {copyStatus === 'copied'
             ? 'Link copied'
