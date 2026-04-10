@@ -449,8 +449,8 @@ const ShareCard = ({ app, shareCardRef }) => {
   };
 
   const shareToLinkedIn = () => {
-    const summary = `Install ${app.name} instantly with winget.\nGet it on Winstall:\n${shareUrl}\n#winget #winstall`;
-    const link = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&summary=${encodeURIComponent(summary)}`;
+    // const link = `https://www.linkedin.com/shareArticle/?url=${encodeURIComponent(shareUrl)}&mini=true`;
+    const link = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
     window.open(link, '_blank');
   };
 
