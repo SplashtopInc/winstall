@@ -439,21 +439,21 @@ const ShareCard = ({ app, shareCardRef }) => {
   const shareToTwitter = () => {
     const text = `Install ${app.name} instantly with winget.\nGet it on Winstall:\n${shareUrl}\n#winget #winstall`;
     const link = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
-    window.open(link, '_blank');
+    window.open(link, '_blank', 'width=640,height=480,resizable=yes,scrollbars=yes,status=yes');
   };
 
   const shareToFacebook = () => {
     const quote = `Install ${app.name} instantly with winget.\nGet it on Winstall:\n${shareUrl}`;
-    // const link = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(quote)}`;
-    const link = `https://www.facebook.com/share.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(quote)}`;
-    window.open(link, '_blank');
+    const link = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(quote)}`;
+    // const link = `https://www.facebook.com/share.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(quote)}`;
+    window.open(link, '_blank', 'width=640,height=480,resizable=yes,scrollbars=yes,status=yes');
   };
 
   const shareToLinkedIn = () => {
     const quote = `Install ${app.name} instantly with winget.\nGet it on Winstall:\n${shareUrl}`;
-    const link = `https://www.linkedin.com/shareArticle/?url=${encodeURIComponent(shareUrl)}&summary=${encodeURIComponent(quote)}&mini=true`;
-    // const link = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
-    window.open(link, '_blank');
+    // const link = `https://www.linkedin.com/shareArticle/?url=${encodeURIComponent(shareUrl)}&summary=${encodeURIComponent(quote)}&mini=true`;
+    const link = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+    window.open(link, '_blank', 'width=640,height=480,resizable=yes,scrollbars=yes,status=yes');
   };
 
   return (
