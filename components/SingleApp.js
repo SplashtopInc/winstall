@@ -444,13 +444,15 @@ const ShareCard = ({ app, shareCardRef }) => {
 
   const shareToFacebook = () => {
     const quote = `Install ${app.name} instantly with winget.\nGet it on Winstall:\n${shareUrl}`;
-    const link = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(quote)}`;
+    // const link = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(quote)}`;
+    const link = `https://www.facebook.com/share.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(quote)}`;
     window.open(link, '_blank');
   };
 
   const shareToLinkedIn = () => {
-    // const link = `https://www.linkedin.com/shareArticle/?url=${encodeURIComponent(shareUrl)}&mini=true`;
-    const link = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+    const quote = `Install ${app.name} instantly with winget.\nGet it on Winstall:\n${shareUrl}`;
+    const link = `https://www.linkedin.com/shareArticle/?url=${encodeURIComponent(shareUrl)}&summary=${encodeURIComponent(quote)}&mini=true`;
+    // const link = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
     window.open(link, '_blank');
   };
 
