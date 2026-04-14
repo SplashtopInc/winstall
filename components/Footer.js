@@ -60,16 +60,14 @@ export default function Footer() {
           </a>
         </li>
         <li>
-          {/* <Link href="/privacy">
-            <a>Privacy Policy</a>
-          </Link> */}
-          <a
+          <a href="/privacy">Privacy Policy</a>
+          {/* <a
             href="https://www.splashtop.com/legal/privacy-policy"
             target="_blank"
             rel="noopener noreferrer"
           >
             Privacy Policy
-          </a>
+          </a> */}
         </li>
         <li>
           <Link href="/eli5">Help</Link>
