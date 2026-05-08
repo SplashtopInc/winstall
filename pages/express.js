@@ -1,48 +1,29 @@
 import styles from "../styles/home.module.scss";
 
 import Search from "../components/Search";
-import PopularApps from "../components/PopularApps";
+import Categories from "../components/Categories";
 import MetaTags from "../components/MetaTags";
-import Recommendations from "../components/Recommendations";
 
 import Footer from "../components/Footer";
-import { shuffleArray } from "../utils/helpers";
-import popularAppsList from "../data/popularApps.json";
+import categoryAppsList from "../data/categoryApps.json";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import Error from "../components/Error";
 import { useState, useEffect } from "react";
 import { getRevalidateTime } from "../utils/revalidateCache";
 
-function ExpressSetup({ popular, appsTotal, recommended, error, buildTime, officialPacksCreator }) {
-  const [data, setData] = useState({ popular: popular || [], appsTotal: appsTotal || 0, recommended: recommended || [] });
-  const [isLoading, setIsLoading] = useState(buildTime || (!popular && !error));
+function ExpressSetup({ appsTotal, error, buildTime }) {
+  const [data, setData] = useState({ appsTotal: appsTotal || 0 });
+  const [isLoading, setIsLoading] = useState(buildTime || !error);
   const [clientError, setClientError] = useState(null);
 
   useEffect(() => {
-    if (buildTime || (!popular && !error)) {
+    if (buildTime || !error) {
       setIsLoading(true);
 
-      Promise.all([
-        fetchWinstallAPI(`/apps`).then(({ response }) => response),
-        fetchWinstallAPI(`/packs/users/${officialPacksCreator}`).then(({ response }) => response)
-      ])
-        .then(([appsResponse, packsResponse]) => {
-          const total = typeof appsResponse?.total === "number" ? appsResponse.total : 0;
-
-          const normalizePayload = (payload) => {
-            if (!payload) return [];
-            if (Array.isArray(payload.data)) return payload.data;
-            if (Array.isArray(payload)) return payload;
-            if (Array.isArray(payload.apps)) return payload.apps;
-            if (Array.isArray(payload.items)) return payload.items;
-            return [];
-          };
-
-          setData({
-            popular: popular || [],
-            appsTotal: total,
-            recommended: normalizePayload(packsResponse)
-          });
+      fetchWinstallAPI(`/apps`)
+        .then(({ response }) => {
+          const total = typeof response?.total === "number" ? response.total : 0;
+          setData({ appsTotal: total });
           setIsLoading(false);
         })
         .catch(err => {
@@ -50,7 +31,7 @@ function ExpressSetup({ popular, appsTotal, recommended, error, buildTime, offic
           setIsLoading(false);
         });
     }
-  }, [buildTime, popular, error, officialPacksCreator]);
+  }, [buildTime, error]);
 
   if (isLoading) {
     return (
@@ -99,7 +80,22 @@ function ExpressSetup({ popular, appsTotal, recommended, error, buildTime, offic
         </div>
       </div>
 
-      <PopularApps apps={data.popular} />
+      {Object.entries(categoryAppsList).map(([key, apps]) => {
+        if (!Array.isArray(apps) || apps.length === 0) return null;
+
+        const categoryName = key
+          .split('_')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+
+        return (
+          <Categories
+            key={key}
+            apps={apps}
+            category={categoryName}
+          />
+        );
+      })}
 
       <Footer />
     </div>
@@ -110,111 +106,45 @@ export async function getStaticProps(){
   const { getRuntimeConfig } = require('../utils/runtimeConfig');
   const config = await getRuntimeConfig();
 
-  const officialPacksCreator = process.env.NEXT_OFFICIAL_PACKS_CREATOR || '1301830924120788997';
-
   // No API at build time: return empty to trigger ISR on first request
   if (!config.apiBase) {
-    console.warn('[getStaticProps /express-setup] Build-time: no API configured, will trigger ISR on first request');
+    console.warn('[getStaticProps /express] Build-time: no API configured, will trigger ISR on first request');
     return {
       props: {
-        popular: shuffleArray(Object.values(popularAppsList)).slice(0, 16),
         appsTotal: 0,
-        recommended: [],
-        buildTime: true,
-        officialPacksCreator
+        buildTime: true
       },
       revalidate: 1
     };
   }
 
-  let popular = shuffleArray(Object.values(popularAppsList));
-
   let { response: apps, error: appsError } = await fetchWinstallAPI(`/apps`);
-  let { response: recommended, error: recommendedError } = await fetchWinstallAPI(`/packs/users/${officialPacksCreator}`);
-
-  const normalizeAppsPayload = (payload) => {
-    if (!payload) return [];
-    if (Array.isArray(payload.data)) return payload.data;
-    if (Array.isArray(payload)) return payload;
-    if (Array.isArray(payload.apps)) return payload.apps;
-    if (Array.isArray(payload.items)) return payload.items;
-    return [];
-  };
 
   const appsTotal = typeof apps?.total === "number" ? apps.total : 0;
-  const recommendedList = normalizeAppsPayload(recommended);
   const hasData = appsTotal > 0;
 
   // Runtime API error: use exponential backoff to avoid hammering failing API
-  if (!hasData || appsError || recommendedError) {
-    const errorMsg = appsError || recommendedError || 'Failed to load data from API server';
-    const revalidate = getRevalidateTime('express-setup', false);
+  if (!hasData || appsError) {
+    const errorMsg = appsError || 'Failed to load data from API server';
+    const revalidate = getRevalidateTime('express', false);
 
-    console.warn(`[getStaticProps /express-setup] Runtime: no data, will retry in ${revalidate}s`);
+    console.warn(`[getStaticProps /express] Runtime: no data, will retry in ${revalidate}s`);
 
     return {
       props: {
-        popular: popular.slice(0, 16),
         appsTotal: 0,
-        recommended: [],
-        error: errorMsg,
-        officialPacksCreator
+        error: errorMsg
       },
       revalidate
     };
   }
 
-  const popularResults = await Promise.all(
-    popular.slice(0, 16).map(async (entry) => {
-      const { response: appData } = await fetchWinstallAPI(`/apps/${entry._id}?exclude=versions`);
-
-      if (!appData) {
-        return entry;
-      }
-
-      return {
-        ...appData,
-        _id: entry._id,
-        img: entry.img,
-      };
-    })
-  );
-
-  popular = popularResults.filter(Boolean);
-
-  const getPackData = recommendedList.map(async (pack) => {
-    return new Promise(async(resolve) => {
-      const appsList = pack.apps;
-
-      const getIndividualApps = appsList.map(async (app, index) => {
-        return new Promise(async (resolve) => {
-          let { response: appData, error } = await fetchWinstallAPI(`/apps/${app._id}`);
-
-          if(error) appData = null;
-
-          appsList[index] = appData;
-          resolve();
-        })
-      })
-
-      await Promise.all(getIndividualApps).then(() => {
-        pack.apps = appsList.filter(app => app != null);
-        resolve();
-      })
-    })
-  })
-
-  await Promise.all(getPackData);
-
-  const revalidate = getRevalidateTime('express-setup', true);
-  console.log(`[getStaticProps /express-setup] Success: ${appsTotal} apps, ${recommendedList.length} packs, revalidate in ${revalidate}s`);
+  const revalidate = getRevalidateTime('express', true);
+  console.log(`[getStaticProps /express] Success: ${appsTotal} apps, revalidate in ${revalidate}s`);
 
   return {
     props: {
-      popular,
-      appsTotal,
-      recommended: recommendedList,
-      officialPacksCreator
+      appsTotal
     },
     revalidate
   };

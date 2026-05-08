@@ -1,0 +1,215 @@
+{
+  "browser": [
+    {
+      "_id": "Google.Chrome",
+      "name": "Google Chrome",
+      "img": "chrome.webp"
+    },
+    {
+      "_id": "Mozilla.Firefox",
+      "name": "Mozilla Firefox",
+      "img": "firefox.webp"
+    },
+    {
+      "_id": "Mozilla.Firefox.ESR",
+      "name": "Mozilla Firefox ESR",
+      "img": "firefox.webp"
+    },
+    {
+      "_id": "Opera.Opera",
+      "name": "Opera Browser",
+      "img": "opera.webp"
+    },
+    {
+      "_id": "Microsoft.Edge",
+      "name": "Microsoft Edge Browser",
+      "img": "edge.webp"
+    },
+    {
+      "_id": "Yandex.Browser",
+      "name": "Yandex Browser",
+      "img": "yandex.webp"
+    },
+    {
+      "_id": "TheBrowserCompany.Arc",
+      "name": "Arc",
+      "img": "arc.webp"
+    },
+    {
+      "_id": "Brave.Brave",
+      "name": "Brave",
+      "img": "brave.webp"
+    },
+    {
+      "_id": "Vivaldi.Vivaldi",
+      "name": "Vivaldi",
+      "img": "vivaldi.webp"
+    }
+  ],
+  "communication": [
+    {
+      "_id": "Microsoft.Teams",
+      "name": "Microsoft Teams",
+      "img": "teams.webp"
+    },
+    {
+      "_id": "Telegram.TelegramDesktop",
+      "name": "Telegram",
+      "img": "telegram.webp"
+    },
+    {
+      "_id": "Discord.Discord.x86",
+      "name": "Discord",
+      "img": "discord.webp"
+    },
+    {
+      "_id": "Pidgin.Pidgin",
+      "name": "Pidgin",
+      "img": "pidgin.webp"
+    },
+    {
+      "_id": "CeruleanStudios.Trillian",
+      "name": "Trillian",
+      "img": "trillian.webp"
+    },
+    {
+      "_id": "SlackTechnologies.Slack",
+      "name": "Slack",
+      "img": "slack.webp"
+    },
+    {
+      "_id": "Mozilla.Thunderbird",
+      "name": "Thunderbird",
+      "img": "thunderbird.webp"
+    },
+    {
+      "_id": "Mozilla.Thunderbird.ESR",
+      "name": "Thunderbird ESR",
+      "img": "thunderbird.webp"
+    }
+  ],
+  "social_media": [],
+  "productivity": [
+    {
+      "_id": "Notion.Notion",
+      "name": "Notion",
+      "img": "notion.webp"
+    },
+    {
+      "_id": "Evernote.Evernote",
+      "name": "Evernote",
+      "img": "evernote.webp"
+    },
+    {
+      "_id": "Xmind.Xmind",
+      "name": "Xmind",
+      "img": "xmind.webp"
+    }
+  ],
+  "documents": [],
+  "collaboration": [
+    {
+      "_id": "Splashtop.SplashtopBusiness",
+      "name": "Splashtop Business",
+      "img": "splashtop.webp"
+    },
+    {
+      "_id": "Cisco.Webex",
+      "name": "WebEx",
+      "img": "webex.webp"
+    },
+    {
+      "_id": "Zoom.Zoom",
+      "name": "Zoom",
+      "img": "zoom.webp"
+    }
+  ],
+  "cloud_storage": [
+    {
+      "_id": "Dropbox.Dropbox",
+      "name": "Dropbox",
+      "img": "dropbox.webp"
+    },
+    {
+      "_id": "Apple.iCloud",
+      "name": "iCloud",
+      "img": "icloud.webp"
+    },
+    {
+      "_id": "Microsoft.OneDrive",
+      "name": "OneDrive",
+      "img": "onedrive.webp"
+    },
+    {
+      "_id": "Google.GoogleDrive",
+      "name": "Google Drive",
+      "img": "googledrive.webp"
+    }
+  ],
+  "development": [
+    {
+      "_id": "Microsoft.VisualStudioCode",
+      "name": "Visual Studio Code",
+      "img": "code.webp"
+    },
+    {
+      "_id": "Notepad++.Notepad++",
+      "name": "Notepad++",
+      "img": "npp.webp"
+    }
+  ],
+  "entertainment": [
+    {
+      "_id": "Spotify.Spotify",
+      "name": "Spotify",
+      "img": "spotify.webp"
+    },
+    {
+      "_id": "Apple.iTunes",
+      "name": "iTunes",
+      "img": "itunes.webp"
+    },
+    {
+      "_id": "VideoLAN.VLC",
+      "name": "VLC Media Player",
+      "img": "vlc.webp"
+    },
+    {
+      "_id": "Daum.PotPlayer",
+      "name": "PotPlayer",
+      "img": "potplayer.webp"
+    }
+  ],
+  "utilities": [
+    {
+      "_id": "7zip.7zip",
+      "name": "7-Zip",
+      "img": "7zip.webp"
+    },
+    {
+      "_id": "Corel.WinZip",
+      "name": "WinZip",
+      "img": "winzip.webp"
+    },
+    {
+      "_id": "RARLab.WinRAR",
+      "name": "WinRAR",
+      "img": "winrar.webp"
+    },
+    {
+      "_id": "subhra74.XtremeDownloadManager",
+      "name": "Xtreme Download Manager - XDM",
+      "img": "xdm.webp"
+    },
+    {
+      "_id": "qBittorrent.qBittorrent",
+      "name": "qBittorrent",
+      "img": "qbittorrent.webp"
+    },
+    {
+      "_id": "Google.EarthPro",
+      "name": "Google Earth Pro",
+      "img": "googleearthpro.webp"
+    }
+  ]
+}
