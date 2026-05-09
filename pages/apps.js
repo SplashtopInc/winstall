@@ -310,7 +310,7 @@ function Store({ data, error, buildTime }) {
       <Search
         onSearch={(q) => setSearchInput(q)}
         label={"Search for apps"}
-        placeholder={"Enter you search term here"}
+        placeholder={"Enter your search query here"}
       />
 
       <div className={styles.controls}>
