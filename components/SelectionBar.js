@@ -43,9 +43,9 @@ function SelectionBar({ router }) {
             </button>
             { twitterLoginEnabled && !hideCreatePack && (
               <Link href="/packs/create">
-                <button disabled={selectedApps.length >= 5 ? false : true}>
+                <button disabled={selectedApps.length >= 2 ? false : true}>
                   <FiShare />
-                  <em>{selectedApps.length >= 5 ? "Create Pack" : `Need ${Math.abs(5 - selectedApps.length)} more ${Math.abs(5 - selectedApps.length) === 1 ? "app" : "apps"} to create a pack.`}</em>
+                  <em>{selectedApps.length >= 2 ? "Create Pack" : `Need ${Math.abs(2 - selectedApps.length)} more ${Math.abs(2 - selectedApps.length) === 1 ? "app" : "apps"} to create a pack.`}</em>
                 </button>
               </Link>
             )}
