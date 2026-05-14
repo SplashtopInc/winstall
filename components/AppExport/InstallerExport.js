@@ -1,7 +1,7 @@
 import { FiDownload, FiInfo } from "react-icons/fi";
 import styles from "../../styles/exportApps.module.scss";
 
-const InstallerExport = ({ apps }) => {
+const InstallerExport = ({ apps, filters = {} }) => {
     const handleInstall = async () => {
         if (!apps || apps.length === 0) {
             alert('No apps selected');
@@ -10,10 +10,29 @@ const InstallerExport = ({ apps }) => {
 
         const appsPayload = apps.map(app => ({
             name: app.name,
-            id: app._id
+            id: app._id,
+            version: app.selectedVersion !== app.latestVersion ? app.selectedVersion : undefined
         }));
 
-        console.log('Installing apps:', appsPayload);
+        const options = {};
+        if (filters["--scope"]) options["--scope"] = filters["--scope"];
+        if (filters["-o"]) options["-o"] = filters["-o"];
+        if (filters["-l"]) options["-l"] = filters["-l"];
+        if (filters["-i"]) options["-i"] = null;
+        if (filters["-h"]) options["-h"] = null;
+        if (filters["--override"]) options["--override"] = null;
+        if (filters["--force"]) options["--force"] = null;
+
+        const payload = {
+            apps: appsPayload,
+            options
+        };
+
+        if (process.env.NODE_ENV === 'development') {
+            console.log('Installing apps with payload:', JSON.stringify(payload, null, 2));
+        }
+
+        console.log('Installing apps with payload:', payload);
 
         try {
             const response = await fetch('/api/installer', {
@@ -21,7 +40,7 @@ const InstallerExport = ({ apps }) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(appsPayload),
+                body: JSON.stringify(payload),
             });
 
             const contentType = response.headers.get('content-type');

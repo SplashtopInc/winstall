@@ -45,11 +45,15 @@ const AdvancedConfig = ({ refreshConfig, activeTab }) => {
         }
 
 
-        let unavailableOptions = ["--ignore-unavailable"];
+        let unavailableOptions = [];
 
         if(activeTab === ".json"){
             unavailableOptions = ["--scope", "-i", "-h", "-o", "--override", "-l", "--force"];
-        } 
+        } else if(activeTab === ".installer"){
+            unavailableOptions = ["--ignore-unavailable"];
+        } else {
+            unavailableOptions = ["--ignore-unavailable"];
+        }
 
         setHiddenOptions(unavailableOptions);
         loadExistingConfig(unavailableOptions);
@@ -81,10 +85,10 @@ const AdvancedConfig = ({ refreshConfig, activeTab }) => {
                     <CheckboxConfig id="-h" defaultChecked={config["-h"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Request silent installation"/>
                     <CheckboxConfig id="--override" defaultChecked={config["--override"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Override arguments to be passed on to the installer"/>
                     <CheckboxConfig id="--force" defaultChecked={config["--force"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Override the installer hash check"/>
-                    
+
                     <TextInputConfig id="-o" defaultValue={config["-o"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Log location (if supported)" inputPlaceholder="Enter a valid path for your local machine"/>
                     <TextInputConfig id="-l" defaultValue={config["-l"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Location to install to (if supported)" inputPlaceholder="Enter a valid path for your local machine"/>
-                   
+
                     <CheckboxConfig id="--ignore-unavailable" defaultChecked={config["--ignore-unavailable"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Ignore unavailable packages "/>
 
                 </div>

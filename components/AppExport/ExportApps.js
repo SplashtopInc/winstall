@@ -18,7 +18,7 @@ const ExportApps = ({ apps, title, subtitle }) => {
             {
                 title: "Download Installer",
                 key: ".installer",
-                element: <InstallerExport apps={apps} />
+                element: <InstallerExport apps={apps} filters={filters} />
             },
             {
                 title: "Batch",
@@ -42,7 +42,7 @@ const ExportApps = ({ apps, title, subtitle }) => {
                         />
             }
         ]
-  }, [ batScript, psScript, wingetScript, wingetImportCommand, apps ])
+  }, [ batScript, psScript, wingetScript, wingetImportCommand, apps, filters ])
 
 
   let handleScriptChange = async () => {
