@@ -21,11 +21,24 @@ function Generate() {
     const [selectedAppForSettings, setSelectedAppForSettings] = useState(null);
 
     useEffect(() => {
-      setApps(selectedApps);
-    }, [ apps, selectedApps ]);
+      // Keep local per-app options while syncing with selected apps from context.
+      setApps((prevApps) => {
+        return selectedApps.map((app) => {
+          const existingApp = prevApps.find((a) => a._id === app._id);
+
+          if (!existingApp) return app;
+
+          return {
+            ...app,
+            advancedConfig: existingApp.advancedConfig,
+          };
+        });
+      });
+    }, [selectedApps]);
 
     const handleSettingsClick = (app) => {
-      setSelectedAppForSettings(app);
+      const appFromState = apps.find((a) => a._id === app._id) || app;
+      setSelectedAppForSettings(appFromState);
       setDrawerOpen(true);
     };
 
@@ -35,13 +48,17 @@ function Generate() {
     };
 
     const handleConfigChange = (app, config) => {
-      const updatedApps = apps.map(a => {
+      setApps((prevApps) => prevApps.map((a) => {
         if (a._id === app._id) {
           return { ...a, advancedConfig: config };
         }
         return a;
+      }));
+
+      setSelectedAppForSettings((prevApp) => {
+        if (!prevApp || prevApp._id !== app._id) return prevApp;
+        return { ...prevApp, advancedConfig: config };
       });
-      setApps(updatedApps);
     };
 
     if(selectedApps.length === 0){
@@ -88,13 +105,13 @@ function Generate() {
         </div>
 
         <div className={styles.selectedApps}>
-          <h2>Apps you are downloading ({selectedApps.length})</h2>
+          <h2>Apps you are downloading ({apps.length})</h2>
           <ListPackages showImg={true}>
-            {selectedApps.map((app) => (
+            {apps.map((app) => (
               <SingleApp
                 app={app}
                 key={app._id}
-                onVersionChange={setApps}
+                onVersionChange={() => setApps((prevApps) => [...prevApps])}
                 showSettingsIcon={true}
                 onSettingsClick={handleSettingsClick}
                 disableSelectedStyle={true}

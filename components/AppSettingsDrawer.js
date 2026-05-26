@@ -1,49 +1,7 @@
 import { useState, useEffect } from 'react';
 import styles from "../styles/appSettingsDrawer.module.scss";
-
-const CheckboxInput = ({ id, checked, onChange, label }) => {
-    return (
-        <label htmlFor={id}>
-            <input
-                type="checkbox"
-                id={id}
-                checked={checked}
-                onChange={(e) => onChange(e.target.checked)}
-            />
-            <p>{label} <code>{id}</code></p>
-        </label>
-    );
-};
-
-const RadioInput = ({ name, value, checked, onChange, label }) => {
-    return (
-        <label>
-            <input
-                type="radio"
-                name={name}
-                value={value}
-                checked={checked}
-                onChange={() => onChange(value)}
-            />
-            <p>{label}</p>
-        </label>
-    );
-};
-
-const TextInput = ({ id, value, onChange, placeholder, label }) => {
-    return (
-        <label htmlFor={id} className={styles.textInputLabel}>
-            <p>{label} <code>{id}</code></p>
-            <input
-                type="text"
-                id={id}
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                placeholder={placeholder}
-            />
-        </label>
-    );
-};
+import exportStyles from "../styles/exportApps.module.scss";
+import { CheckboxConfig, RadioConfig, TextInputConfig } from "./AppExport/InputComponents";
 
 const AppSettingsDrawer = ({ app, isOpen, onClose, onConfigChange }) => {
     const [config, setConfig] = useState({
@@ -55,6 +13,7 @@ const AppSettingsDrawer = ({ app, isOpen, onClose, onConfigChange }) => {
         "-l": "",
         "--force": false
     });
+    const hiddenOptions = ["--ignore-unavailable"];
 
     useEffect(() => {
         if (app && app.advancedConfig) {
@@ -92,54 +51,24 @@ const AppSettingsDrawer = ({ app, isOpen, onClose, onConfigChange }) => {
                 </div>
 
                 <div className={styles.content}>
-                    <label className={styles.radioContainer}>
-                        <p>Installation scope <code>--scope</code></p>
-                        <div>
-                            <RadioInput name="scope" value="default" checked={config["--scope"] === null} onChange={() => updateConfig("--scope", null)} label="Default" />
-                            <RadioInput name="scope" value="user" checked={config["--scope"] === "user"} onChange={(val) => updateConfig("--scope", val)} label="User" />
-                            <RadioInput name="scope" value="machine" checked={config["--scope"] === "machine"} onChange={(val) => updateConfig("--scope", val)} label="Machine" />
-                        </div>
-                    </label>
+                    <div className={exportStyles.expandBlock}>
+                        <RadioConfig
+                            id="--scope"
+                            defaultChecked={config["--scope"]}
+                            options={[{ id: "user", label: "User" }, { id: "machine", label: "Machine" }]}
+                            updateConfig={updateConfig}
+                            hiddenOptions={hiddenOptions}
+                            labelText="Installation scope"
+                        />
 
-                    <CheckboxInput
-                        id="-i"
-                        checked={config["-i"]}
-                        onChange={(val) => updateConfig("-i", val)}
-                        label="Request interactive installation; user input may be needed"
-                    />
-                    <CheckboxInput
-                        id="-h"
-                        checked={config["-h"]}
-                        onChange={(val) => updateConfig("-h", val)}
-                        label="Request silent installation"
-                    />
-                    <CheckboxInput
-                        id="--override"
-                        checked={config["--override"]}
-                        onChange={(val) => updateConfig("--override", val)}
-                        label="Override arguments to be passed on to the installer"
-                    />
-                    <CheckboxInput
-                        id="--force"
-                        checked={config["--force"]}
-                        onChange={(val) => updateConfig("--force", val)}
-                        label="Override the installer hash check"
-                    />
+                        <CheckboxConfig id="-i" defaultChecked={config["-i"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Request interactive installation; user input may be needed"/>
+                        <CheckboxConfig id="-h" defaultChecked={config["-h"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Request silent installation"/>
+                        <CheckboxConfig id="--override" defaultChecked={config["--override"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Override arguments to be passed on to the installer"/>
+                        <CheckboxConfig id="--force" defaultChecked={config["--force"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Override the installer hash check"/>
 
-                    <TextInput
-                        id="-o"
-                        value={config["-o"]}
-                        onChange={(val) => updateConfig("-o", val)}
-                        placeholder="Enter a valid path for your local machine"
-                        label="Log location (if supported)"
-                    />
-                    <TextInput
-                        id="-l"
-                        value={config["-l"]}
-                        onChange={(val) => updateConfig("-l", val)}
-                        placeholder="Enter a valid path for your local machine"
-                        label="Location to install to (if supported)"
-                    />
+                        <TextInputConfig id="-o" defaultValue={config["-o"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Log location (if supported)" inputPlaceholder="Enter a valid path for your local machine"/>
+                        <TextInputConfig id="-l" defaultValue={config["-l"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Location to install to (if supported)" inputPlaceholder="Enter a valid path for your local machine"/>
+                    </div>
                 </div>
             </div>
         </>

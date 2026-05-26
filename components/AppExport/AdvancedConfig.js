@@ -90,7 +90,6 @@ const AdvancedConfig = ({ refreshConfig, activeTab }) => {
                     <TextInputConfig id="-l" defaultValue={config["-l"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Location to install to (if supported)" inputPlaceholder="Enter a valid path for your local machine"/>
 
                     <CheckboxConfig id="--ignore-unavailable" defaultChecked={config["--ignore-unavailable"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Ignore unavailable packages "/>
-
                 </div>
             )}
         </div>

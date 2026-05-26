@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import styles from "../../styles/exportApps.module.scss";
 import generateWingetImport from "../../utils/generateWingetImport";
 import GenericExport from "./GenericExport";
@@ -45,7 +45,7 @@ const ExportApps = ({ apps, title, subtitle }) => {
   }, [ batScript, psScript, wingetScript, wingetImportCommand, apps, filters ])
 
 
-  let handleScriptChange = async () => {
+    const handleScriptChange = useCallback(async () => {
     if(!apps) return;
 
     let installs = [];
@@ -93,7 +93,7 @@ const ExportApps = ({ apps, title, subtitle }) => {
 
     setWingetImportCommand(`winget import --import-file "$fileName" ${advancedFilters}`);
 
-  };
+    }, [apps, filters]);
 
   useEffect(() => {
     const restoreDefaultTab = async () => {
@@ -104,8 +104,8 @@ const ExportApps = ({ apps, title, subtitle }) => {
         }
     }
 
-    restoreDefaultTab();
-    handleScriptChange();
+        restoreDefaultTab();
+        handleScriptChange();
   }, [handleScriptChange]);
 
   const changeTab = async ( tabKey ) => {
@@ -140,7 +140,7 @@ const ExportApps = ({ apps, title, subtitle }) => {
             }) }
         </ul>
 
-        <AdvancedConfig refreshConfig={refreshFilters} activeTab={active}/>
+        {/* <AdvancedConfig refreshConfig={refreshFilters} activeTab={active}/> */}
 
         { tabs.map((tab, index) => {
             return <section key={index} className={ tab.key === active ? styles.displaySection : styles.hideSection }>{ tab.element }</section>
