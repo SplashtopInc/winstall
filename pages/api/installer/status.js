@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 		return res.status(405).json({ error: 'Method not allowed' });
 	}
 
-	const { taskId } = req.query;
+	const { taskId, fileName } = req.query;
 
 	if (!taskId) {
 		return res.status(400).json({ error: 'taskId is required' });
@@ -41,15 +41,17 @@ export default async function handler(req, res) {
 		if (uploaded === '0') {
 			const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
 			const host = req.headers.host;
-			const statusUrl = `${protocol}://${host}/api/installer/status?taskId=${taskId}`;
+			const statusUrl = new URL(`${protocol}://${host}/api/installer/status`);
+			statusUrl.searchParams.set('taskId', taskId);
+			if (fileName) statusUrl.searchParams.set('fileName', fileName);
 
 			return res.status(202).json({
 				message: 'Processing',
-				statusUrl,
+				statusUrl: statusUrl.toString(),
 			});
 		}
 
-		const downloadUrl = await generateGetPresignedUrl(taskId, `winstall-${taskId}.exe`, 3600);
+		const downloadUrl = await generateGetPresignedUrl(taskId, fileName || `winstall-${taskId}.exe`, 3600);
 		if (!downloadUrl) {
 			return res.status(500).json({ error: 'S3 not configured, cannot generate download URL' });
 		}

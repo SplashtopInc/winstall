@@ -38,8 +38,9 @@ export default async function handler(req, res) {
 
 		const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
 		const host = req.headers.host;
+		const { config, filename } = req.body;
 		const payload = {
-			config: req.body.config,
+			config,
 		};
 
 		const uploadUrl = await generatePutPresignedUrl(taskId, 900);
@@ -80,7 +81,10 @@ export default async function handler(req, res) {
 			return res.status(200).send(Buffer.from(buffer));
 		}
 
-		const statusUrl = `${protocol}://${host}/api/installer/status?taskId=${taskId}`;
+		const statusUrlObj = new URL(`${protocol}://${host}/api/installer/status`);
+		statusUrlObj.searchParams.set('taskId', taskId);
+		if (filename) statusUrlObj.searchParams.set('fileName', filename);
+		const statusUrl = statusUrlObj.toString();
 
 		return res.status(202).json({
 			taskId,

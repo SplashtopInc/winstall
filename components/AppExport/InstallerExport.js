@@ -5,14 +5,15 @@ import styles from "../../styles/exportApps.module.scss";
 const InstallerExport = ({ apps, filters = {} }) => {
     const [isProcessing, setIsProcessing] = useState(false);
 
-    const downloadFile = (url, filename) => {
-        console.log('Installer download file:', filename);
+    const downloadFile = (url, filename = null) => {
+        // console.log('Installer download file:', filename);
         const a = document.createElement('a');
         a.href = url;
-        a.download = filename; // Async mode, filename is set by Content-Disposition header in S3 presigned URL
+        if (filename) {
+            a.download = filename;
+        }
         document.body.appendChild(a);
         a.click();
-        window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
     };
 
@@ -30,7 +31,7 @@ const InstallerExport = ({ apps, filters = {} }) => {
                     const data = await statusResponse.json();
                     if (data.downloadUrl) {
                         console.log('Installer ready, downloading from S3:', data.downloadUrl);
-                        downloadFile(data.downloadUrl, `installer.exe`);
+                        downloadFile(data.downloadUrl); // Filename is set by S3 presigned URL's Content-Disposition header
                         return true;
                     }
                 } else if (statusResponse.status === 202) {
@@ -94,6 +95,11 @@ const InstallerExport = ({ apps, filters = {} }) => {
                 console.log('Installer config:', JSON.stringify(configPayload, null, 2));
             }
 
+            // [ "Microsoft Edge" ] => "winstall-Microsoft_Edge.exe"
+            // [ "Mozialla Firefox (en-US)", "Microsoft Edge" ] => "winstall-Mozilla_Firefox_en_US-etc.exe"
+            const appSlug = apps[0].name.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+            const filename = `winstall-${appSlug}${apps.length > 1 ? '-etc' : ''}.exe`;
+
             const response = await fetch('/api/installer', {
                 method: 'POST',
                 headers: {
@@ -101,6 +107,7 @@ const InstallerExport = ({ apps, filters = {} }) => {
                 },
                 body: JSON.stringify({
                     config: configPayload,
+                    filename,
                 }),
             });
 
@@ -108,10 +115,9 @@ const InstallerExport = ({ apps, filters = {} }) => {
             if (response.status === 200) {
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
-
-                let filename = 'installer.exe';
                 console.log('Installer ready, downloading from builder:', filename);
                 downloadFile(url, filename);
+                window.URL.revokeObjectURL(url);
             }
             // Async mode: poll for status
             else if (response.status === 202) {
