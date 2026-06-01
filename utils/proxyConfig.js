@@ -1,6 +1,6 @@
 /**
- * Global proxy configuration for development
- * Sets up undici's EnvHttpProxyAgent to handle HTTP_PROXY & NO_PROXY automatically
+ * Centralize proxy behavior so every fetch call follows one environment-driven rule.
+ * This avoids per-call proxy wiring and keeps runtime behavior consistent.
  */
 
 import { EnvHttpProxyAgent, setGlobalDispatcher } from "undici";
@@ -14,20 +14,17 @@ export function configureProxy() {
                    process.env.http_proxy || process.env.https_proxy;
 
   if (!proxyUrl) {
-    proxyConfigured = true;
     return;
   }
 
-  // EnvHttpProxyAgent 自动处理:
-  // - HTTP_PROXY / HTTPS_PROXY / http_proxy / https_proxy
-  // - NO_PROXY / no_proxy (支持 localhost, IP, CIDR, 域名通配符)
+  // Use env-aware proxy resolution so runtime config can stay outside application code.
   const envHttpProxyAgent = new EnvHttpProxyAgent();
   setGlobalDispatcher(envHttpProxyAgent);
 
   proxyConfigured = true;
 }
 
-// Auto-configure in development
+// Configure eagerly in dev/test to keep local behavior close to production startup.
 if (process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test") {
   configureProxy();
 }
