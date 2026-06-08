@@ -94,6 +94,17 @@
         }
     }
 
+    .searchingLabel {
+        position: absolute;
+        right: -150px;
+        top: 0px;
+        font-size: 14px;
+        color: var(--textColor);
+        opacity: 0.7;
+        line-height: 50px;
+        white-space: nowrap;
+    }
+
     svg{
         padding-left: 15px;
     }
@@ -133,6 +144,10 @@
 
 @media(max-width: 790px){
     .tip{
+        display: none;
+    }
+
+    .searchingLabel{
         display: none;
     }
 }

@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FiSearch, FiHelpCircle } from "react-icons/fi";
 
 import styles from "../styles/search.module.scss";
@@ -14,6 +14,10 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
   const [searchInput, setSearchInput] = useState("");
   const [urlQuery, setUrlQuery] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [showSearching, setShowSearching] = useState(false);
+  const [hasSearchResponse, setHasSearchResponse] = useState(false);
+  const activeRequestIdRef = useRef(0);
+  const hideSearchingTimerRef = useRef(null);
 
   const normalizeAppsPayload = (payload) => {
     if (!payload?.data) return [];
@@ -42,25 +46,77 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
     return () => clearTimeout(timer);
   }, [searchInput]);
 
-  const handleSearch = async (inputVal) => {
-    if(onSearch) onSearch(inputVal);
+  useEffect(() => {
+    const canSearch = !!searchInput && searchInput.length >= 3;
 
-    if(inputVal === ""){
-      setSearchInput("");
-      setResults([]);
+    if (!canSearch) {
+      if (hideSearchingTimerRef.current) {
+        clearTimeout(hideSearchingTimerRef.current);
+        hideSearchingTimerRef.current = null;
+      }
+      setShowSearching(false);
       return;
     }
 
-    if (inputVal.length < 3) return;
+    if (isLoading) {
+      if (hideSearchingTimerRef.current) {
+        clearTimeout(hideSearchingTimerRef.current);
+        hideSearchingTimerRef.current = null;
+      }
+      setShowSearching(true);
+      return;
+    }
+
+    hideSearchingTimerRef.current = setTimeout(() => {
+      setShowSearching(false);
+      hideSearchingTimerRef.current = null;
+    }, 300);
+
+    return () => {
+      if (hideSearchingTimerRef.current) {
+        clearTimeout(hideSearchingTimerRef.current);
+        hideSearchingTimerRef.current = null;
+      }
+    };
+  }, [isLoading, searchInput]);
+
+  const handleSearch = async (inputVal) => {
+    if(inputVal === ""){
+      if(onSearch) onSearch("");
+      setSearchInput("");
+      setResults([]);
+      setHasSearchResponse(false);
+      setIsLoading(false);
+      return;
+    }
+
+    if (inputVal.length < 3) {
+      if(onSearch) onSearch("");
+      setResults([]);
+      setHasSearchResponse(false);
+      setIsLoading(false);
+      return;
+    }
 
     const query = inputVal.trim();
     const resultLimit = limit && limit > 0 ? limit : 60;
 
+    if (onSearch) onSearch(query);
+
+    const requestId = activeRequestIdRef.current + 1;
+    activeRequestIdRef.current = requestId;
+
+    setResults([]);
+    setHasSearchResponse(false);
     setIsLoading(true);
     const { response, error } = await fetchWinstallAPI(
       `/apps/search?q=${encodeURIComponent(query)}&limit=${resultLimit}`
     );
+
+    if (requestId !== activeRequestIdRef.current) return;
+
     setIsLoading(false);
+    setHasSearchResponse(true);
 
     if (error) {
       setResults([]);
@@ -112,6 +168,9 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
             </ul>
           </div>
         </div>
+        {showSearching && (
+          <span className={styles.searchingLabel}>Searching...</span>
+        )}
         {searchInput && results.length === limit &&
           <p className={styles.searchHint}>
             Showing {results.length} result
@@ -123,7 +182,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
         }
       </div>
 
-      {searchInput && results.length !== 0 ? (
+      {searchInput && !isLoading && hasSearchResponse && results.length !== 0 ? (
         <ListPackages>
             {results.map((app, i) =>
             <SingleApp
@@ -139,7 +198,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
         </ListPackages>
       ) : (
           <>
-            {searchInput && !isLoading ? (
+            {searchInput && !isLoading && hasSearchResponse && results.length === 0 && searchInput.length >= 3 ? (
               <p className={styles.noresults}>Could not find any apps.</p>
             ) : ""}
           </>
