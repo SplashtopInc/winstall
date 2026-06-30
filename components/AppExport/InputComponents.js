@@ -1,28 +1,32 @@
 import styles from "../../styles/exportApps.module.scss";
 
-export const CheckboxConfig = ({ id, defaultChecked, updateConfig, hiddenOptions, labelText }) => {
+export const CheckboxConfig = ({ id, defaultChecked, updateConfig, hiddenOptions, labelText, disabled = false }) => {
     if(hiddenOptions.includes(id)) return null;
 
     return (
-        <label htmlFor={id}>
-            <input type="checkbox" id={id} checked={defaultChecked} onChange={(e) => updateConfig(id, e.target.checked)}/>
+        <label htmlFor={id} className={disabled ? styles.disabled : ''}>
+            <input type="checkbox" id={id} checked={defaultChecked} onChange={(e) => updateConfig(id, e.target.checked)} disabled={disabled}/>
             <p>{labelText} <code>{id}</code></p>
         </label>
     )
 }
 
-export const RadioConfig = ({ id, defaultChecked, options, updateConfig, hiddenOptions, labelText }) => {
+export const RadioConfig = ({ id, defaultChecked, options, updateConfig, hiddenOptions, labelText, disabled = false, groupId }) => {
     if(hiddenOptions.includes(id)) return null;
 
+    const radioName = groupId || id;
+
     return (
-        <label className={styles.radioContainer}>
+        <label className={`${styles.radioContainer} ${disabled ? styles.disabled : ''}`}>
             <p>{labelText} <code>{id}</code></p>
 
             <div>
                 { options.map((option) => {
+                    const optionId = `${radioName}-${option.id || 'default'}`;
+
                     return (
-                        <label key={option.id} htmlFor={option.id}>
-                            <input type="radio" id={option.id} name={id} value={option.id} onChange={(e) => updateConfig(id, e.target.value)} checked={defaultChecked === option.id}/>
+                        <label key={option.id} htmlFor={optionId}>
+                            <input type="radio" id={optionId} name={radioName} value={option.id} onChange={(e) => updateConfig(id, e.target.value)} checked={defaultChecked === option.id} disabled={disabled}/>
                             <p>{option.label}</p>
                         </label>
                     )

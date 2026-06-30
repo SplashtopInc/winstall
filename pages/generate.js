@@ -19,6 +19,7 @@ function Generate() {
     const [apps, setApps] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [selectedAppForSettings, setSelectedAppForSettings] = useState(null);
+    const [defaultFilters, setDefaultFilters] = useState(null);
 
     useEffect(() => {
       // Keep local per-app options while syncing with selected apps from context.
@@ -97,7 +98,7 @@ function Generate() {
             <h1>Your apps are ready to be installed.</h1>
             <h3>Make sure you have Windows Package Manager installed :)</h3>
 
-            <ExportApps apps={apps} />
+            <ExportApps apps={apps} onDefaultFiltersChange={setDefaultFilters} />
           </div>
           <div className="art">
             <img src="/assets/dl.svg" draggable={false} alt="download icon" />
@@ -125,6 +126,7 @@ function Generate() {
           isOpen={drawerOpen}
           onClose={handleCloseDrawer}
           onConfigChange={handleConfigChange}
+          defaultFilters={defaultFilters || {}}
         />
 
         <Footer />

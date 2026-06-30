@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import styles from "../../styles/exportApps.module.scss";
 import generateWingetImport from "../../utils/generateWingetImport";
+import getEffectiveConfig from "../../utils/getEffectiveConfig";
 import GenericExport from "./GenericExport";
 import InstallerExport from "./InstallerExport";
 import AdvancedConfig from "./AdvancedConfig";
 
-const ExportApps = ({ apps, title, subtitle }) => {
+const ExportApps = ({ apps, title, subtitle, onDefaultFiltersChange }) => {
     const [ batScript, setBatScript ] = useState("");
     const [ psScript, setPsScript ] = useState("");
     const [ wingetScript, setWingetScript ] = useState("");
@@ -72,14 +73,9 @@ const ExportApps = ({ apps, title, subtitle }) => {
         }
 
         let installs = [];
-        let advancedFilters = buildFilterString(filters);
 
         apps.map((app) => {
-            let appFilters = advancedFilters;
-
-            if (app.advancedConfig) {
-                appFilters = buildFilterString(app.advancedConfig);
-            }
+            const appFilters = buildFilterString(getEffectiveConfig(filters, app.advancedConfig));
 
             installs.push(
                 `winget install --id=${app._id}${app.selectedVersion !== app.latestVersion ? ` -v "${app.selectedVersion}"` : ""} -e ${appFilters}`
@@ -93,7 +89,7 @@ const ExportApps = ({ apps, title, subtitle }) => {
         setBatScript(newBatchScript);
         setPsScript(newPSScript);
         setWingetScript(JSON.stringify(await generateWingetImport(apps), 2));
-        setWingetImportCommand(`winget import --import-file "$fileName" ${advancedFilters}`);
+        setWingetImportCommand(`winget import --import-file "$fileName"`);
     }, [apps, filters]);
 
 useEffect(() => {
@@ -114,14 +110,9 @@ const changeTab = async ( tabKey ) => {
     await localStorage.setItem("winstall-default-export-tab", tabKey);
 }
 
-const refreshFilters = async ( newConfig, unavailableOptions ) => {
-    let availableConfig = { ...newConfig }
-
-    await unavailableOptions.map(opt => {
-        delete availableConfig[opt]
-    });
-
-    setFilters(availableConfig);
+const refreshFilters = ( newConfig ) => {
+    setFilters(newConfig);
+    onDefaultFiltersChange && onDefaultFiltersChange(newConfig);
 }
 
 return (
@@ -141,7 +132,7 @@ return (
             }) }
         </ul>
 
-        {/* <AdvancedConfig refreshConfig={refreshFilters} activeTab={active}/> */}
+        <AdvancedConfig refreshConfig={refreshFilters} activeTab={active} onFiltersChange={onDefaultFiltersChange}/>
 
         { tabs.map((tab, index) => {
             return <section key={index} className={ tab.key === active ? styles.displaySection : styles.hideSection }>{ tab.element }</section>

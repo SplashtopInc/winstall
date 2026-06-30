@@ -29,8 +29,9 @@
         margin-right: 0px;
         margin-bottom: 10px;
         min-height: 120px;
+        max-height: 400px;
         color: var(--textColor);
-        overflow: hidden;
+        overflow-y: auto;
         box-sizing: border-box;
     }
 }
@@ -145,6 +146,11 @@
         margin-bottom: 5px;
         cursor: pointer;
 
+        &.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         input{
             margin: 0px;
             margin-right: 10px;
@@ -167,6 +173,15 @@
         flex-direction: column;
         align-items: flex-start;
         margin-top: 10px;
+
+        &.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+
+            label {
+                cursor: not-allowed;
+            }
+        }
 
         div {
             display: flex;

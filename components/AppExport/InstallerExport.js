@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { FiDownload, FiInfo } from "react-icons/fi";
+import getEffectiveConfig from "../../utils/getEffectiveConfig";
 import styles from "../../styles/exportApps.module.scss";
 
 const InstallerExport = ({ apps, filters = {} }) => {
@@ -103,7 +104,7 @@ const InstallerExport = ({ apps, filters = {} }) => {
                 name: app.name,
                 id: app._id,
                 version: app.selectedVersion !== app.latestVersion ? app.selectedVersion : undefined,
-                options: buildInstallerOptions(app.advancedConfig || filters)
+                options: buildInstallerOptions(getEffectiveConfig(filters, app.advancedConfig))
             }));
 
             const configPayload = {
@@ -174,7 +175,7 @@ const InstallerExport = ({ apps, filters = {} }) => {
         name: app.name,
         id: app._id,
         version: app.selectedVersion !== app.latestVersion ? app.selectedVersion : undefined,
-        options: buildInstallerOptions(app.advancedConfig || filters)
+        options: buildInstallerOptions(getEffectiveConfig(filters, app.advancedConfig))
     }));
 
     const configPayload = {
