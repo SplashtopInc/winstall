@@ -117,7 +117,7 @@ export default function PackShareCard({
   const shareToTwitter = () => {
     if (shareDisabled) return;
 
-    const text = `Install apps from "${pack.name}" instantly with winget.\nGet it on Winstall:\n${shareUrl}\n#winget #winstall`;
+    const text = `Install the apps in "${pack.name}" instantly with winget.\nGet it on Winstall:\n${shareUrl}\n#winget #winstall`;
     const link = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(
       link,
@@ -129,7 +129,7 @@ export default function PackShareCard({
   const shareToFacebook = () => {
     if (shareDisabled) return;
 
-    const quote = `Install apps from "${pack.name}" instantly with winget.\nGet it on Winstall:\n${shareUrl}`;
+    const quote = `Install the apps in "${pack.name}" instantly with winget.\nGet it on Winstall:\n${shareUrl}`;
     const link = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(quote)}`;
     window.open(
       link,
