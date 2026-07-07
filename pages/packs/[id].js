@@ -31,6 +31,7 @@ import {
   syncOwnPacksCacheEntry,
 } from "../../utils/packHelpers";
 import fetchWinstallAPI from "../../utils/fetchWinstallAPI";
+import { compareVersion } from "../../utils/helpers";
 
 import styles from "../../styles/packDetail.module.scss";
 
@@ -83,16 +84,38 @@ async function enrichApps(apps) {
 
       if (!response) return app;
 
+      const appData = response?.data && !response._id ? response.data : response;
+
+      let versions = appData.versions ?? app.versions ?? [];
+      if (versions.length > 1) {
+        versions = [...versions].sort((a, b) =>
+          compareVersion(b.version, a.version)
+        );
+      }
+
+      const latestVersion =
+        versions[0]?.version ??
+        appData.latestVersion ??
+        app.latestVersion ??
+        app.appVersion ??
+        "";
+      const savedVersion = app.appVersion || app.latestVersion || latestVersion;
+      const selectedVersion = versions.some((entry) => entry.version === savedVersion)
+        ? savedVersion
+        : latestVersion;
+
       return {
         ...app,
         _id: appId,
         unavailable: false,
-        desc: response.desc ?? app.desc,
-        updatedAt: response.updatedAt ?? app.updatedAt,
-        latestVersion: response.latestVersion ?? app.latestVersion,
-        likeCount: response.likeCount ?? response.likes ?? app.likeCount,
-        publisher: response.publisher ?? app.publisher,
-        selectedVersion: response.latestVersion ?? app.latestVersion,
+        desc: appData.desc ?? app.desc,
+        updatedAt: appData.updatedAt ?? app.updatedAt,
+        latestVersion,
+        versions,
+        appVersion: selectedVersion,
+        likeCount: appData.likeCount ?? appData.likes ?? app.likeCount,
+        publisher: appData.publisher ?? app.publisher,
+        selectedVersion,
       };
     })
   );
@@ -301,6 +324,38 @@ export default function PackDetailPage() {
     setSelectedAppForSettings(null);
   };
 
+  const handleVersionChange = (app, nextVersion) => {
+    if (!isOwner || !nextVersion) return;
+
+    let nextApps = [];
+
+    setApps((current) => {
+      nextApps = current.map((item) => {
+        if (item._id !== app._id) return item;
+
+        return {
+          ...item,
+          appVersion: nextVersion,
+          selectedVersion: nextVersion,
+        };
+      });
+      return nextApps;
+    });
+
+    setPack((current) => {
+      if (!current) return current;
+      return { ...current, apps: nextApps };
+    });
+
+    if (persistAppsTimerRef.current) {
+      clearTimeout(persistAppsTimerRef.current);
+    }
+
+    persistAppsTimerRef.current = setTimeout(() => {
+      persistPackApps(nextApps);
+    }, 500);
+  };
+
   const handleAppConfigChange = (app, installOptions) => {
     let nextApps = [];
 
@@ -427,7 +482,13 @@ export default function PackDetailPage() {
   }
 
   const appCount = apps.length;
-  const installableApps = apps.filter((app) => !app.unavailable);
+  const installableApps = apps
+    .filter((app) => !app.unavailable)
+    .map((app) => ({
+      ...app,
+      selectedVersion:
+        app.selectedVersion || app.appVersion || app.latestVersion,
+    }));
   const metaDesc =
     appCount > 0
       ? `${pack.description} Includes ${apps
@@ -545,6 +606,7 @@ export default function PackDetailPage() {
                   deleting={deletingAppId === app._id}
                   onConfig={handleAppSettings}
                   onDelete={handleDeleteApp}
+                  onVersionChange={isOwner ? handleVersionChange : undefined}
                 />
               </li>
             ))}

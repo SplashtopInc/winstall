@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import {
   FiClock,
@@ -7,9 +7,10 @@ import {
   FiMoreVertical,
   FiSettings,
   FiTrash2,
+  FiChevronDown,
 } from "react-icons/fi";
 import AppIcon from "./AppIcon";
-import { timeAgo } from "../utils/helpers";
+import { compareVersion, timeAgo } from "../utils/helpers";
 import styles from "../styles/packDetail.module.scss";
 
 function formatLikeCount(count) {
@@ -27,13 +28,30 @@ export default function PackDetailAppCard({
   deleting = false,
   onConfig,
   onDelete,
+  onVersionChange,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
   const unavailable = Boolean(app.unavailable);
-  const version = app.latestVersion || app.appVersion;
   const likeLabel = formatLikeCount(app.likeCount ?? app.likes);
+
+  const versions = useMemo(() => {
+    if (!app.versions?.length) return [];
+
+    if (app.versions.length === 1) {
+      return app.versions;
+    }
+
+    return [...app.versions].sort((a, b) =>
+      compareVersion(b.version, a.version)
+    );
+  }, [app.versions]);
+
+  const displayVersion =
+    app.selectedVersion || app.appVersion || app.latestVersion;
+  const canSelectVersion =
+    isOwner && !unavailable && versions.length > 1 && onVersionChange;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -71,6 +89,12 @@ export default function PackDetailAppCard({
     setMenuOpen((open) => !open);
   };
 
+  const handleVersionSelect = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onVersionChange?.(app, event.target.value);
+  };
+
   const headerContent = (
     <>
       <AppIcon
@@ -89,6 +113,30 @@ export default function PackDetailAppCard({
     </>
   );
 
+  const versionContent = displayVersion ? (
+    canSelectVersion ? (
+      <div className={styles.appMetaVersion}>
+        <span className={styles.versionLabel}>v{displayVersion}</span>
+        <select
+          className={styles.versionSelector}
+          value={displayVersion}
+          onClick={(event) => event.stopPropagation()}
+          onChange={handleVersionSelect}
+          aria-label={`Select version for ${app.name}`}
+        >
+          {versions.map((entry) => (
+            <option key={entry.version} value={entry.version}>
+              v{entry.version}
+            </option>
+          ))}
+        </select>
+        <FiChevronDown aria-hidden="true" />
+      </div>
+    ) : (
+      <span>v{displayVersion}</span>
+    )
+  ) : null;
+
   const bodyContent = (
     <>
       {unavailable ? (
@@ -106,10 +154,10 @@ export default function PackDetailAppCard({
             <span>Last updated {timeAgo(app.updatedAt)}</span>
           </li>
         )}
-        {version && (
-          <li>
+        {versionContent && (
+          <li className={canSelectVersion ? styles.appMetaVersionRow : undefined}>
             <FiPackage aria-hidden="true" />
-            <span>v{version}</span>
+            {versionContent}
           </li>
         )}
         {!unavailable && likeLabel && (
@@ -121,6 +169,10 @@ export default function PackDetailAppCard({
       </ul>
     </>
   );
+
+  const bodyWrapperClass = canSelectVersion
+    ? styles.appCardBody
+    : styles.appCardBodyLink;
 
   return (
     <div
@@ -178,12 +230,10 @@ export default function PackDetailAppCard({
 
       {unavailable ? (
         <div className={styles.appCardBody}>{bodyContent}</div>
+      ) : canSelectVersion ? (
+        <div className={bodyWrapperClass}>{bodyContent}</div>
       ) : (
-        <Link
-          href={`/apps/${app._id}`}
-          prefetch={false}
-          className={styles.appCardBodyLink}
-        >
+        <Link href={`/apps/${app._id}`} prefetch={false} className={bodyWrapperClass}>
           {bodyContent}
         </Link>
       )}

@@ -72,10 +72,42 @@ export function mergeAppsWithEnrichedData(existingApps = [], apiApps = []) {
   return apiApps.map((apiApp) => {
     const existing = existingById.get(getAppId(apiApp));
     if (!existing) return apiApp;
+
     const merged = { ...existing, ...apiApp };
+
     if (existing.unavailable) {
       merged.unavailable = true;
     }
+
+    if (existing.versions?.length) {
+      merged.versions = existing.versions;
+    }
+
+    if (existing.desc) {
+      merged.desc = existing.desc;
+    }
+
+    if (existing.updatedAt) {
+      merged.updatedAt = existing.updatedAt;
+    }
+
+    if (existing.likeCount != null) {
+      merged.likeCount = existing.likeCount;
+    }
+
+    if (existing.publisher) {
+      merged.publisher = existing.publisher;
+    }
+
+    merged.appVersion =
+      existing.appVersion ?? existing.selectedVersion ?? apiApp.latestVersion ?? "";
+    merged.selectedVersion =
+      existing.selectedVersion ?? existing.appVersion ?? apiApp.latestVersion ?? "";
+
+    if (existing.latestVersion && existing.latestVersion !== merged.appVersion) {
+      merged.latestVersion = existing.latestVersion;
+    }
+
     return merged;
   });
 }
