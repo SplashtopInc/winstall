@@ -13,6 +13,20 @@
         height: 53px;
         width: auto;
     }
+
+    .brandLogoDark {
+        display: none;
+    }
+}
+
+:global(.dark) {
+    .brandLogoLight {
+        display: none;
+    }
+
+    .brandLogoDark {
+        display: block;
+    }
 }
 
 .nav{
