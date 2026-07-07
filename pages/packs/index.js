@@ -3,7 +3,14 @@ import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub, FaMicrosoft } from "react-icons/fa";
-import { FiPlus } from "react-icons/fi";
+import {
+  FiPlus,
+  FiChevronLeft,
+  FiChevronRight,
+  FiArrowLeftCircle,
+  FiArrowRightCircle,
+  FiSearch,
+} from "react-icons/fi";
 
 import PageWrapper from "../../components/PageWrapper";
 import MetaTags from "../../components/MetaTags";
@@ -14,6 +21,11 @@ import { fetchMyPacks, fetchPublicPacks } from "../../utils/fetchPackAPI";
 import { OWN_PACKS_UPDATED_EVENT } from "../../utils/packHelpers";
 
 import styles from "../../styles/packsIndex.module.scss";
+import appsStyles from "../../styles/apps.module.scss";
+import searchStyles from "../../styles/search.module.scss";
+
+const PACKS_PER_PAGE = 24;
+const MIN_SEARCH_LENGTH = 3;
 
 function getApiBase() {
   return process.env.NEXT_PUBLIC_WINSTALL_API_BASE || "";
@@ -59,6 +71,13 @@ export default function PacksPage() {
   const [publicPacks, setPublicPacks] = useState([]);
   const [publicPacksLoading, setPublicPacksLoading] = useState(false);
   const [publicPacksError, setPublicPacksError] = useState(null);
+  const [publicTotal, setPublicTotal] = useState(0);
+  const [publicCurrentOffset, setPublicCurrentOffset] = useState(0);
+  const [publicLoadedKey, setPublicLoadedKey] = useState(null);
+  const [publicPage, setPublicPage] = useState(1);
+  const [searchInput, setSearchInput] = useState("");
+  const [activePublicSearch, setActivePublicSearch] = useState("");
+  const [showSearching, setShowSearching] = useState(false);
 
   const [user, setUser] = useState(null);
   const [myPacks, setMyPacks] = useState([]);
@@ -68,21 +87,35 @@ export default function PacksPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const authError = router.query.error;
+  const publicLoadKey = `${publicPage}:${activePublicSearch}`;
+  const publicTotalPages = Math.max(1, Math.ceil(publicTotal / PACKS_PER_PAGE));
 
-  const loadPublicPacks = useCallback(async ({ silent = false } = {}) => {
+  const loadPublicPacks = useCallback(async ({ page = 1, q, silent = false } = {}) => {
     if (!silent) {
       setPublicPacksLoading(true);
     }
     setPublicPacksError(null);
 
+    const offset = (page - 1) * PACKS_PER_PAGE;
+    const searchKey = q || "";
+
     try {
-      const { response, error } = await fetchPublicPacks({ limit: 1000 });
+      const { response, error } = await fetchPublicPacks({
+        offset,
+        limit: PACKS_PER_PAGE,
+        ...(q ? { q } : {}),
+      });
 
       if (error) {
         setPublicPacksError(error);
         setPublicPacks([]);
       } else if (response?.data) {
         setPublicPacks(transformPackIcons(response.data, getApiBase()));
+        setPublicTotal(typeof response.total === "number" ? response.total : 0);
+        setPublicCurrentOffset(
+          typeof response.offset === "number" ? response.offset : offset
+        );
+        setPublicLoadedKey(`${page}:${searchKey}`);
       }
     } catch (err) {
       setPublicPacksError(err.message || "Failed to load packs.");
@@ -133,8 +166,58 @@ export default function PacksPage() {
 
   useEffect(() => {
     if (activeTab !== "public") return;
-    loadPublicPacks();
-  }, [activeTab, loadPublicPacks]);
+    if (publicLoadedKey === publicLoadKey) return;
+    loadPublicPacks({
+      page: publicPage,
+      q: activePublicSearch || undefined,
+    });
+  }, [
+    activePublicSearch,
+    activeTab,
+    loadPublicPacks,
+    publicLoadKey,
+    publicLoadedKey,
+    publicPage,
+  ]);
+
+  useEffect(() => {
+    if (activeTab !== "public") return;
+
+    const timer = setTimeout(() => {
+      const trimmed = searchInput.trim();
+      const nextSearch =
+        trimmed.length >= MIN_SEARCH_LENGTH ? trimmed : "";
+
+      setActivePublicSearch((current) => {
+        if (current !== nextSearch) {
+          setPublicPage(1);
+        }
+        return nextSearch;
+      });
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [activeTab, searchInput]);
+
+  useEffect(() => {
+    if (!router.isReady || activeTab !== "public") return;
+    if (!router.query.q && !router.query.page) return;
+
+    router.replace(
+      { pathname: "/packs", query: { tab: "public" } },
+      undefined,
+      { shallow: true }
+    );
+  }, [activeTab, router.isReady, router.query.page, router.query.q]);
+
+  useEffect(() => {
+    const canSearch = searchInput.trim().length >= MIN_SEARCH_LENGTH;
+    if (!canSearch) {
+      setShowSearching(false);
+      return;
+    }
+    setShowSearching(publicPacksLoading);
+  }, [publicPacksLoading, searchInput]);
 
   useEffect(() => {
     if (activeTab !== "mine") return;
@@ -148,7 +231,11 @@ export default function PacksPage() {
       if (activeTab === "mine") {
         loadMyPacks({ silent: true });
       } else {
-        loadPublicPacks({ silent: true });
+        loadPublicPacks({
+          page: publicPage,
+          q: activePublicSearch || undefined,
+          silent: true,
+        });
       }
     };
 
@@ -171,7 +258,15 @@ export default function PacksPage() {
       window.removeEventListener("pageshow", handlePageShow);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [activeTab, loadMyPacks, loadPublicPacks, router.isReady, router.pathname]);
+  }, [
+    activePublicSearch,
+    activeTab,
+    loadMyPacks,
+    loadPublicPacks,
+    publicPage,
+    router.isReady,
+    router.pathname,
+  ]);
 
   useEffect(() => {
     const handleOwnPacksUpdated = (event) => {
@@ -198,6 +293,60 @@ export default function PacksPage() {
     router.push({ pathname: "/packs", query }, undefined, { shallow: true });
   };
 
+  const handlePublicPrevious = () => {
+    window.scrollTo(0, 0);
+    setPublicPage((current) => Math.max(1, current - 1));
+  };
+
+  const handlePublicNext = () => {
+    window.scrollTo(0, 0);
+    setPublicPage((current) => current + 1);
+  };
+
+  useEffect(() => {
+    if (activeTab !== "public") return;
+
+    const handlePagination = (e) => {
+      if (e.keyCode === 39) {
+        document.getElementById("public-packs-next")?.click();
+      } else if (e.keyCode === 37) {
+        document.getElementById("public-packs-previous")?.click();
+      }
+    };
+
+    document.addEventListener("keydown", handlePagination);
+    return () => document.removeEventListener("keydown", handlePagination);
+  }, [activeTab]);
+
+  const PublicPagination = ({ small }) => (
+    <div className={small ? appsStyles.minPagination : appsStyles.pagbtn}>
+      <button
+        type="button"
+        className={`button ${small ? appsStyles.smallBtn : ""}`}
+        id={!small ? "public-packs-previous" : undefined}
+        onClick={handlePublicPrevious}
+        title="Previous page of packs"
+        disabled={publicPage > 1 ? undefined : "disabled"}
+      >
+        <FiChevronLeft />
+        {!small ? "Previous" : ""}
+      </button>
+      <button
+        type="button"
+        className={`button ${small ? appsStyles.smallBtn : ""}`}
+        id={!small ? "public-packs-next" : undefined}
+        title="Next page of packs"
+        onClick={handlePublicNext}
+        disabled={
+          publicPage < publicTotalPages ? undefined : "disabled"
+        }
+      >
+        {!small ? "Next" : ""}
+        <FiChevronRight />
+      </button>
+    </div>
+  );
+
   const handleLogin = (provider) => {
     signIn(provider, { callbackUrl: "/packs?tab=mine" });
   };
@@ -211,8 +360,25 @@ export default function PacksPage() {
     setShowCreateModal(false);
   };
 
+  const getPublicSummary = () => {
+    if (publicPacks.length === 0) {
+      return activePublicSearch
+        ? `No packs matching "${activePublicSearch}".`
+        : "No packs to show";
+    }
+
+    const range = `Showing ${publicCurrentOffset + 1}-${publicCurrentOffset + publicPacks.length} of ${publicTotal.toLocaleString()}`;
+    const pageInfo = `(page ${publicPage} of ${publicTotalPages})`;
+
+    if (activePublicSearch) {
+      return `${range} results for "${activePublicSearch}" ${pageInfo}.`;
+    }
+
+    return `${range} packs ${pageInfo}.`;
+  };
+
   const renderPublicPacks = () => {
-    if (publicPacksLoading) {
+    if (publicPacksLoading && publicPacks.length === 0) {
       return <p className={styles.loading}>Loading...</p>;
     }
 
@@ -221,13 +387,51 @@ export default function PacksPage() {
     }
 
     return (
-      <ul className={styles.grid}>
-        {publicPacks.map((pack) => (
-          <li key={pack._id}>
-            <PackCard pack={pack} />
-          </li>
-        ))}
-      </ul>
+      <>
+        <div className={styles.searchSection}>
+          <label htmlFor="public-packs-search" className={searchStyles.searchLabel}>
+            Search public packs
+          </label>
+          <div className={searchStyles.searchBox}>
+            <div className={searchStyles.searchInner}>
+              <FiSearch />
+              <input
+                type="text"
+                id="public-packs-search"
+                minLength={2}
+                value={searchInput}
+                autoComplete="off"
+                placeholder="Search by pack name or description"
+                onChange={(event) => setSearchInput(event.target.value)}
+              />
+            </div>
+            {showSearching && (
+              <span className={searchStyles.searchingLabel}>Searching...</span>
+            )}
+          </div>
+        </div>
+
+        <div className={styles.publicControls}>
+          <p>{getPublicSummary()}</p>
+          <PublicPagination small />
+        </div>
+
+        <ul className={styles.grid}>
+          {publicPacks.map((pack) => (
+            <li key={pack._id}>
+              <PackCard pack={pack} />
+            </li>
+          ))}
+        </ul>
+
+        <div className={appsStyles.pagination}>
+          <PublicPagination />
+          <em>
+            Hit the <FiArrowLeftCircle /> and <FiArrowRightCircle /> keys on
+            your keyboard to navigate between pages quickly.
+          </em>
+        </div>
+      </>
     );
   };
 

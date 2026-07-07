@@ -12,6 +12,7 @@ import {
 
 const ACTIVE_PUBLIC_PACK_FILTER = { visibility: "public", status: "active" };
 const MAX_LIST_LIMIT = 1000;
+const MIN_SEARCH_LENGTH = 3;
 
 export class PackError extends Error {
   constructor(message, status) {
@@ -149,6 +150,26 @@ async function findOwnedActivePack(packId, userId) {
   return pack;
 }
 
+function parseSearchQuery(q) {
+  if (q === undefined || q === null || q === "") {
+    return null;
+  }
+
+  const trimmed = String(q).trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  if (trimmed.length < MIN_SEARCH_LENGTH) {
+    throw new PackError(
+      `Search query must be at least ${MIN_SEARCH_LENGTH} characters.`,
+      400
+    );
+  }
+
+  return trimmed;
+}
+
 function parseListQuery({ offset, limit } = {}) {
   const parsedOffset = offset !== undefined ? Number(offset) : 0;
   const parsedLimit = limit !== undefined ? Number(limit) : 100;
@@ -214,6 +235,7 @@ export async function listPublicPacks({
   offset,
   limit,
   sort = "recent",
+  q,
   metadataOnly = false,
 } = {}) {
   const { offset: safeOffset, limit: safeLimit } = parseListQuery({
@@ -221,8 +243,12 @@ export async function listPublicPacks({
     limit,
   });
   const sortMode = sort === "popular" ? "popular" : "recent";
+  const searchQuery = parseSearchQuery(q);
+  const filter = searchQuery
+    ? { ...ACTIVE_PUBLIC_PACK_FILTER, $text: { $search: searchQuery } }
+    : ACTIVE_PUBLIC_PACK_FILTER;
 
-  const total = await Pack.countDocuments(ACTIVE_PUBLIC_PACK_FILTER);
+  const total = await Pack.countDocuments(filter);
 
   if (metadataOnly) {
     return {
@@ -238,12 +264,17 @@ export async function listPublicPacks({
       ? { "stats.likeCount": -1, createdAt: -1 }
       : { createdAt: -1 };
 
-  const data = await Pack.find(ACTIVE_PUBLIC_PACK_FILTER)
-    .sort(sortSpec)
-    .skip(safeOffset)
-    .limit(safeLimit)
-    .lean()
-    .exec();
+  let query = Pack.find(filter);
+
+  if (searchQuery) {
+    query = query
+      .select({ score: { $meta: "textScore" } })
+      .sort({ score: { $meta: "textScore" }, createdAt: -1 });
+  } else {
+    query = query.sort(sortSpec);
+  }
+
+  const data = await query.skip(safeOffset).limit(safeLimit).lean().exec();
 
   return {
     total,

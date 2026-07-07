@@ -73,11 +73,12 @@ export async function fetchMyPacks() {
   return fetchPackAPI("");
 }
 
-export async function fetchPublicPacks({ offset, limit, sort } = {}) {
+export async function fetchPublicPacks({ offset, limit, sort, q } = {}) {
   const params = new URLSearchParams();
   if (offset !== undefined) params.set("offset", String(offset));
   if (limit !== undefined) params.set("limit", String(limit));
   if (sort) params.set("sort", sort);
+  if (q) params.set("q", q);
 
   const query = params.toString();
   return fetchPackAPI(query ? `/public?${query}` : "/public");
