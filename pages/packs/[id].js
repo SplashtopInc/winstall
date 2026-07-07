@@ -25,6 +25,7 @@ import { copyPack, deletePack, fetchPackById, updatePack } from "../../utils/fet
 import {
   formatAppsForPatch,
   invalidateOwnPacksCache,
+  isAppUnavailable,
   mergeAppsWithEnrichedData,
   removeAppFromPack,
   syncOwnPacksCacheEntry,
@@ -71,11 +72,21 @@ async function enrichApps(apps) {
 
   const enriched = await Promise.all(
     apps.map(async (app) => {
-      const { response } = await fetchWinstallAPI(`/apps/${app._id}`);
+      const appId = app.appId || app._id;
+      if (!appId) return app;
+
+      const { response, status, error } = await fetchWinstallAPI(`/apps/${appId}`);
+
+      if (isAppUnavailable({ response, status, error })) {
+        return { ...app, _id: appId, unavailable: true };
+      }
+
       if (!response) return app;
 
       return {
         ...app,
+        _id: appId,
+        unavailable: false,
         desc: response.desc ?? app.desc,
         updatedAt: response.updatedAt ?? app.updatedAt,
         latestVersion: response.latestVersion ?? app.latestVersion,
@@ -242,8 +253,11 @@ export default function PackDetailPage() {
     setPack((current) => ({
       ...current,
       ...transformed,
-      apps: transformed.apps ?? current.apps,
+      apps: mergeAppsWithEnrichedData(current?.apps, transformed.apps ?? []),
     }));
+    setApps((current) =>
+      mergeAppsWithEnrichedData(current, transformed.apps ?? [])
+    );
     setEditingPack(null);
     syncOwnPacksCacheEntry(transformed);
     setToast({ type: "success", message: "Pack updated." });
@@ -413,6 +427,7 @@ export default function PackDetailPage() {
   }
 
   const appCount = apps.length;
+  const installableApps = apps.filter((app) => !app.unavailable);
   const metaDesc =
     appCount > 0
       ? `${pack.description} Includes ${apps
@@ -448,7 +463,7 @@ export default function PackDetailPage() {
             <button
               type="button"
               className={styles.installButton}
-              disabled={appCount === 0}
+              disabled={installableApps.length === 0}
               onClick={() => setInstallDrawerOpen(true)}
             >
               <FiDownload aria-hidden="true" />
@@ -538,7 +553,7 @@ export default function PackDetailPage() {
       </div>
 
       <InstallDrawer
-        apps={apps}
+        apps={installableApps}
         isOpen={installDrawerOpen}
         onClose={() => setInstallDrawerOpen(false)}
       />

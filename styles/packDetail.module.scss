@@ -220,6 +220,15 @@
   }
 }
 
+.appCardUnavailable {
+  opacity: 0.65;
+  cursor: default;
+
+  &:hover {
+    opacity: 0.65;
+  }
+}
+
 .appHeader {
   display: flex;
   align-items: center;
@@ -252,6 +261,13 @@
   min-height: 0;
   color: inherit;
   text-decoration: none;
+}
+
+.appCardBody {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .appMenuWrapper {
@@ -336,6 +352,37 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.appNameGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.unavailableBadge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 50px;
+  background-color: rgba(0, 0, 0, 0.08);
+  color: var(--textColor);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.appUnavailableNote {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--textColor);
+  opacity: 0.7;
+  flex: 1;
+  min-height: 0;
 }
 
 .appDesc {

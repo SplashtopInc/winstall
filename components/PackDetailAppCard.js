@@ -31,6 +31,7 @@ export default function PackDetailAppCard({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
+  const unavailable = Boolean(app.unavailable);
   const version = app.latestVersion || app.appVersion;
   const likeLabel = formatLikeCount(app.likeCount ?? app.likes);
 
@@ -70,23 +71,75 @@ export default function PackDetailAppCard({
     setMenuOpen((open) => !open);
   };
 
+  const headerContent = (
+    <>
+      <AppIcon
+        id={app._id}
+        name={app.name}
+        icon={app.icon}
+        iconUrl={app.iconUrl}
+        iconPng={app.iconPng}
+      />
+      <div className={styles.appNameGroup}>
+        <h3 className={styles.appName}>{app.name}</h3>
+        {unavailable && (
+          <span className={styles.unavailableBadge}>Unavailable</span>
+        )}
+      </div>
+    </>
+  );
+
+  const bodyContent = (
+    <>
+      {unavailable ? (
+        <p className={styles.appUnavailableNote}>
+          This app is no longer available in the catalog.
+        </p>
+      ) : (
+        app.desc && <p className={styles.appDesc}>{app.desc}</p>
+      )}
+
+      <ul className={styles.appMeta}>
+        {!unavailable && app.updatedAt && (
+          <li>
+            <FiClock aria-hidden="true" />
+            <span>Last updated {timeAgo(app.updatedAt)}</span>
+          </li>
+        )}
+        {version && (
+          <li>
+            <FiPackage aria-hidden="true" />
+            <span>v{version}</span>
+          </li>
+        )}
+        {!unavailable && likeLabel && (
+          <li>
+            <FiThumbsUp aria-hidden="true" />
+            <span>{likeLabel}</span>
+          </li>
+        )}
+      </ul>
+    </>
+  );
+
   return (
-    <div className={styles.appCard}>
+    <div
+      className={`${styles.appCard}${unavailable ? ` ${styles.appCardUnavailable}` : ""}`}
+    >
       <div className={styles.appHeader}>
-        <Link
-          href={`/apps/${app._id}`}
-          prefetch={false}
-          className={styles.appHeaderLink}
-        >
-          <AppIcon
-            id={app._id}
-            name={app.name}
-            icon={app.icon}
-            iconUrl={app.iconUrl}
-            iconPng={app.iconPng}
-          />
-          <h3 className={styles.appName}>{app.name}</h3>
-        </Link>
+        {unavailable ? (
+          <div className={styles.appHeaderLink} aria-disabled="true">
+            {headerContent}
+          </div>
+        ) : (
+          <Link
+            href={`/apps/${app._id}`}
+            prefetch={false}
+            className={styles.appHeaderLink}
+          >
+            {headerContent}
+          </Link>
+        )}
 
         {isOwner && (
           <div className={styles.appMenuWrapper} ref={menuRef}>
@@ -123,34 +176,17 @@ export default function PackDetailAppCard({
         )}
       </div>
 
-      <Link
-        href={`/apps/${app._id}`}
-        prefetch={false}
-        className={styles.appCardBodyLink}
-      >
-        {app.desc && <p className={styles.appDesc}>{app.desc}</p>}
-
-        <ul className={styles.appMeta}>
-          {app.updatedAt && (
-            <li>
-              <FiClock aria-hidden="true" />
-              <span>Last updated {timeAgo(app.updatedAt)}</span>
-            </li>
-          )}
-          {version && (
-            <li>
-              <FiPackage aria-hidden="true" />
-              <span>v{version}</span>
-            </li>
-          )}
-          {likeLabel && (
-            <li>
-              <FiThumbsUp aria-hidden="true" />
-              <span>{likeLabel}</span>
-            </li>
-          )}
-        </ul>
-      </Link>
+      {unavailable ? (
+        <div className={styles.appCardBody}>{bodyContent}</div>
+      ) : (
+        <Link
+          href={`/apps/${app._id}`}
+          prefetch={false}
+          className={styles.appCardBodyLink}
+        >
+          {bodyContent}
+        </Link>
+      )}
     </div>
   );
 }

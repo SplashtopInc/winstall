@@ -101,7 +101,21 @@ export default async function handler(req, res) {
       body: req.method !== "GET" && req.method !== "HEAD" ? JSON.stringify(req.body) : undefined,
     });
 
-    const data = await response.json();
+    const text = await response.text();
+    let data;
+
+    if (!text) {
+      data = response.ok
+        ? {}
+        : { error: response.statusText || "Request failed" };
+    } else {
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = response.ok ? { data: text } : { error: text };
+      }
+    }
+
     return res.status(response.status).json(data);
   } catch (error) {
     return res.status(500).json({ error: error.message });

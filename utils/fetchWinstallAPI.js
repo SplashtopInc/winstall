@@ -19,7 +19,7 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
   // Client-side always uses proxy, doesn't need apiBase
   if (!useProxy && !config.apiBase) {
     console.warn(`[fetchWinstallAPI] no API configured, skipping ${path}`);
-    return { response: null, error: null };
+    return { response: null, error: null, status: null };
   }
 
   const url = useProxy ? `/api/winstall${path}` : `${config.apiBase}${path}`;
@@ -35,7 +35,7 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
     delete additionalOptions["headers"];
   }
 
-  let response, error;
+  let response, error, status;
   const startedAt = Date.now();
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
@@ -61,11 +61,12 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
       signal: controller.signal,
     });
 
+    status = res.status;
+
     if (isDebug) {
       const elapsedMs = Date.now() - startedAt;
       console.log(`[fetchWinstallAPI] response ${res.status} ${res.statusText} ${url} (${elapsedMs}ms)`);
     }
-
 
     if (!res.ok) {
       let errorBody;
@@ -110,7 +111,7 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
     clearTimeout(timeoutId);
   }
 
-  return { response, error };
+  return { response, error, status };
 };
 
 export default fetchWinstallAPI;

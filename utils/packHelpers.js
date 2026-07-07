@@ -8,6 +8,22 @@ function getAppId(app) {
   return app?.appId || app?._id;
 }
 
+export function isAppUnavailable({ response, status, error } = {}) {
+  if (status === 404 || status === 410) {
+    return true;
+  }
+
+  if (response?.deleted === true || response?.status === "deleted") {
+    return true;
+  }
+
+  if (error && /could not find app|not found/i.test(String(error))) {
+    return true;
+  }
+
+  return false;
+}
+
 export function toAppSnapshot(app) {
   const appId = getAppId(app);
   if (!appId) return null;
@@ -56,7 +72,11 @@ export function mergeAppsWithEnrichedData(existingApps = [], apiApps = []) {
   return apiApps.map((apiApp) => {
     const existing = existingById.get(getAppId(apiApp));
     if (!existing) return apiApp;
-    return { ...existing, ...apiApp };
+    const merged = { ...existing, ...apiApp };
+    if (existing.unavailable) {
+      merged.unavailable = true;
+    }
+    return merged;
   });
 }
 
