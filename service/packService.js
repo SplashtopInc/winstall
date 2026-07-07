@@ -9,6 +9,10 @@ import {
   isModerationFailure,
   moderatePackFields,
 } from "../utils/contentModeration";
+import {
+  MAX_PUBLIC_PACKS_PER_USER,
+  PUBLIC_PACK_LIMIT_MESSAGE,
+} from "../utils/packLimits";
 
 const ACTIVE_PUBLIC_PACK_FILTER = { visibility: "public", status: "active" };
 const MAX_LIST_LIMIT = 1000;
@@ -88,6 +92,18 @@ function parseAppsInputOptional(raw) {
 
 function isValidVisibility(value) {
   return VISIBILITY.includes(value);
+}
+
+async function assertCanSetPackPublic(userId) {
+  const count = await Pack.countDocuments({
+    userId,
+    visibility: "public",
+    status: "active",
+  }).exec();
+
+  if (count >= MAX_PUBLIC_PACKS_PER_USER) {
+    throw new PackError(PUBLIC_PACK_LIMIT_MESSAGE, 400);
+  }
 }
 
 export function formatAppForResponse(app) {
@@ -230,6 +246,10 @@ export async function createPack(userId, { name, description, apps, visibility }
   const moderation = moderatePackFields({ name, description });
   if (isModerationFailure(moderation)) {
     return moderation;
+  }
+
+  if (visibility === "public") {
+    await assertCanSetPackPublic(userId);
   }
 
   const doc = await Pack.create({
@@ -375,6 +395,14 @@ export async function updatePack(
   }
 
   const pack = await findOwnedActivePack(packId, userId);
+
+  if (
+    visibility !== undefined &&
+    visibility === "public" &&
+    pack.visibility !== "public"
+  ) {
+    await assertCanSetPackPublic(userId);
+  }
 
   if (name !== undefined) {
     pack.name = name;

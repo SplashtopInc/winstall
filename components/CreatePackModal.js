@@ -2,7 +2,12 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 
-import { createPack, updatePack } from "../utils/fetchPackAPI";
+import { createPack, fetchMyPacks, updatePack } from "../utils/fetchPackAPI";
+import {
+  countPublicPacksInList,
+  MAX_PUBLIC_PACKS_PER_USER,
+  PUBLIC_PACK_LIMIT_MESSAGE,
+} from "../utils/packLimits";
 import styles from "../styles/createPackModal.module.scss";
 
 Modal.setAppElement("#__next");
@@ -39,12 +44,17 @@ export default function CreatePackModal({ isOpen, onClose, user, onCreated, pack
   } = useForm({ defaultValues });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [publicPackCount, setPublicPackCount] = useState(0);
   const isPublic = watch("isPublic");
   const title = watch("title");
   const description = watch("description");
   const isPublicRegister = register("isPublic");
+  const isAlreadyPublic = isEditMode && pack.visibility === "public";
+  const publicLimitReached =
+    publicPackCount >= MAX_PUBLIC_PACKS_PER_USER && !isAlreadyPublic;
+  const publicCheckboxDisabled = submitting || publicLimitReached;
 
-  const checkboxIcon = submitting
+  const checkboxIcon = submitting || publicLimitReached
     ? isPublic
       ? "/assets/cb_check_disable.svg"
       : "/assets/cb_uncheck_disable.svg"
@@ -63,6 +73,24 @@ export default function CreatePackModal({ isOpen, onClose, user, onCreated, pack
 
     setError("");
   }, [isOpen, pack, reset]);
+
+  useEffect(() => {
+    if (!isOpen || !user) {
+      setPublicPackCount(0);
+      return;
+    }
+
+    let cancelled = false;
+
+    fetchMyPacks().then(({ response }) => {
+      if (cancelled) return;
+      setPublicPackCount(countPublicPacksInList(response));
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, user]);
 
   const handleClose = () => {
     if (submitting) return;
@@ -174,7 +202,7 @@ export default function CreatePackModal({ isOpen, onClose, user, onCreated, pack
               <input
                 type="checkbox"
                 className={styles.checkboxInput}
-                disabled={submitting}
+                disabled={publicCheckboxDisabled}
                 {...isPublicRegister}
               />
               <img
@@ -189,7 +217,9 @@ export default function CreatePackModal({ isOpen, onClose, user, onCreated, pack
             <p>Public pack</p>
           </label>
           <em>
-          Appears in the public App Packs directory for anyone to discover.
+            {publicLimitReached
+              ? PUBLIC_PACK_LIMIT_MESSAGE
+              : "Appears in the public App Packs directory for anyone to discover."}
           </em>
         </div>
 
