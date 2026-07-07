@@ -8,9 +8,6 @@ import Recommendations from "../components/Recommendations";
 import Footer from "../components/Footer";
 import { shuffleArray } from "../utils/helpers";
 import popularAppsList from "../data/popularApps.json";
-import FeaturePromoter from "../components/FeaturePromoter";
-import Link from "next/link";
-import { FiPlus, FiPackage } from "react-icons/fi";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import Error from "../components/Error";
 import DonateCard from "../components/DonateCard";
@@ -113,15 +110,6 @@ function Home({ popular, appsTotal, recommended, error, buildTime, officialPacks
       <PopularApps apps={data.popular} />
 
       {/* <RecentApps apps={recents} /> */}
-
-      <FeaturePromoter art="/assets/packsPromo.svg" promoId="packs">
-            <h3>Introducing Packs</h3>
-            <h1>Curate and share the apps you use daily.</h1>
-            <div className="box2">
-                <Link href="/packs/create" className="button spacer accent" id="starWine"><FiPlus/> Create a pack</Link>
-                <Link href="/packs/" className="button"><FiPackage/> View packs</Link>
-            </div>
-      </FeaturePromoter>
 
       <Footer />
     </div>
