@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { FiPlus } from "react-icons/fi";
 import styles from "../styles/packSelectDropdown.module.scss";
 
 export default function PackSelectDropdown({
@@ -52,6 +53,7 @@ export default function PackSelectDropdown({
         disabled={disabled}
         role="menuitem"
       >
+        <FiPlus aria-hidden="true" className={styles.createIcon} />
         Create New Pack
       </button>
 

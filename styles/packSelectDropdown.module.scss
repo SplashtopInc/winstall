@@ -38,7 +38,7 @@
   background-color: var(--main-bg);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  padding: 8px 0;
+  padding: 0;
   z-index: 50;
   overflow: hidden;
 }
@@ -46,7 +46,7 @@
 .divider {
   height: 1px;
   background-color: rgba(0, 0, 0, 0.08);
-  margin: 4px 0;
+  margin: 0;
 }
 
 .list {
@@ -81,9 +81,29 @@
     }
 
     .createItem {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       padding: 14px 20px;
-      font-size: 16px;
-      font-weight: 700;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent);
+
+      &:hover:not(:disabled),
+      &:focus:not(:disabled) {
+        color: var(--accent);
+        background-color: color-mix(in srgb, var(--accent) 10%, var(--main-bg));
+      }
+
+      &:disabled {
+        color: var(--accent);
+      }
+    }
+
+    .createIcon {
+      flex-shrink: 0;
+      font-size: 18px;
+      stroke-width: 2.5px;
     }
 
     .packItem {
