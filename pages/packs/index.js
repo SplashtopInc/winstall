@@ -54,7 +54,7 @@ function CreatePackCard({ onClick }) {
 
 export default function PacksPage() {
   const router = useRouter();
-  const activeTab = router.query.tab === "mine" ? "mine" : "public";
+  const activeTab = router.query.tab === "public" ? "public" : "mine";
 
   const [publicPacks, setPublicPacks] = useState([]);
   const [publicPacksLoading, setPublicPacksLoading] = useState(false);
@@ -194,7 +194,7 @@ export default function PacksPage() {
   }, []);
 
   const setTab = (tab) => {
-    const query = tab === "mine" ? { tab: "mine" } : {};
+    const query = tab === "public" ? { tab: "public" } : {};
     router.push({ pathname: "/packs", query }, undefined, { shallow: true });
   };
 
@@ -330,21 +330,21 @@ export default function PacksPage() {
         <div className={styles.tabs}>
           <button
             type="button"
-            className={`${styles.tab} ${activeTab === "public" ? styles.tabActive : ""}`}
-            onClick={() => setTab("public")}
-          >
-            Public Packs
-          </button>
-          <button
-            type="button"
             className={`${styles.tab} ${activeTab === "mine" ? styles.tabActive : ""}`}
             onClick={() => setTab("mine")}
           >
             My Packs
           </button>
+          <button
+            type="button"
+            className={`${styles.tab} ${activeTab === "public" ? styles.tabActive : ""}`}
+            onClick={() => setTab("public")}
+          >
+            Public Packs
+          </button>
         </div>
 
-        {activeTab === "public" ? renderPublicPacks() : renderMyPacks()}
+        {activeTab === "mine" ? renderMyPacks() : renderPublicPacks()}
       </div>
 
       {user && (
