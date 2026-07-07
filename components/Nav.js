@@ -195,7 +195,11 @@ const NavUser = () => {
         onClick={handleAvatarClick}
         className={`${styles.justIcon} ${styles.userAvatar}`}
         role="button"
-        aria-label={session ? "User menu" : "Log in"}
+        aria-label={
+          session
+            ? session.user?.name || session.user?.email || "User menu"
+            : "Log in"
+        }
         aria-expanded={session ? menuOpen : undefined}
       >
         {session?.user?.image ? (
@@ -205,6 +209,11 @@ const NavUser = () => {
         )}
         <p className={styles.ddOnly}>{session ? "Account" : "Log in"}</p>
       </span>
+      {session && (
+        <span className={styles.avatarTooltip} role="tooltip">
+          {session.user?.name || session.user?.email || "User"}
+        </span>
+      )}
       {session && (
         <UserMenu
           variant="nav"

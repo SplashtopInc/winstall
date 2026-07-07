@@ -119,6 +119,46 @@
         position: relative;
         display: flex;
         align-self: center;
+
+        &:hover .avatarTooltip{
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    }
+
+    .avatarTooltip{
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        z-index: 1000;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: auto;
+        height: auto;
+        min-height: 32px;
+        margin-right: 0;
+        padding: 6px 12px;
+        border-radius: 8px;
+        background-color: var(--card-bg);
+        box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.2);
+        color: var(--textColor);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        pointer-events: none;
+        cursor: default;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-4px);
+        transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+
+        &:hover{
+            opacity: 1;
+        }
     }
 
     .userAvatar{
