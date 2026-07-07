@@ -15,7 +15,7 @@ function formatPackDate(isoDate) {
 }
 
 export default function PackCard({ pack, href }) {
-  const apps = (pack.apps || []).filter((app) => app.icon || app.iconUrl);
+  const apps = pack.apps || [];
   const visibleApps = apps.slice(0, MAX_VISIBLE_ICONS);
   const overflowCount = apps.length - visibleApps.length;
   const linkHref = href || `/packs/${pack._id}`;
