@@ -120,13 +120,13 @@ function SelectionBar({ router }) {
       if (updatedPack) {
         syncOwnPacksCacheEntry(updatedPack);
       }
-      setSelectedApps([]);
-      setExpanded(false);
-      setDropdownOpen(false);
       setToast({
         type: "success",
         message: `Added to ${packName}`,
       });
+      setSelectedApps([]);
+      setExpanded(false);
+      setDropdownOpen(false);
     },
     [setSelectedApps]
   );
@@ -161,8 +161,6 @@ function SelectionBar({ router }) {
       }
     }
   }, [setSelectedApps]);
-
-  if (selectedApps.length === 0) return <></>;
 
   const previewApps = selectedApps.slice(0, PREVIEW_ICON_LIMIT);
   const overflowCount =
@@ -220,6 +218,7 @@ function SelectionBar({ router }) {
 
   return (
     <>
+      {selectedApps.length > 0 && (
       <div className={barStyles.wrapper}>
         <div className={barStyles.barContainer} ref={barContainerRef}>
           <div
@@ -349,6 +348,7 @@ function SelectionBar({ router }) {
           </div>
         </div>
       </div>
+      )}
 
       {session?.user && (
         <CreatePackModal
