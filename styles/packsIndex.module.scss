@@ -348,6 +348,22 @@
 
 .searchSection {
   margin-bottom: 24px;
+
+  .publicSearchBox {
+    display: block;
+    width: 100%;
+    max-width: 540px;
+  }
+
+  .publicSearchInner {
+    width: 100%;
+  }
+
+  .publicSearchInput {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+  }
 }
 
 .publicControls {

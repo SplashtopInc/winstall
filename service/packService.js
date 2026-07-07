@@ -170,6 +170,19 @@ function parseSearchQuery(q) {
   return trimmed;
 }
 
+function escapeRegex(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function buildPublicSearchFilter(searchQuery) {
+  const regex = new RegExp(escapeRegex(searchQuery), "i");
+
+  return {
+    ...ACTIVE_PUBLIC_PACK_FILTER,
+    $or: [{ name: regex }, { description: regex }],
+  };
+}
+
 function parseListQuery({ offset, limit } = {}) {
   const parsedOffset = offset !== undefined ? Number(offset) : 0;
   const parsedLimit = limit !== undefined ? Number(limit) : 100;
@@ -245,7 +258,7 @@ export async function listPublicPacks({
   const sortMode = sort === "popular" ? "popular" : "recent";
   const searchQuery = parseSearchQuery(q);
   const filter = searchQuery
-    ? { ...ACTIVE_PUBLIC_PACK_FILTER, $text: { $search: searchQuery } }
+    ? buildPublicSearchFilter(searchQuery)
     : ACTIVE_PUBLIC_PACK_FILTER;
 
   const total = await Pack.countDocuments(filter);
@@ -264,17 +277,12 @@ export async function listPublicPacks({
       ? { "stats.likeCount": -1, createdAt: -1 }
       : { createdAt: -1 };
 
-  let query = Pack.find(filter);
-
-  if (searchQuery) {
-    query = query
-      .select({ score: { $meta: "textScore" } })
-      .sort({ score: { $meta: "textScore" }, createdAt: -1 });
-  } else {
-    query = query.sort(sortSpec);
-  }
-
-  const data = await query.skip(safeOffset).limit(safeLimit).lean().exec();
+  const data = await Pack.find(filter)
+    .sort(sortSpec)
+    .skip(safeOffset)
+    .limit(safeLimit)
+    .lean()
+    .exec();
 
   return {
     total,
