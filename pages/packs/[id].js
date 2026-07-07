@@ -8,6 +8,8 @@ import {
   FiEdit,
   FiTrash2,
   FiShare2,
+  FiGlobe,
+  FiLock,
 } from "react-icons/fi";
 
 import PageWrapper from "../../components/PageWrapper";
@@ -511,6 +513,14 @@ export default function PackDetailPage() {
             <h1 className={styles.title}>{pack.name}</h1>
             <p className={styles.description}>{pack.description}</p>
             <div className={styles.badges}>
+              <span className={styles.badge}>
+                {pack.visibility === "public" ? (
+                  <FiGlobe aria-hidden="true" />
+                ) : (
+                  <FiLock aria-hidden="true" />
+                )}
+                {pack.visibility === "public" ? "Public" : "Private"}
+              </span>
               <span className={styles.badge}>
                 {appCount} {appCount === 1 ? "app" : "apps"}
               </span>
