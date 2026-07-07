@@ -193,6 +193,139 @@
   }
 }
 
+.shareCard {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background-color: var(--main-bg);
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 110;
+  min-width: 260px;
+}
+
+.shareButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 10px 8px;
+  background-color: transparent;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s all ease-in-out;
+  color: var(--textColor);
+  outline: 0;
+  font-family: inherit;
+  font-size: 16px;
+
+  &:hover:not(:disabled) {
+    background-color: var(--card-bg);
+    transform: translateY(-2px);
+    opacity: 0.75;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  span {
+    text-align: left;
+    white-space: nowrap;
+  }
+}
+
+.shareDivider {
+  height: 1px;
+  background-color: #e5e5e5;
+  margin: 4px 0;
+  opacity: 0.8;
+}
+
+.shareButtonFailed span {
+  color: var(--error);
+}
+
+.sharePublicNotice {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shareCheckboxLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--textColor);
+}
+
+.shareCheckbox {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 17px;
+  height: 17px;
+  margin-top: 2px;
+}
+
+.shareCheckboxInput {
+  position: absolute;
+  inset: 0;
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.shareCheckboxIcon {
+  display: block;
+  width: 17px;
+  height: 17px;
+  pointer-events: none;
+}
+
+.shareCheckboxLabel:has(.shareCheckboxInput:disabled) {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.sharePublicHint {
+  margin: 0;
+  padding-left: 27px;
+  font-size: 12px;
+  line-height: 1.4;
+  font-style: normal;
+  opacity: 0.7;
+}
+
+.sharePublicError {
+  margin: 0;
+  padding-left: 27px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--error);
+}
+
 .appGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -536,7 +669,8 @@
   }
 
   .packMenuDropdown,
-  .appMenuDropdown {
+  .appMenuDropdown,
+  .shareCard {
     background-color: var(--card-bg);
   }
 
@@ -574,6 +708,12 @@
 @media (max-width: 590px) {
   .page {
     padding-top: 16px;
+  }
+
+  .shareCard {
+    right: auto;
+    left: 0;
+    min-width: 280px;
   }
 
   .appGrid {

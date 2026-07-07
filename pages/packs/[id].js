@@ -22,6 +22,7 @@ import AppSettingsDrawer from "../../components/AppSettingsDrawer";
 import AddAppsDialog from "../../components/AddAppsDialog";
 import useDefaultInstallFilters from "../../hooks/useDefaultInstallFilters";
 import Toast from "../../components/Toast";
+import PackShareCard from "../../components/PackShareCard";
 import useRequireAuth from "../../hooks/useRequireAuth";
 import { copyPack, deletePack, fetchPackById, updatePack } from "../../utils/fetchPackAPI";
 import {
@@ -138,6 +139,7 @@ export default function PackDetailPage() {
   const [copying, setCopying] = useState(false);
   const [toast, setToast] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showShareCard, setShowShareCard] = useState(false);
   const [editingPack, setEditingPack] = useState(null);
   const [deletingPack, setDeletingPack] = useState(false);
   const [deletingAppId, setDeletingAppId] = useState(null);
@@ -146,6 +148,7 @@ export default function PackDetailPage() {
   const [addAppsDialogOpen, setAddAppsDialogOpen] = useState(false);
   const defaultFilters = useDefaultInstallFilters(settingsDrawerOpen);
   const menuRef = useRef(null);
+  const shareCardRef = useRef(null);
   const persistAppsTimerRef = useRef(null);
 
   const isOwner = Boolean(user && pack && user.id === pack.userId);
@@ -154,17 +157,18 @@ export default function PackDetailPage() {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuOpen(false);
+        setShowShareCard(false);
       }
     };
 
-    if (menuOpen) {
+    if (menuOpen || showShareCard) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [menuOpen]);
+  }, [menuOpen, showShareCard]);
 
   const loadPack = useCallback(async (packId) => {
     setLoading(true);
@@ -270,6 +274,22 @@ export default function PackDetailPage() {
       setToast({ type: "success", message: "Pack deleted." });
       router.push("/packs?tab=mine");
     }
+  };
+
+  const handleShareClick = () => {
+    setMenuOpen(false);
+    setShowShareCard((open) => !open);
+  };
+
+  const handlePackMadePublic = (updatedPack) => {
+    const apiBase = getApiBase();
+    const transformed = transformPackIcons(updatedPack, apiBase);
+    setPack((current) => ({
+      ...current,
+      ...transformed,
+    }));
+    syncOwnPacksCacheEntry(transformed);
+    setToast({ type: "success", message: "Pack is now public." });
   };
 
   const handlePackUpdated = (updatedPack) => {
@@ -582,11 +602,19 @@ export default function PackDetailPage() {
                       <button
                         type="button"
                         className={styles.packMenuItem}
-                        disabled
+                        onClick={handleShareClick}
                       >
                         <FiShare2 aria-hidden="true" /> Share
                       </button>
                     </div>
+                  )}
+                  {showShareCard && (
+                    <PackShareCard
+                      pack={pack}
+                      shareCardRef={shareCardRef}
+                      user={user}
+                      onMadePublic={handlePackMadePublic}
+                    />
                   )}
                 </div>
               </>
