@@ -120,10 +120,7 @@ const azureClientId =
   process.env.AZURE_AD_CLIENT_ID || process.env.MICROSOFT_CLIENT_ID;
 const azureClientSecret =
   process.env.AZURE_AD_CLIENT_SECRET || process.env.MICROSOFT_CLIENT_SECRET;
-const azureTenantId =
-  process.env.AZURE_AD_TENANT_ID ||
-  process.env.MICROSOFT_TENANT_ID ||
-  "common";
+const azureTenantId ="common";
 
 if (azureClientId && azureClientSecret) {
   providers.push(
