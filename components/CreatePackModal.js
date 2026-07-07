@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Modal from "react-modal";
 
 import { createPack, fetchMyPacks, updatePack } from "../utils/fetchPackAPI";
+import { syncOwnPacksCacheEntry } from "../utils/packHelpers";
 import {
   countPublicPacksInList,
   MAX_PUBLIC_PACKS_PER_USER,
@@ -121,7 +122,7 @@ export default function CreatePackModal({ isOpen, onClose, user, onCreated, pack
     }
 
     if (response) {
-      localStorage.removeItem("ownPacks");
+      syncOwnPacksCacheEntry(response);
       reset(defaultValues);
       setError("");
       onCreated(response);

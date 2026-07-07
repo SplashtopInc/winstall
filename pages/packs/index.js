@@ -13,7 +13,10 @@ import PublicPacksSearch from "../../components/PublicPacksSearch";
 import PublicPacksList from "../../components/PublicPacksList";
 import Error from "../../components/Error";
 import { fetchMyPacks, fetchPublicPacks } from "../../utils/fetchPackAPI";
-import { OWN_PACKS_UPDATED_EVENT } from "../../utils/packHelpers";
+import {
+  OWN_PACKS_UPDATED_EVENT,
+  PUBLIC_PACKS_UPDATED_EVENT,
+} from "../../utils/packHelpers";
 
 import styles from "../../styles/packsIndex.module.scss";
 
@@ -252,10 +255,19 @@ export default function PacksPage() {
       );
     };
 
+    const handlePublicPacksUpdated = () => {
+      setPublicLoadedKey(null);
+    };
+
     window.addEventListener(OWN_PACKS_UPDATED_EVENT, handleOwnPacksUpdated);
+    window.addEventListener(PUBLIC_PACKS_UPDATED_EVENT, handlePublicPacksUpdated);
 
     return () => {
       window.removeEventListener(OWN_PACKS_UPDATED_EVENT, handleOwnPacksUpdated);
+      window.removeEventListener(
+        PUBLIC_PACKS_UPDATED_EVENT,
+        handlePublicPacksUpdated
+      );
     };
   }, []);
 

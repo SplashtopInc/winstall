@@ -158,9 +158,18 @@ export function invalidateOwnPacksCache() {
 }
 
 export const OWN_PACKS_UPDATED_EVENT = "winstall:own-packs-updated";
+export const PUBLIC_PACKS_UPDATED_EVENT = "winstall:public-packs-updated";
+
+export function notifyPublicPacksChanged() {
+  if (typeof window === "undefined") return;
+
+  window.dispatchEvent(new CustomEvent(PUBLIC_PACKS_UPDATED_EVENT));
+}
 
 export function syncOwnPacksCacheEntry(updatedPack) {
   if (typeof window === "undefined" || !updatedPack?._id) return;
+
+  let wasPublic = false;
 
   try {
     const cached = localStorage.getItem("ownPacks");
@@ -168,6 +177,9 @@ export function syncOwnPacksCacheEntry(updatedPack) {
       const packs = JSON.parse(cached);
       if (Array.isArray(packs)) {
         const index = packs.findIndex((pack) => pack._id === updatedPack._id);
+        if (index >= 0) {
+          wasPublic = packs[index].visibility === "public";
+        }
         const next =
           index >= 0
             ? packs.map((pack, i) =>
@@ -179,6 +191,11 @@ export function syncOwnPacksCacheEntry(updatedPack) {
     }
   } catch {
     localStorage.removeItem("ownPacks");
+  }
+
+  const isPublic = updatedPack.visibility === "public";
+  if (wasPublic || isPublic) {
+    notifyPublicPacksChanged();
   }
 
   window.dispatchEvent(
