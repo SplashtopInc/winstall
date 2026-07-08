@@ -11,6 +11,8 @@ import {
 } from "../utils/contentModeration";
 import {
   MAX_PUBLIC_PACKS_PER_USER,
+  PACK_DESCRIPTION_MAX_LENGTH,
+  PACK_NAME_MAX_LENGTH,
   PUBLIC_PACK_LIMIT_MESSAGE,
 } from "../utils/packLimits";
 
@@ -92,6 +94,40 @@ function parseAppsInputOptional(raw) {
 
 function isValidVisibility(value) {
   return VISIBILITY.includes(value);
+}
+
+function assertPackName(name) {
+  if (typeof name !== "string") {
+    throw new PackError("Invalid field types.", 400);
+  }
+
+  if (!name.trim()) {
+    throw new PackError("You are missing a required attribute.", 400);
+  }
+
+  if (name.length > PACK_NAME_MAX_LENGTH) {
+    throw new PackError(
+      `Pack name must be ${PACK_NAME_MAX_LENGTH} characters or fewer.`,
+      400
+    );
+  }
+}
+
+function assertPackDescription(description) {
+  if (typeof description !== "string") {
+    throw new PackError("Invalid field types.", 400);
+  }
+
+  if (!description.trim()) {
+    throw new PackError("You are missing a required attribute.", 400);
+  }
+
+  if (description.length > PACK_DESCRIPTION_MAX_LENGTH) {
+    throw new PackError(
+      `Description must be ${PACK_DESCRIPTION_MAX_LENGTH} characters or fewer.`,
+      400
+    );
+  }
 }
 
 async function assertCanSetPackPublic(userId) {
@@ -228,9 +264,12 @@ export function canEditPack(pack, userId) {
 }
 
 export async function createPack(userId, { name, description, apps, visibility }) {
-  if (!name || !description || visibility === undefined) {
+  if (name === undefined || description === undefined || visibility === undefined) {
     throw new PackError("You are missing a required attribute.", 400);
   }
+
+  assertPackName(name);
+  assertPackDescription(description);
 
   if (!isValidVisibility(visibility)) {
     throw new PackError("Invalid visibility.", 400);
@@ -360,12 +399,12 @@ export async function updatePack(
     throw new PackError("No fields to update.", 400);
   }
 
-  if (name !== undefined && !name) {
-    throw new PackError("You are missing a required attribute.", 400);
+  if (name !== undefined) {
+    assertPackName(name);
   }
 
-  if (description !== undefined && !description) {
-    throw new PackError("You are missing a required attribute.", 400);
+  if (description !== undefined) {
+    assertPackDescription(description);
   }
 
   if (visibility !== undefined && !isValidVisibility(visibility)) {

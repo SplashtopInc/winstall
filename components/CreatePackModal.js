@@ -7,14 +7,13 @@ import { syncOwnPacksCacheEntry } from "../utils/packHelpers";
 import {
   countPublicPacksInList,
   MAX_PUBLIC_PACKS_PER_USER,
+  PACK_DESCRIPTION_MAX_LENGTH,
+  PACK_NAME_MAX_LENGTH,
   PUBLIC_PACK_LIMIT_MESSAGE,
 } from "../utils/packLimits";
 import styles from "../styles/createPackModal.module.scss";
 
 Modal.setAppElement("#__next");
-
-const TITLE_MAX_LENGTH = 50;
-const DESCRIPTION_MAX_LENGTH = 300;
 
 const defaultValues = {
   title: "",
@@ -146,19 +145,19 @@ export default function CreatePackModal({ isOpen, onClose, user, onCreated, pack
           <span className={styles.fieldHeader}>
             Pack title
             <span className={styles.charCount} aria-live="polite">
-              {(title || "").length}/{TITLE_MAX_LENGTH}
+              {(title || "").length}/{PACK_NAME_MAX_LENGTH}
             </span>
           </span>
           <input
             type="text"
             placeholder="Give your pack a name"
             autoComplete="off"
-            maxLength={TITLE_MAX_LENGTH}
+            maxLength={PACK_NAME_MAX_LENGTH}
             {...register("title", {
               required: "Please enter a name for your pack.",
               maxLength: {
-                value: TITLE_MAX_LENGTH,
-                message: `Pack name must be ${TITLE_MAX_LENGTH} characters or fewer.`,
+                value: PACK_NAME_MAX_LENGTH,
+                message: `Pack name must be ${PACK_NAME_MAX_LENGTH} characters or fewer.`,
               },
               validate: (value) =>
                 value.replace(/\s/g, "").length > 0 ||
@@ -174,18 +173,18 @@ export default function CreatePackModal({ isOpen, onClose, user, onCreated, pack
           <span className={styles.fieldHeader}>
             Pack description
             <span className={styles.charCount} aria-live="polite">
-              {(description || "").length}/{DESCRIPTION_MAX_LENGTH}
+              {(description || "").length}/{PACK_DESCRIPTION_MAX_LENGTH}
             </span>
           </span>
           <textarea
             placeholder="Give your pack a short description"
             autoComplete="off"
-            maxLength={DESCRIPTION_MAX_LENGTH}
+            maxLength={PACK_DESCRIPTION_MAX_LENGTH}
             {...register("description", {
               required: "Please enter a description for your pack.",
               maxLength: {
-                value: DESCRIPTION_MAX_LENGTH,
-                message: `Description must be ${DESCRIPTION_MAX_LENGTH} characters or fewer.`,
+                value: PACK_DESCRIPTION_MAX_LENGTH,
+                message: `Description must be ${PACK_DESCRIPTION_MAX_LENGTH} characters or fewer.`,
               },
               validate: (value) =>
                 value.replace(/\s/g, "").length > 0 ||
