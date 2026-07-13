@@ -276,7 +276,7 @@
         align-self: flex-start;
         flex-shrink: 0;
         padding: 0px !important;
-        opacity: 0;
+        opacity: 1;
 
         svg{
             padding-right: 0px !important;
@@ -294,10 +294,6 @@
         &:hover{
             opacity: 0.75 !important;
         }
-    }
-
-    &:hover .settingsIcon {
-        opacity: 1;
     }
 }
 
