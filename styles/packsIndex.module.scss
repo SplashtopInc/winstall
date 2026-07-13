@@ -252,6 +252,7 @@
   font-weight: 700;
   color: var(--textColor);
   transition: 0.3s all ease-in-out;
+  position: relative;
 
   &:hover,
   &:focus {

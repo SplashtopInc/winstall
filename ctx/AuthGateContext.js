@@ -2,11 +2,12 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useRef,
   useState,
 } from "react";
 import { useRouter } from "next/router";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 import LoginPanel from "../components/LoginPanel";
 import Toast from "../components/Toast";
@@ -14,6 +15,7 @@ import {
   AUTH_ERROR_MESSAGE,
   setAuthGateIntent,
 } from "../utils/authGate";
+import { setLastLoginProvider } from "../utils/lastLoginProvider";
 
 const AuthGateContext = createContext(null);
 
@@ -29,9 +31,16 @@ export function useAuthGate() {
 
 export function AuthGateProvider({ children }) {
   const router = useRouter();
+  const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [toast, setToast] = useState(null);
   const loginOptionsRef = useRef(null);
+
+  useEffect(() => {
+    if (session?.user?.provider) {
+      setLastLoginProvider(session.user.provider);
+    }
+  }, [session?.user?.provider]);
 
   const authError =
     isOpen && router.query.error ? AUTH_ERROR_MESSAGE : null;
@@ -65,6 +74,7 @@ export function AuthGateProvider({ children }) {
         setAuthGateIntent(resumeKey);
       }
 
+      setLastLoginProvider(provider);
       signIn(provider, { callbackUrl });
     },
     [router.asPath]

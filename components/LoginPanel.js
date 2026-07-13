@@ -1,31 +1,57 @@
+import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub, FaMicrosoft } from "react-icons/fa";
 import { FiX } from "react-icons/fi";
 import Modal from "react-modal";
 import styles from "../styles/loginPanel.module.scss";
+import {
+  getLastLoginProvider,
+  setLastLoginProvider,
+} from "../utils/lastLoginProvider";
 
 Modal.setAppElement("#__next");
 
-const PROVIDERS = [
+export const LOGIN_PROVIDERS = [
   { id: "google", label: "Continue with Google", icon: FcGoogle },
   { id: "github", label: "Continue with GitHub", icon: FaGithub },
   { id: "azure-ad", label: "Continue with Microsoft", icon: FaMicrosoft },
 ];
 
-export function LoginButtons({ onLogin, className }) {
+export function LoginButtons({ onLogin, className, cardClassName }) {
+  const [lastProvider, setLastProvider] = useState(null);
+
+  useEffect(() => {
+    setLastProvider(getLastLoginProvider());
+  }, []);
+
+  const handleLogin = (providerId) => {
+    setLastLoginProvider(providerId);
+    setLastProvider(providerId);
+    onLogin(providerId);
+  };
+
+  const resolvedCardClassName = cardClassName ?? styles.loginCard;
+
   return (
     <div className={className ?? styles.loginButtons}>
-      {PROVIDERS.map(({ id, label, icon: Icon }) => (
-        <button
-          key={id}
-          type="button"
-          className={styles.loginCard}
-          onClick={() => onLogin(id)}
-        >
-          <Icon />
-          {label}
-        </button>
-      ))}
+      {LOGIN_PROVIDERS.map(({ id, label, icon: Icon }) => {
+        const isLastUsed = id === lastProvider;
+
+        return (
+          <button
+            key={id}
+            type="button"
+            className={resolvedCardClassName}
+            onClick={() => handleLogin(id)}
+          >
+            <Icon />
+            {label}
+            {isLastUsed && (
+              <span className={styles.lastUsedBadge}>Last used</span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }

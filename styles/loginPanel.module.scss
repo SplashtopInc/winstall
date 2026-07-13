@@ -94,6 +94,7 @@
   font-weight: 600;
   color: var(--textColor);
   transition: 0.2s all ease-in-out;
+  position: relative;
 
   &:hover,
   &:focus {
@@ -105,6 +106,22 @@
     height: 20px;
     flex-shrink: 0;
   }
+}
+
+.lastUsedBadge {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(0, 120, 212, 0.12);
+  color: #0078d4;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 @media (max-width: 480px) {

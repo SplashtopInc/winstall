@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
-import { FcGoogle } from "react-icons/fc";
-import { FaGithub, FaMicrosoft } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
 
 import PageWrapper from "../../components/PageWrapper";
@@ -12,7 +10,9 @@ import CreatePackModal from "../../components/CreatePackModal";
 import PublicPacksSearch from "../../components/PublicPacksSearch";
 import PublicPacksList from "../../components/PublicPacksList";
 import Error from "../../components/Error";
+import { LoginButtons } from "../../components/LoginPanel";
 import { fetchMyPacks, fetchPublicPacks } from "../../utils/fetchPackAPI";
+import { setLastLoginProvider } from "../../utils/lastLoginProvider";
 import {
   OWN_PACKS_UPDATED_EVENT,
   PUBLIC_PACKS_UPDATED_EVENT,
@@ -302,6 +302,7 @@ export default function PacksPage() {
   }, [activeTab]);
 
   const handleLogin = (provider) => {
+    setLastLoginProvider(provider);
     signIn(provider, { callbackUrl: "/packs?tab=mine" });
   };
 
@@ -352,32 +353,11 @@ export default function PacksPage() {
               Authentication failed. Please try again.
             </p>
           )}
-          <div className={styles.loginButtons}>
-            <button
-              type="button"
-              className={styles.loginCard}
-              onClick={() => handleLogin("google")}
-            >
-              <FcGoogle />
-              Continue with Google
-            </button>
-            <button
-              type="button"
-              className={styles.loginCard}
-              onClick={() => handleLogin("github")}
-            >
-              <FaGithub />
-              Continue with GitHub
-            </button>
-            <button
-              type="button"
-              className={styles.loginCard}
-              onClick={() => handleLogin("azure-ad")}
-            >
-              <FaMicrosoft />
-              Continue with Microsoft
-            </button>
-          </div>
+          <LoginButtons
+            onLogin={handleLogin}
+            className={styles.loginButtons}
+            cardClassName={styles.loginCard}
+          />
         </section>
       );
     }

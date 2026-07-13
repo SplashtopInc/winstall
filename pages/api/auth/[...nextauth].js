@@ -27,6 +27,19 @@ if (proxyUrl) {
   httpOptions.agent = tunnelingAgent;
 }
 
+function applyUserToToken(token, user) {
+  if (!user) return token;
+
+  if (user.name) token.name = user.name;
+  if (user.email) token.email = user.email;
+  if (user.image) token.picture = user.image;
+  if (user.email) {
+    token.username = user.email.split("@")[0];
+  }
+
+  return token;
+}
+
 function applyProfileToToken(token, account, profile) {
   if (!profile) return token;
 
@@ -197,19 +210,23 @@ export const authOptions = {
         console.log("[NextAuth JWT Debug End]\n");
       }
 
-      if (user?.publicId) {
-        token.id = user.publicId;
+      if (user) {
+        if (user.publicId) {
+          token.id = user.publicId;
+        }
+
+        if (user.id) {
+          token.dbUserId = user.id;
+        }
+
+        applyUserToToken(token, user);
+      } else {
+        applyProfileToToken(token, account, profile);
       }
 
       if (account?.provider) {
         token.provider = account.provider;
       }
-
-      if (user?.id) {
-        token.dbUserId = user.id;
-      }
-
-      applyProfileToToken(token, account, profile);
 
       if (account) {
         token.accessToken = account.access_token;
