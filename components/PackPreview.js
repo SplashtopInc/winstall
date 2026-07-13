@@ -3,7 +3,7 @@ import AppIcon from "./AppIcon";
 import { useState, useEffect} from "react";
 import { FiEdit, FiPackage, FiTrash2 } from "react-icons/fi";
 import Link from "next/link";
-import fetchWinstallAPI from "../utils/fetchWinstallAPI";
+import { deletePack as deletePackAPI } from "../utils/fetchPackAPI";
 
 export default function PackPreview({ pack, hideMeta, showDelete=false, auth, deleted}){
     const [appIcons, setIcons] = useState([]);
@@ -23,15 +23,9 @@ export default function PackPreview({ pack, hideMeta, showDelete=false, auth, de
     const deletePack = async () => {
         if(!auth) return;
 
-        const { response } = await fetchWinstallAPI(`/packs/${pack._id}`, {
-            method: "DELETE",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ creator: pack.creator })
-        });
+        const { response, error } = await deletePackAPI(pack._id);
 
-        if(response && response.msg){
+        if(!error && response){
             if(deleted) deleted(pack._id);
             localStorage.removeItem("ownPacks");
         }

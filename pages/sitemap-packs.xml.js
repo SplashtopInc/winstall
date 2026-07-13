@@ -1,5 +1,3 @@
-import fetchWinstallAPI from "../utils/fetchWinstallAPI";
-
 function generatePacksSiteMap(urlPrefix, packs, users) {
   return `<?xml version="1.0" encoding="UTF-8"?>
    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -34,31 +32,33 @@ export async function getServerSideProps({ req, res }) {
   const host = req.headers['host'];
   const urlPrefix = protocol + "://" + host;
 
-  const limit = 500;
-  let allPacks = [];
-  let offset = 0;
-  let total = 0;
+  try {
+    // Query packs from local MongoDB
+    const { connectMongoose } = require('../lib/mongoose');
+    const mongoose = await connectMongoose();
 
-  do {
-    let { response: packsData, error: err } = await fetchWinstallAPI(`/packs?limit=${limit}&offset=${offset}`);
-    if (err || !packsData?.data) {
-      console.error('[sitemap-packs] Failed to fetch packs:', err || 'Invalid response');
-      res.statusCode = 500;
-      res.end('Error generating sitemap');
-      return { props: {} };
-    }
+    // Import Pack model to register it
+    require('../dbModel/Pack');
+    const Pack = mongoose.models.Pack;
+    const allPacks = await Pack.find({
+      visibility: 'public',
+      status: 'active'
+    })
+      .sort({ createdAt: -1 })
+      .select('_id userId updatedAt')
+      .lean();
 
-    allPacks = allPacks.concat(packsData.data);
-    total = packsData.total;
-    offset += limit;
-  } while (offset < total);
+    const users = Array.from(new Set(allPacks.map(pack => pack.userId)));
+    const sitemap = generatePacksSiteMap(urlPrefix, allPacks, users);
 
-  const users = Array.from(new Set(allPacks.map(pack => pack.creator)));
-  const sitemap = generatePacksSiteMap(urlPrefix, allPacks, users);
-
-  res.setHeader('Content-Type', 'text/xml');
-  res.write(sitemap);
-  res.end();
+    res.setHeader('Content-Type', 'text/xml');
+    res.write(sitemap);
+    res.end();
+  } catch (err) {
+    console.error('[sitemap-packs] Failed to generate sitemap:', err.message);
+    res.statusCode = 500;
+    res.end('Error generating sitemap');
+  }
 
   return {
     props: {},

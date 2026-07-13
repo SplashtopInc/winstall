@@ -14,7 +14,7 @@ import DonateCard from "../components/DonateCard";
 import { useState, useEffect } from "react";
 import { getRevalidateTime } from "../utils/revalidateCache";
 
-function Home({ popular, appsTotal, recommended, error, buildTime, officialPacksCreator }) {
+function Home({ popular, appsTotal, recommended, error, buildTime }) {
   const [data, setData] = useState({ popular: popular || [], appsTotal: appsTotal || 0, recommended: recommended || [] });
   const [isLoading, setIsLoading] = useState(buildTime || (!popular && !error));
   const [clientError, setClientError] = useState(null);
@@ -23,26 +23,14 @@ function Home({ popular, appsTotal, recommended, error, buildTime, officialPacks
     if (buildTime || (!popular && !error)) {
       setIsLoading(true);
 
-      Promise.all([
-        fetchWinstallAPI(`/apps`).then(({ response }) => response),
-        fetchWinstallAPI(`/packs/users/${officialPacksCreator}`).then(({ response }) => response)
-      ])
-        .then(([appsResponse, packsResponse]) => {
-          const total = typeof appsResponse?.total === "number" ? appsResponse.total : 0;
-
-          const normalizePayload = (payload) => {
-            if (!payload) return [];
-            if (Array.isArray(payload.data)) return payload.data;
-            if (Array.isArray(payload)) return payload;
-            if (Array.isArray(payload.apps)) return payload.apps;
-            if (Array.isArray(payload.items)) return payload.items;
-            return [];
-          };
+      fetchWinstallAPI(`/apps`)
+        .then(({ response }) => {
+          const total = typeof response?.total === "number" ? response.total : 0;
 
           setData({
             popular: popular || [],
             appsTotal: total,
-            recommended: normalizePayload(packsResponse)
+            recommended: recommended || []
           });
           setIsLoading(false);
         })
@@ -51,7 +39,7 @@ function Home({ popular, appsTotal, recommended, error, buildTime, officialPacks
           setIsLoading(false);
         });
     }
-  }, [buildTime, popular, error, officialPacksCreator]);
+  }, [buildTime, popular, error, recommended]);
 
   if (isLoading) {
     return (
@@ -109,7 +97,9 @@ function Home({ popular, appsTotal, recommended, error, buildTime, officialPacks
 
       <PopularApps apps={data.popular} />
 
-      {/* <RecentApps apps={recents} /> */}
+      {data.recommended && data.recommended.length > 0 && (
+        <Recommendations packs={data.recommended} />
+      )}
 
       <Footer />
     </div>
@@ -130,8 +120,7 @@ export async function getStaticProps(){
         popular: shuffleArray(Object.values(popularAppsList)).slice(0, 16),
         appsTotal: 0,
         recommended: [],
-        buildTime: true,
-        officialPacksCreator
+        buildTime: true
       },
       revalidate: 1
     };
@@ -140,24 +129,44 @@ export async function getStaticProps(){
   let popular = shuffleArray(Object.values(popularAppsList));
 
   let { response: apps, error: appsError } = await fetchWinstallAPI(`/apps`);
-  let { response: recommended, error: recommendedError } = await fetchWinstallAPI(`/packs/users/${officialPacksCreator}`);
 
-  const normalizeAppsPayload = (payload) => {
-    if (!payload) return [];
-    if (Array.isArray(payload.data)) return payload.data;
-    if (Array.isArray(payload)) return payload;
-    if (Array.isArray(payload.apps)) return payload.apps;
-    if (Array.isArray(payload.items)) return payload.items;
-    return [];
-  };
+  // Query recommended packs from local MongoDB
+  let recommendedList = [];
+  try {
+    const { connectMongoose } = require('../lib/mongoose');
+    const mongoose = await connectMongoose();
+
+    // Import Pack model to register it
+    require('../dbModel/Pack');
+    const Pack = mongoose.models.Pack;
+
+    if (!Pack) {
+      console.warn('[getStaticProps /] Pack model not found, skipping recommended packs');
+    } else {
+      const packs = await Pack.find({
+        userId: officialPacksCreator,
+        visibility: 'public',
+        status: 'active'
+      })
+        .sort({ createdAt: -1 })
+        .lean()
+        .exec();
+
+      recommendedList = packs;
+      console.log(`[getStaticProps /] Loaded ${recommendedList.length} recommended packs from MongoDB`);
+    }
+  } catch (err) {
+    // MongoDB might not be available during build time, which is OK
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.warn('[getStaticProps /] MongoDB not available for recommended packs:', errMsg);
+  }
 
   const appsTotal = typeof apps?.total === "number" ? apps.total : 0;
-  const recommendedList = normalizeAppsPayload(recommended);
   const hasData = appsTotal > 0;
 
   // Runtime API error: use exponential backoff to avoid hammering failing API
-  if (!hasData || appsError || recommendedError) {
-    const errorMsg = appsError || recommendedError || 'Failed to load data from API server';
+  if (!hasData || appsError) {
+    const errorMsg = appsError || 'Failed to load data from API server';
     const revalidate = getRevalidateTime('index', false);
 
     console.warn(`[getStaticProps /] Runtime: no data, will retry in ${revalidate}s`);
@@ -167,8 +176,7 @@ export async function getStaticProps(){
         popular: popular.slice(0, 16),
         appsTotal: 0,
         recommended: [],
-        error: errorMsg,
-        officialPacksCreator
+        error: errorMsg
       },
       revalidate
     };
@@ -192,15 +200,36 @@ export async function getStaticProps(){
 
   popular = popularResults.filter(Boolean);
 
+  // Enrich pack apps with API data
   const getPackData = recommendedList.map(async (pack) => {
     return new Promise(async(resolve) => {
-      const appsList = pack.apps;
+      const appsList = pack.apps || [];
 
       const getIndividualApps = appsList.map(async (app, index) => {
         return new Promise(async (resolve) => {
-          let { response: appData, error } = await fetchWinstallAPI(`/apps/${app._id}`);
+          const appId = app.appId || app._id;
+          if (!appId) {
+            appsList[index] = null;
+            resolve();
+            return;
+          }
 
-          if(error) appData = null;
+          let { response: appData, error } = await fetchWinstallAPI(`/apps/${appId}`);
+
+          if(error) {
+            appData = null;
+          } else {
+            // Merge pack app data with API data
+            appData = {
+              ...appData,
+              _id: appId,
+              name: app.appName || appData.name,
+              icon: app.icon || appData.icon,
+              iconUrl: app.iconUrl,
+              iconPng: app.iconPng,
+              publisher: app.publisher || appData.publisher
+            };
+          }
 
           appsList[index] = appData;
           resolve();
@@ -209,6 +238,9 @@ export async function getStaticProps(){
 
       await Promise.all(getIndividualApps).then(() => {
         pack.apps = appsList.filter(app => app != null);
+        // Add compatibility fields for Recommendations component
+        pack.title = pack.name;
+        pack.desc = pack.description;
         resolve();
       })
     })
@@ -223,8 +255,7 @@ export async function getStaticProps(){
     props: {
       popular,
       appsTotal,
-      recommended: recommendedList,
-      officialPacksCreator
+      recommended: recommendedList
     },
     revalidate
   };
