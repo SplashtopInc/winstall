@@ -166,6 +166,8 @@ const NavUser = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const isLoggedIn = Boolean(session);
+  const avatarImage = session?.user?.image;
 
   const handleAvatarClick = () => {
     if (!session) {
@@ -199,28 +201,34 @@ const NavUser = () => {
     <div className={styles.userMenuAnchor}>
       <span
         onClick={handleAvatarClick}
-        className={`${styles.justIcon} ${styles.userAvatar}`}
+        className={`${styles.justIcon} ${
+          isLoggedIn ? styles.userAvatar : styles.userAvatarLoggedOut
+        }`}
         role="button"
         aria-label={
-          session
+          isLoggedIn
             ? session.user?.name || session.user?.email || "User menu"
             : "Log in"
         }
-        aria-expanded={session ? menuOpen : undefined}
+        aria-expanded={isLoggedIn ? menuOpen : undefined}
       >
-        {session?.user?.image ? (
-          <img src={session.user.image} alt="" referrerPolicy="no-referrer" />
-        ) : (
+        {!isLoggedIn ? (
           <FiUser />
+        ) : avatarImage ? (
+          <img src={avatarImage} alt="" referrerPolicy="no-referrer" />
+        ) : (
+          <span className={styles.defaultAvatar} aria-hidden="true">
+            {getUserInitials(session.user)}
+          </span>
         )}
-        <p className={styles.ddOnly}>{session ? "Account" : "Log in"}</p>
+        <p className={styles.ddOnly}>{isLoggedIn ? "Account" : "Log in"}</p>
       </span>
-      {session && (
+      {isLoggedIn && (
         <span className={styles.avatarTooltip} role="tooltip">
           {session.user?.name || session.user?.email || "User"}
         </span>
       )}
-      {session && (
+      {isLoggedIn && (
         <UserMenu
           variant="nav"
           open={menuOpen}
@@ -239,5 +247,21 @@ const NavUser = () => {
     </div>
   );
 };
+
+function getUserInitials(user) {
+  const name = user?.name?.trim();
+  if (name) {
+    const parts = name.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  }
+
+  const email = user?.email?.trim();
+  if (email) return email[0].toUpperCase();
+
+  return "?";
+}
 
 export default Nav;
