@@ -311,7 +311,7 @@ export default function PacksPage() {
       [{ ...newPack, apps: newPack.apps || [] }],
       getApiBase()
     );
-    setMyPacks((current) => [...current, pack]);
+    setMyPacks((current) => [pack, ...current]);
     setShowCreateModal(false);
   };
 
