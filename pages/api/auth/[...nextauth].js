@@ -2,13 +2,13 @@
 import "../../../utils/proxyConfig";
 
 import NextAuth from "next-auth";
-import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import TwitterProvider from "next-auth/providers/twitter";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 import AzureADProvider from "next-auth/providers/azure-ad";
 import tunnel from "tunnel";
 import clientPromise from "../../../lib/mongodb";
+import { createAuthAdapter } from "../../../lib/authAdapter";
 
 const proxyUrl = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
 
@@ -25,32 +25,6 @@ if (proxyUrl) {
   });
 
   httpOptions.agent = tunnelingAgent;
-}
-
-/** Provider-specific id — used as pack creator id across the app */
-function getOAuthUserId(account, profile) {
-  if (!account) return null;
-
-  if (account.provider === "twitter") {
-    const id = profile?.data?.id ?? profile?.id;
-    if (id != null) return String(id);
-  }
-
-  if (account.provider === "google" || account.provider === "azure-ad") {
-    const id = profile?.sub ?? profile?.id;
-    if (id != null) return String(id);
-  }
-
-  if (account.provider === "github") {
-    const id = profile?.id ?? profile?.sub;
-    if (id != null) return String(id);
-  }
-
-  if (account.providerAccountId != null) {
-    return String(account.providerAccountId);
-  }
-
-  return null;
 }
 
 function applyProfileToToken(token, account, profile) {
@@ -85,6 +59,10 @@ function applyProfileToToken(token, account, profile) {
 
 const providers = [];
 
+const emailAccountLinking = {
+  allowDangerousEmailAccountLinking: true,
+};
+
 if (process.env.TWITTER_CLIENT_ID && process.env.TWITTER_CLIENT_SECRET) {
   providers.push(
     TwitterProvider({
@@ -92,6 +70,7 @@ if (process.env.TWITTER_CLIENT_ID && process.env.TWITTER_CLIENT_SECRET) {
       clientSecret: process.env.TWITTER_CLIENT_SECRET,
       version: "2.0",
       httpOptions,
+      ...emailAccountLinking,
     })
   );
 }
@@ -102,6 +81,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       httpOptions,
+      ...emailAccountLinking,
     })
   );
 }
@@ -112,6 +92,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       httpOptions,
+      ...emailAccountLinking,
     })
   );
 }
@@ -129,6 +110,7 @@ if (azureClientId && azureClientSecret) {
       clientSecret: azureClientSecret,
       httpOptions,
       tenantId: azureTenantId,
+      ...emailAccountLinking,
     })
   );
 }
@@ -141,7 +123,7 @@ if (providers.length === 0) {
 
 // Export the auth options for use in getServerSession
 export const authOptions = {
-  adapter: MongoDBAdapter(clientPromise),
+  adapter: createAuthAdapter(clientPromise),
 
   providers,
 
@@ -215,9 +197,8 @@ export const authOptions = {
         console.log("[NextAuth JWT Debug End]\n");
       }
 
-      const oauthUserId = getOAuthUserId(account, profile);
-      if (oauthUserId) {
-        token.id = oauthUserId;
+      if (user?.publicId) {
+        token.id = user.publicId;
       }
 
       if (account?.provider) {
@@ -243,10 +224,11 @@ export const authOptions = {
     signIn: async ({ user, account, profile, isNewUser }) => {
       if (process.env.NODE_ENV === "development") {
         console.log("[NextAuth] signIn", {
+          publicId: user?.publicId,
           dbUserId: user?.id,
-          oauthUserId: getOAuthUserId(account, profile),
-          isNewUser,
           provider: account?.provider,
+          providerAccountId: account?.providerAccountId,
+          isNewUser,
         });
       }
     },
