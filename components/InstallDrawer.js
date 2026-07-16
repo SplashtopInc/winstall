@@ -2,7 +2,14 @@ import ExportApps from "./AppExport/ExportApps";
 import drawerStyles from "../styles/appSettingsDrawer.module.scss";
 import styles from "../styles/installDrawer.module.scss";
 
-export default function InstallDrawer({ apps, isOpen, onClose }) {
+export default function InstallDrawer({
+  apps,
+  isOpen,
+  onClose,
+  initialFilters,
+  onDefaultFiltersChange,
+  persistHint,
+}) {
   return (
     <>
       <div
@@ -34,7 +41,12 @@ export default function InstallDrawer({ apps, isOpen, onClose }) {
         </div>
 
         <div className={drawerStyles.content}>
-          <ExportApps apps={apps || []} />
+          <ExportApps
+            apps={apps || []}
+            initialFilters={initialFilters}
+            onDefaultFiltersChange={onDefaultFiltersChange}
+            persistHint={persistHint}
+          />
         </div>
       </div>
     </>

@@ -7,7 +7,7 @@ import ListPackages from "../components/ListPackages";
 import SingleApp from "../components/SingleApp";
 import SelectedContext from "../ctx/SelectedContext";
 import AppSettingsDrawer from "../components/AppSettingsDrawer";
-import useDefaultInstallFilters from "../hooks/useDefaultInstallFilters";
+import { DEFAULT_INSTALL_FILTERS } from "../utils/defaultInstallOptions";
 
 import Footer from "../components/Footer";
 
@@ -20,12 +20,30 @@ import {
 } from "../utils/ensureAppBasics";
 
 function Generate() {
-    const { selectedApps, setSelectedApps } = useContext(SelectedContext);
+    const {
+      selectedApps,
+      setSelectedApps,
+      defaultInstallOptions,
+      setDefaultInstallOptions,
+    } = useContext(SelectedContext);
     const [apps, setApps] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [selectedAppForSettings, setSelectedAppForSettings] = useState(null);
-    const [defaultFilters, setDefaultFilters] = useState(null);
-    const storedDefaultFilters = useDefaultInstallFilters(drawerOpen);
+
+    // Seed session defaults from the code constant whenever generate opens
+    // without an existing selection-scoped override.
+    useEffect(() => {
+      if (selectedApps.length === 0) return;
+      if (defaultInstallOptions == null) {
+        setDefaultInstallOptions({ ...DEFAULT_INSTALL_FILTERS });
+      }
+    }, [
+      selectedApps.length,
+      defaultInstallOptions,
+      setDefaultInstallOptions,
+    ]);
+
+    const filters = defaultInstallOptions ?? DEFAULT_INSTALL_FILTERS;
 
     useEffect(() => {
       let cancelled = false;
@@ -139,7 +157,11 @@ function Generate() {
             <h1>Your apps are ready to be installed.</h1>
             <h3>Make sure you have Windows Package Manager installed :)</h3>
 
-            <ExportApps apps={apps} onDefaultFiltersChange={setDefaultFilters} />
+            <ExportApps
+              apps={apps}
+              initialFilters={filters}
+              onDefaultFiltersChange={setDefaultInstallOptions}
+            />
           </div>
           <div className="art">
             <img src="/assets/dl.svg" draggable={false} alt="download icon" />
@@ -167,7 +189,7 @@ function Generate() {
           isOpen={drawerOpen}
           onClose={handleCloseDrawer}
           onConfigChange={handleConfigChange}
-          defaultFilters={defaultFilters || storedDefaultFilters}
+          defaultFilters={filters}
         />
 
         <Footer />

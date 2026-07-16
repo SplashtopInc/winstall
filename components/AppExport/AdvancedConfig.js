@@ -1,46 +1,77 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FiChevronDown, FiInfo } from "react-icons/fi";
 import styles from "../../styles/exportApps.module.scss";
 import { CheckboxConfig, RadioConfig } from "./InputComponents";
 import { DEFAULT_INSTALL_FILTERS } from "../../utils/defaultInstallOptions";
 
-const AdvancedConfig = ({ refreshConfig, activeTab, onFiltersChange }) => {
-    const [ expanded, setExpnaded ] = useState(false);
-    const [ config, setConfig ] = useState(DEFAULT_INSTALL_FILTERS);
+function resolveFilters(filters) {
+    return {
+        ...DEFAULT_INSTALL_FILTERS,
+        ...(filters || {}),
+    };
+}
 
-    const updateConfig = async (key, val) => {
-        const newConfig = { ...config, [key]: val};
+function isCustomFilters(filters) {
+    return (
+        filters["--scope"] !== DEFAULT_INSTALL_FILTERS["--scope"] ||
+        filters["--interactive"] !== DEFAULT_INSTALL_FILTERS["--interactive"] ||
+        filters["--force"] !== DEFAULT_INSTALL_FILTERS["--force"]
+    );
+}
+
+function filtersKey(filters) {
+    const resolved = resolveFilters(filters);
+    return [
+        resolved["--scope"] || "",
+        resolved["--interactive"] ? "1" : "0",
+        resolved["--silent"] ? "1" : "0",
+        resolved["--force"] ? "1" : "0",
+    ].join("|");
+}
+
+const AdvancedConfig = ({
+    refreshConfig,
+    activeTab,
+    onFiltersChange,
+    initialFilters,
+    persistHint = "These options apply to your current selection and clear when you unselect all apps.",
+}) => {
+    const [expanded, setExpnaded] = useState(() =>
+        isCustomFilters(resolveFilters(initialFilters))
+    );
+    const [config, setConfig] = useState(() => resolveFilters(initialFilters));
+    const lastSyncedKey = useRef(filtersKey(initialFilters));
+
+    const updateConfig = (key, val) => {
+        const newConfig = { ...config, [key]: val };
 
         if (key === "--interactive") {
             newConfig["--silent"] = !val;
         }
 
         setConfig(newConfig);
+        lastSyncedKey.current = filtersKey(newConfig);
         refreshConfig(newConfig);
         onFiltersChange && onFiltersChange(newConfig);
-
-        await localStorage.setItem("winstall-default-options", JSON.stringify(newConfig));
     }
 
     useEffect(() => {
-        const loadExistingConfig = async () => {
-            let previousConfig = await localStorage.getItem("winstall-default-options");
-
-            if (previousConfig) {
-                previousConfig = { ...DEFAULT_INSTALL_FILTERS, ...JSON.parse(previousConfig) };
-                setExpnaded(true);
-            } else {
-                previousConfig = { ...DEFAULT_INSTALL_FILTERS };
-            }
-
-            refreshConfig(previousConfig);
-            onFiltersChange && onFiltersChange(previousConfig);
-            setConfig(previousConfig);
+        const nextKey = filtersKey(initialFilters);
+        if (nextKey === lastSyncedKey.current && activeTab !== ".json") {
+            return;
         }
 
-        loadExistingConfig();
+        const nextConfig = resolveFilters(initialFilters);
+        lastSyncedKey.current = nextKey;
+        setConfig(nextConfig);
+        refreshConfig(nextConfig);
 
-    }, [ activeTab ]);
+        if (isCustomFilters(nextConfig)) {
+            setExpnaded(true);
+        }
+        // Intentionally sync from parent props / tab changes only.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeTab, initialFilters]);
 
     if (activeTab === ".json") {
         return null;
@@ -55,7 +86,7 @@ const AdvancedConfig = ({ refreshConfig, activeTab, onFiltersChange }) => {
 
             { expanded && (
                 <div>
-                    <p className={styles.center}><FiInfo/> All of the following options are persisted locally in your browser.</p>
+                    <p className={styles.center}><FiInfo/> {persistHint}</p>
 
                     <RadioConfig
                         id="--scope"

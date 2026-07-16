@@ -2,17 +2,36 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import styles from "../../styles/exportApps.module.scss";
 import generateWingetImport from "../../utils/generateWingetImport";
 import getEffectiveConfig from "../../utils/getEffectiveConfig";
+import { DEFAULT_INSTALL_FILTERS } from "../../utils/defaultInstallOptions";
 import GenericExport from "./GenericExport";
 import InstallerExport from "./InstallerExport";
 import AdvancedConfig from "./AdvancedConfig";
 
-const ExportApps = ({ apps, title, subtitle, onDefaultFiltersChange }) => {
+const ExportApps = ({
+    apps,
+    title,
+    subtitle,
+    initialFilters,
+    onDefaultFiltersChange,
+    persistHint,
+}) => {
     const [ batScript, setBatScript ] = useState("");
     const [ psScript, setPsScript ] = useState("");
     const [ wingetScript, setWingetScript ] = useState("");
-    const [ filters, setFilters ] = useState({});
+    const [ filters, setFilters ] = useState(() => ({
+        ...DEFAULT_INSTALL_FILTERS,
+        ...(initialFilters || {}),
+    }));
     const [ wingetImportCommand, setWingetImportCommand ] = useState("");
     const [ active, setActive ] = useState(".installer");
+
+    const resolvedInitialFilters = useMemo(
+        () => ({
+            ...DEFAULT_INSTALL_FILTERS,
+            ...(initialFilters || {}),
+        }),
+        [initialFilters]
+    );
 
     const tabs = useMemo(() => {
         return [
@@ -112,7 +131,6 @@ const changeTab = async ( tabKey ) => {
 
 const refreshFilters = ( newConfig ) => {
     setFilters(newConfig);
-    onDefaultFiltersChange && onDefaultFiltersChange(newConfig);
 }
 
 return (
@@ -128,11 +146,17 @@ return (
 
         <ul className={styles.tabHeader}>
             { tabs.map((tab, index) => {
-                return <li key={index} className={ tab.key === active ? styles.active : ''} onClick={() => changeTab(tab.key)}>{tab.title}</li>
+                return <li key={index} className={ tab.key === active ? styles.active : ''} onClick={() => changeTab(tab.key)}>{tab.title}</li>;
             }) }
         </ul>
 
-        <AdvancedConfig refreshConfig={refreshFilters} activeTab={active} onFiltersChange={onDefaultFiltersChange}/>
+        <AdvancedConfig
+            refreshConfig={refreshFilters}
+            activeTab={active}
+            onFiltersChange={onDefaultFiltersChange}
+            initialFilters={resolvedInitialFilters}
+            persistHint={persistHint}
+        />
 
         { tabs.map((tab, index) => {
             return <section key={index} className={ tab.key === active ? styles.displaySection : styles.hideSection }>{ tab.element }</section>

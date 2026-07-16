@@ -21,7 +21,20 @@ function winstall({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter();
 
   const [selectedApps, setSelectedApps] = useState([]);
-  const selectedAppValue = { selectedApps, setSelectedApps };
+  const [defaultInstallOptions, setDefaultInstallOptions] = useState(null);
+
+  useEffect(() => {
+    if (selectedApps.length === 0) {
+      setDefaultInstallOptions(null);
+    }
+  }, [selectedApps.length]);
+
+  const selectedAppValue = {
+    selectedApps,
+    setSelectedApps,
+    defaultInstallOptions,
+    setDefaultInstallOptions,
+  };
 
   const [popular, setPopular] = useState([]);
   const popularApps = { popular, setPopular };

@@ -167,15 +167,50 @@ export function formatAppForResponse(app) {
   return formatted;
 }
 
+function parseDefaultInstallOptionsOptional(raw) {
+  if (raw === undefined) {
+    return undefined;
+  }
+
+  let value = raw;
+  if (typeof value === "string") {
+    try {
+      value = JSON.parse(value);
+    } catch {
+      throw new Error("Invalid defaultInstallOptions.");
+    }
+  }
+
+  if (value === null) {
+    return {};
+  }
+
+  if (typeof value !== "object" || Array.isArray(value)) {
+    throw new Error("Invalid defaultInstallOptions.");
+  }
+
+  return normalizeInstallOptions(value);
+}
+
 export function formatPackForResponse(pack) {
   if (!pack) {
     return pack;
   }
 
-  return {
+  const formatted = {
     ...pack,
     apps: (pack.apps || []).map(formatAppForResponse).filter(Boolean),
   };
+
+  if (hasInstallOptions(pack.defaultInstallOptions)) {
+    formatted.defaultInstallOptions = normalizeInstallOptions(
+      pack.defaultInstallOptions
+    );
+  } else {
+    delete formatted.defaultInstallOptions;
+  }
+
+  return formatted;
 }
 
 export function formatPacksForResponse(packs) {
@@ -263,7 +298,10 @@ export function canEditPack(pack, userId) {
   return pack.status === "active" && userId === pack.userId;
 }
 
-export async function createPack(userId, { name, description, apps, visibility }) {
+export async function createPack(
+  userId,
+  { name, description, apps, visibility, defaultInstallOptions }
+) {
   if (name === undefined || description === undefined || visibility === undefined) {
     throw new PackError("You are missing a required attribute.", 400);
   }
@@ -276,8 +314,12 @@ export async function createPack(userId, { name, description, apps, visibility }
   }
 
   let parsedApps = [];
+  let parsedDefaultInstallOptions;
   try {
     parsedApps = parseAppsInputOptional(apps) ?? [];
+    parsedDefaultInstallOptions = parseDefaultInstallOptionsOptional(
+      defaultInstallOptions
+    );
   } catch (err) {
     throw new PackError(err.message, 400);
   }
@@ -291,14 +333,23 @@ export async function createPack(userId, { name, description, apps, visibility }
     await assertCanSetPackPublic(userId);
   }
 
-  const doc = await Pack.create({
+  const createPayload = {
     userId,
     name,
     description,
     apps: parsedApps,
     visibility,
     status: "active",
-  });
+  };
+
+  if (
+    parsedDefaultInstallOptions !== undefined &&
+    hasInstallOptions(parsedDefaultInstallOptions)
+  ) {
+    createPayload.defaultInstallOptions = parsedDefaultInstallOptions;
+  }
+
+  const doc = await Pack.create(createPayload);
 
   return doc.toObject();
 }
@@ -388,13 +439,14 @@ export async function listPublicPacksByUser(userId) {
 export async function updatePack(
   packId,
   userId,
-  { name, description, apps, visibility }
+  { name, description, apps, visibility, defaultInstallOptions }
 ) {
   if (
     name === undefined &&
     description === undefined &&
     apps === undefined &&
-    visibility === undefined
+    visibility === undefined &&
+    defaultInstallOptions === undefined
   ) {
     throw new PackError("No fields to update.", 400);
   }
@@ -412,8 +464,12 @@ export async function updatePack(
   }
 
   let parsedApps;
+  let parsedDefaultInstallOptions;
   try {
     parsedApps = parseAppsInputOptional(apps);
+    parsedDefaultInstallOptions = parseDefaultInstallOptionsOptional(
+      defaultInstallOptions
+    );
   } catch (err) {
     throw new PackError(err.message, 400);
   }
@@ -459,6 +515,15 @@ export async function updatePack(
     pack.visibility = visibility;
   }
 
+  if (parsedDefaultInstallOptions !== undefined) {
+    if (hasInstallOptions(parsedDefaultInstallOptions)) {
+      pack.set("defaultInstallOptions", parsedDefaultInstallOptions);
+    } else {
+      pack.set("defaultInstallOptions", undefined);
+    }
+    pack.markModified("defaultInstallOptions");
+  }
+
   const result = await pack.save();
   return result.toObject();
 }
@@ -487,14 +552,22 @@ export async function copyPack(sourcePackId, userId) {
     throw new PackError("Pack not found.", 404);
   }
 
-  const doc = await Pack.create({
+  const createPayload = {
     userId,
     name: source.name,
     description: source.description,
     apps: source.apps || [],
     visibility: "private",
     status: "active",
-  });
+  };
+
+  if (hasInstallOptions(source.defaultInstallOptions)) {
+    createPayload.defaultInstallOptions = normalizeInstallOptions(
+      source.defaultInstallOptions
+    );
+  }
+
+  const doc = await Pack.create(createPayload);
 
   return doc.toObject();
 }

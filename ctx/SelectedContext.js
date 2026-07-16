@@ -1,8 +1,10 @@
 import React from "react";
 
 const SelectedContext = React.createContext({
-  selected: [],
-  setSelected: () => {},
+  selectedApps: [],
+  setSelectedApps: () => {},
+  defaultInstallOptions: null,
+  setDefaultInstallOptions: () => {},
 });
 
 export default SelectedContext;

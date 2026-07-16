@@ -1,3 +1,9 @@
+import {
+  drawerConfigToInstallOptions,
+  hasInstallOptions,
+  installOptionsToDrawerConfig,
+} from "./installOptions";
+
 export const DEFAULT_INSTALL_FILTERS = {
   "--scope": "",
   "--interactive": false,
@@ -5,19 +11,26 @@ export const DEFAULT_INSTALL_FILTERS = {
   "--force": false,
 };
 
-export async function loadDefaultInstallFilters() {
-  if (typeof window === "undefined") {
+/** Convert stored (dash-free) install options into UI default filters. */
+export function toDefaultInstallFilters(installOptions) {
+  if (!hasInstallOptions(installOptions)) {
     return { ...DEFAULT_INSTALL_FILTERS };
   }
 
-  try {
-    const stored = await localStorage.getItem("winstall-default-options");
-    if (stored) {
-      return { ...DEFAULT_INSTALL_FILTERS, ...JSON.parse(stored) };
-    }
-  } catch {
-    // ignore invalid localStorage data
-  }
+  const drawer = installOptionsToDrawerConfig(installOptions);
 
-  return { ...DEFAULT_INSTALL_FILTERS };
+  return {
+    "--scope": drawer["--scope"] ?? "",
+    "--interactive": drawer["--interactive"] ?? false,
+    "--silent": drawer["--silent"] ?? true,
+    "--force": drawer["--force"] ?? false,
+  };
+}
+
+/** Convert UI default filters into stored (dash-free) install options. */
+export function fromDefaultInstallFilters(filters) {
+  return drawerConfigToInstallOptions({
+    ...DEFAULT_INSTALL_FILTERS,
+    ...(filters || {}),
+  });
 }

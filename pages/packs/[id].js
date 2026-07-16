@@ -20,7 +20,6 @@ import InstallDrawer from "../../components/InstallDrawer";
 import CreatePackModal from "../../components/CreatePackModal";
 import AppSettingsDrawer from "../../components/AppSettingsDrawer";
 import AddAppsDialog from "../../components/AddAppsDialog";
-import useDefaultInstallFilters from "../../hooks/useDefaultInstallFilters";
 import Toast from "../../components/Toast";
 import PackShareCard from "../../components/PackShareCard";
 import useRequireAuth from "../../hooks/useRequireAuth";
@@ -35,6 +34,12 @@ import {
 } from "../../utils/packHelpers";
 import fetchWinstallAPI from "../../utils/fetchWinstallAPI";
 import { compareVersion } from "../../utils/helpers";
+import {
+  DEFAULT_INSTALL_FILTERS,
+  fromDefaultInstallFilters,
+  toDefaultInstallFilters,
+} from "../../utils/defaultInstallOptions";
+import { hasInstallOptions } from "../../utils/installOptions";
 
 import styles from "../../styles/packDetail.module.scss";
 
@@ -146,10 +151,11 @@ export default function PackDetailPage() {
   const [settingsDrawerOpen, setSettingsDrawerOpen] = useState(false);
   const [selectedAppForSettings, setSelectedAppForSettings] = useState(null);
   const [addAppsDialogOpen, setAddAppsDialogOpen] = useState(false);
-  const defaultFilters = useDefaultInstallFilters(settingsDrawerOpen);
+  const [defaultFilters, setDefaultFilters] = useState(DEFAULT_INSTALL_FILTERS);
   const menuRef = useRef(null);
   const shareCardRef = useRef(null);
   const persistAppsTimerRef = useRef(null);
+  const persistDefaultsTimerRef = useRef(null);
 
   const isOwner = Boolean(user && pack && user.id === pack.userId);
 
@@ -170,6 +176,17 @@ export default function PackDetailPage() {
     };
   }, [menuOpen, showShareCard]);
 
+  useEffect(() => {
+    return () => {
+      if (persistAppsTimerRef.current) {
+        clearTimeout(persistAppsTimerRef.current);
+      }
+      if (persistDefaultsTimerRef.current) {
+        clearTimeout(persistDefaultsTimerRef.current);
+      }
+    };
+  }, []);
+
   const loadPack = useCallback(async (packId) => {
     setLoading(true);
     setError(null);
@@ -180,6 +197,7 @@ export default function PackDetailPage() {
       setError(fetchError);
       setPack(null);
       setApps([]);
+      setDefaultFilters(DEFAULT_INSTALL_FILTERS);
       setLoading(false);
       return;
     }
@@ -188,6 +206,7 @@ export default function PackDetailPage() {
     const transformed = transformPackIcons(response, apiBase);
     setPack(transformed);
     setApps(transformed.apps || []);
+    setDefaultFilters(toDefaultInstallFilters(transformed.defaultInstallOptions));
     setLoading(false);
 
     const enriched = await enrichApps(transformed.apps || []);
@@ -334,6 +353,60 @@ export default function PackDetailPage() {
       syncOwnPacksCacheEntry(transformed);
     }
   }, [pack?._id]);
+
+  const persistPackDefaultOptions = useCallback(
+    async (filters) => {
+      if (!pack?._id || !isOwner) return;
+
+      const storedOptions = fromDefaultInstallFilters(filters);
+      const { response, error: persistError } = await updatePack(pack._id, {
+        defaultInstallOptions: storedOptions,
+      });
+
+      if (persistError) {
+        setToast({ type: "error", message: persistError });
+        return;
+      }
+
+      if (response) {
+        const apiBase = getApiBase();
+        const transformed = transformPackIcons(response, apiBase);
+        // Keep optimistic UI filters — don't reset from the response payload.
+        setPack((current) => ({
+          ...current,
+          ...transformed,
+          apps: mergeAppsWithEnrichedData(current?.apps, transformed.apps),
+          defaultInstallOptions: hasInstallOptions(storedOptions)
+            ? storedOptions
+            : undefined,
+        }));
+        syncOwnPacksCacheEntry({
+          ...transformed,
+          defaultInstallOptions: hasInstallOptions(storedOptions)
+            ? storedOptions
+            : undefined,
+        });
+      }
+    },
+    [pack?._id, isOwner]
+  );
+
+  const handleDefaultFiltersChange = useCallback(
+    (filters) => {
+      setDefaultFilters(filters);
+
+      if (!isOwner) return;
+
+      if (persistDefaultsTimerRef.current) {
+        clearTimeout(persistDefaultsTimerRef.current);
+      }
+
+      persistDefaultsTimerRef.current = setTimeout(() => {
+        persistPackDefaultOptions(filters);
+      }, 500);
+    },
+    [isOwner, persistPackDefaultOptions]
+  );
 
   const handleAppSettings = (app) => {
     const appFromPack = apps.find((item) => item._id === app._id) || app;
@@ -656,6 +729,13 @@ export default function PackDetailPage() {
         apps={installableApps}
         isOpen={installDrawerOpen}
         onClose={() => setInstallDrawerOpen(false)}
+        initialFilters={defaultFilters}
+        onDefaultFiltersChange={handleDefaultFiltersChange}
+        persistHint={
+          isOwner
+            ? "These options are saved with this pack."
+            : "These options apply while exporting this pack."
+        }
       />
 
       {user && (

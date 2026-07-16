@@ -4,6 +4,16 @@ import { nanoid } from "nanoid";
 export const VISIBILITY = ["public", "unlisted", "private"];
 export const STATUS = ["active", "archived"];
 
+const installOptionsShape = {
+  scope: String,
+  interactive: Boolean,
+  silent: Boolean,
+  force: Boolean,
+  override: String,
+  log: String,
+  location: String,
+};
+
 const PackSchema = new mongoose.Schema(
   {
     _id: {
@@ -32,6 +42,11 @@ const PackSchema = new mongoose.Schema(
       enum: STATUS,
       default: "active",
     },
+    defaultInstallOptions: {
+      type: { ...installOptionsShape },
+      default: undefined,
+      _id: false,
+    },
     apps: [
       {
         _id: false,
@@ -50,15 +65,7 @@ const PackSchema = new mongoose.Schema(
         icon: String,
         publisher: String,
         installOptions: {
-          type: {
-            scope: String,
-            interactive: Boolean,
-            silent: Boolean,
-            force: Boolean,
-            override: String,
-            log: String,
-            location: String,
-          },
+          type: { ...installOptionsShape },
           default: undefined,
           _id: false,
         },
@@ -81,4 +88,9 @@ PackSchema.index({ visibility: 1, status: 1, "stats.likeCount": -1 });
 PackSchema.index({ "apps.appId": 1, visibility: 1, status: 1 });
 PackSchema.index({ name: "text", description: "text" });
 
-export default mongoose.models.Pack ?? mongoose.model("Pack", PackSchema);
+// Next.js / HMR can keep a stale mongoose model without new paths.
+if (mongoose.models.Pack) {
+  delete mongoose.models.Pack;
+}
+
+export default mongoose.model("Pack", PackSchema);
