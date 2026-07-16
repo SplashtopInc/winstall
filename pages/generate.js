@@ -14,9 +14,13 @@ import Footer from "../components/Footer";
 import { FiHome } from "react-icons/fi";
 import MetaTags from "../components/MetaTags";
 import ExportApps from "../components/AppExport/ExportApps";
+import {
+  ensureAppsBasics,
+  isAppBasicsIncomplete,
+} from "../utils/ensureAppBasics";
 
 function Generate() {
-    const { selectedApps } = useContext(SelectedContext);
+    const { selectedApps, setSelectedApps } = useContext(SelectedContext);
     const [apps, setApps] = useState([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [selectedAppForSettings, setSelectedAppForSettings] = useState(null);
@@ -24,20 +28,43 @@ function Generate() {
     const storedDefaultFilters = useDefaultInstallFilters(drawerOpen);
 
     useEffect(() => {
-      // Keep local per-app options while syncing with selected apps from context.
-      setApps((prevApps) => {
-        return selectedApps.map((app) => {
-          const existingApp = prevApps.find((a) => a._id === app._id);
+      let cancelled = false;
 
-          if (!existingApp) return app;
+      const syncApps = async () => {
+        const needsEnrich = selectedApps.some(isAppBasicsIncomplete);
+        const nextSelected = needsEnrich
+          ? await ensureAppsBasics(selectedApps)
+          : selectedApps;
 
-          return {
-            ...app,
-            installOptions: existingApp.installOptions,
-          };
+        if (cancelled) return;
+
+        if (needsEnrich) {
+          const changed = nextSelected.some((app, i) => app !== selectedApps[i]);
+          if (changed) {
+            setSelectedApps(nextSelected);
+          }
+        }
+
+        setApps((prevApps) => {
+          return nextSelected.map((app) => {
+            const existingApp = prevApps.find((a) => a._id === app._id);
+
+            if (!existingApp) return app;
+
+            return {
+              ...app,
+              installOptions: existingApp.installOptions,
+            };
+          });
         });
-      });
-    }, [selectedApps]);
+      };
+
+      syncApps();
+
+      return () => {
+        cancelled = true;
+      };
+    }, [selectedApps, setSelectedApps]);
 
     const handleSettingsClick = (app) => {
       const appFromState = apps.find((a) => a._id === app._id) || app;

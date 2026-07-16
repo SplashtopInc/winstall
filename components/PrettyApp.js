@@ -3,6 +3,7 @@ import styles from "../styles/prettyApp.module.scss";
 import SelectedContext from "../ctx/SelectedContext";
 import Link from "next/link";
 import { FiCheck } from "react-icons/fi";
+import { ensureAppBasics, isAppBasicsIncomplete } from "../utils/ensureAppBasics";
 
 let PrettyApp = ({ app }) => {
   const [selected, setSelected] = useState(false);
@@ -14,7 +15,7 @@ let PrettyApp = ({ app }) => {
     setSelected(found);
   }, [selectedApps, app._id]);
 
-  let handleAppSelect = (event) => {
+  let handleAppSelect = async (event) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -28,7 +29,10 @@ let PrettyApp = ({ app }) => {
       setSelected(false);
     } else {
       setSelected(true);
-      setSelectedApps([...selectedApps, app]);
+      const appToSelect = isAppBasicsIncomplete(app)
+        ? await ensureAppBasics(app)
+        : app;
+      setSelectedApps([...selectedApps, appToSelect]);
     }
   };
 

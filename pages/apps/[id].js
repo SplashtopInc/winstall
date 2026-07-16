@@ -73,6 +73,40 @@ function AppDetail({ app, popular}) {
     );
 }
 
+/**
+ * Keep only fields the detail page needs.
+ * Full API payloads (esp. installers[] per version) easily exceed Next.js's 128 kB page-data limit.
+ */
+function slimAppForDetailPage(app) {
+    if (!app) return null;
+
+    return {
+        _id: app._id,
+        name: app.name,
+        desc: app.desc || "",
+        homepage: app.homepage || "",
+        icon: app.icon || "",
+        latestVersion: app.latestVersion || "",
+        license: app.license || "",
+        licenseUrl: app.licenseUrl || "",
+        minOS: app.minOS || "",
+        publisher: app.publisher || "",
+        tags: Array.isArray(app.tags) ? app.tags : [],
+        updatedAt: app.updatedAt || null,
+        versions: Array.isArray(app.versions)
+            ? app.versions.map((v) => ({
+                  version: v.version,
+                  installerType: v.installerType || "",
+                  // Download link only uses installers[0]
+                  installers:
+                      Array.isArray(v.installers) && v.installers.length
+                          ? [v.installers[0]]
+                          : [],
+              }))
+            : [],
+    };
+}
+
 export async function getStaticPaths() {
     return {
         paths: [],
@@ -81,17 +115,14 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-    // const { getRuntimeConfig } = require('../../utils/runtimeConfig');
-    // const config = await getRuntimeConfig();
-
     try{
         let { response: app } = await fetchWinstallAPI(`/apps/${params.id}`);
-        //console.log('[getStaticProps] app:', app);
 
         // Don't transform icon here - let AppIcon component handle it
         // This ensures NEXT_PUBLIC_WINSTALL_API_BASE is read at runtime,not build time
 
-        return { props: app ? { app } : {}, revalidate: 3600 }
+        const slimApp = slimAppForDetailPage(app);
+        return { props: slimApp ? { app: slimApp } : {}, revalidate: 3600 }
     } catch(err) {
         return { props: {}, revalidate: 3600 };
     }

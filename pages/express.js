@@ -12,6 +12,7 @@ import MetaTags from "../components/MetaTags";
 import Footer from "../components/Footer";
 import Error from "../components/Error";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
+import { getRevalidateTime } from "../utils/revalidateCache";
 
 const categoryNames = {
   "all": "All",
@@ -120,8 +121,27 @@ function ExpressSetup({ error, categoryApps }) {
 }
 
 export async function getStaticProps() {
-  // Enrich category apps with full data from API
+  const { getRuntimeConfig } = require("../utils/runtimeConfig");
+  const config = await getRuntimeConfig();
+
+  // Docker/build has no WINSTALL_API_BASE — don't bake empty static apps for an hour.
+  // Same pattern as pages/index.js and pages/apps.js.
+  if (!config.apiBase) {
+    console.warn(
+      "[getStaticProps /express] Build-time: no API configured, will trigger ISR on first request"
+    );
+    return {
+      props: {
+        categoryApps: categoryAppsList,
+        buildTime: true,
+      },
+      revalidate: 1,
+    };
+  }
+
   const enrichedCategories = {};
+  let enrichedCount = 0;
+  let totalCount = 0;
 
   for (const [category, apps] of Object.entries(categoryAppsList)) {
     if (!Array.isArray(apps) || apps.length === 0) {
@@ -131,15 +151,19 @@ export async function getStaticProps() {
 
     const enrichedApps = await Promise.all(
       apps.map(async (entry) => {
-        const { response: appData } = await fetchWinstallAPI(`/apps/${entry._id}?exclude=versions`);
+        totalCount += 1;
+        const { response: appData } = await fetchWinstallAPI(
+          `/apps/${entry._id}?exclude=versions`
+        );
 
         if (!appData) {
           return entry;
         }
 
-        // Transform icons to full URLs using apiBase
-        if (appData.icon && !appData.icon.startsWith('http') && !appData.iconUrl) {
-          const iconName = appData.icon.replace('.png', '');
+        enrichedCount += 1;
+
+        if (appData.icon && !appData.icon.startsWith("http") && !appData.iconUrl) {
+          const iconName = appData.icon.replace(".png", "");
           appData.iconUrl = `${process.env.NEXT_PUBLIC_WINSTALL_API_BASE}/icons/next/${iconName}.webp`;
           appData.iconPng = `${process.env.NEXT_PUBLIC_WINSTALL_API_BASE}/icons/${iconName}.png`;
         }
@@ -147,7 +171,7 @@ export async function getStaticProps() {
         return {
           ...appData,
           _id: entry._id,
-          img: entry.img, // Keep as fallback for popularApps matching
+          img: entry.img,
         };
       })
     );
@@ -155,13 +179,24 @@ export async function getStaticProps() {
     enrichedCategories[category] = enrichedApps.filter(Boolean);
   }
 
-  // TODO: Load enriched data from API server can provide app description, iconUrl and iconPng, but may slow down the page render speed
+  const enrichSucceeded = enrichedCount > 0 && enrichedCount >= totalCount * 0.5;
+  const revalidate = getRevalidateTime("express", enrichSucceeded);
+
+  if (!enrichSucceeded) {
+    console.warn(
+      `[getStaticProps /express] Enrich incomplete (${enrichedCount}/${totalCount}), retry in ${revalidate}s`
+    );
+  } else {
+    console.log(
+      `[getStaticProps /express] Success: ${enrichedCount}/${totalCount} apps, revalidate in ${revalidate}s`
+    );
+  }
+
   return {
     props: {
-      // categoryApps: categoryAppsList
-      categoryApps: enrichedCategories
+      categoryApps: enrichedCategories,
     },
-    revalidate: 3600 // Revalidate every hour
+    revalidate,
   };
 }
 

@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import styles from "../styles/categoryApp.module.scss";
 import SelectedContext from "../ctx/SelectedContext";
 import AppIcon from "./AppIcon";
+import { ensureAppBasics, isAppBasicsIncomplete } from "../utils/ensureAppBasics";
 
 let CategoryApp = ({ app }) => {
   const [selected, setSelected] = useState(false);
@@ -13,7 +14,7 @@ let CategoryApp = ({ app }) => {
     setSelected(found);
   }, [selectedApps, app._id]);
 
-  let handleAppSelect = () => {
+  let handleAppSelect = async () => {
     let found = selectedApps.findIndex((a) => a._id === app._id);
     if (found !== -1) {
       let updatedSelectedApps = selectedApps.filter(
@@ -24,7 +25,11 @@ let CategoryApp = ({ app }) => {
       setSelected(false);
     } else {
       setSelected(true);
-      setSelectedApps([...selectedApps, app]);
+      // First open after Docker build may only have {_id, name, img} — fill before select.
+      const appToSelect = isAppBasicsIncomplete(app)
+        ? await ensureAppBasics(app)
+        : app;
+      setSelectedApps([...selectedApps, appToSelect]);
     }
   };
 
