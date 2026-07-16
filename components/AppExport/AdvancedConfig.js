@@ -67,8 +67,8 @@ const AdvancedConfig = ({ refreshConfig, activeTab, onFiltersChange }) => {
                         labelText="Installation scope"
                     />
 
-                    <CheckboxConfig id="--interactive" defaultChecked={config["--interactive"]} updateConfig={updateConfig} hiddenOptions={[]} labelText="Request interactive installation; user input may be needed"/>
-                    <CheckboxConfig id="--force" defaultChecked={config["--force"]} updateConfig={updateConfig} hiddenOptions={[]} labelText="Override the installer hash check"/>
+                    <CheckboxConfig id="--interactive" inputId="default-options-interactive" defaultChecked={config["--interactive"]} updateConfig={updateConfig} hiddenOptions={[]} labelText="Request interactive installation; user input may be needed"/>
+                    <CheckboxConfig id="--force" inputId="default-options-force" defaultChecked={config["--force"]} updateConfig={updateConfig} hiddenOptions={[]} labelText="Override the installer hash check"/>
                 </div>
             )}
         </div>

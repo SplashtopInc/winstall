@@ -101,6 +101,7 @@ const AppSettingsDrawer = ({
                     <div className={exportStyles.expandBlock}>
                         <CheckboxConfig
                             id="customConfig"
+                            inputId="app-settings-customConfig"
                             defaultChecked={config.customConfig}
                             updateConfig={updateConfig}
                             hiddenOptions={[]}
@@ -118,8 +119,8 @@ const AppSettingsDrawer = ({
                             disabled={optionsDisabled}
                         />
 
-                        <CheckboxConfig id="--interactive" defaultChecked={interactiveValue} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Request interactive installation; user input may be needed" disabled={optionsDisabled}/>
-                        <CheckboxConfig id="--force" defaultChecked={forceValue} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Override the installer hash check" disabled={optionsDisabled}/>
+                        <CheckboxConfig id="--interactive" inputId="app-settings-interactive" defaultChecked={interactiveValue} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Request interactive installation; user input may be needed" disabled={optionsDisabled}/>
+                        <CheckboxConfig id="--force" inputId="app-settings-force" defaultChecked={forceValue} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Override the installer hash check" disabled={optionsDisabled}/>
 
                         <TextInputConfig id="--override" defaultValue={config["--override"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Override arguments to be passed on to the installer" inputPlaceholder="Enter arguments for installer"/>
                         <TextInputConfig id="--log" defaultValue={config["--log"]} updateConfig={updateConfig} hiddenOptions={hiddenOptions} labelText="Log location (if supported)" inputPlaceholder="Enter a valid file path for your local machine"/>
