@@ -299,6 +299,50 @@ export default function AddAppsDialog({
     setPage((current) => Math.max(1, current - 1));
   };
 
+  useEffect(() => {
+    if (!isOpen || isSearching) return;
+
+    const canGoPrevious = page > 1;
+    const canGoNext = totalKnown
+      ? page < totalPages
+      : apps.length === APPS_PER_PAGE;
+
+    const handlePagination = (event) => {
+      const target = event.target;
+      if (
+        isLoading ||
+        (target instanceof HTMLElement &&
+          (target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.tagName === "SELECT" ||
+            target.isContentEditable))
+      ) {
+        return;
+      }
+
+      if (event.key === "ArrowRight" || event.keyCode === 39) {
+        if (!canGoNext) return;
+        event.preventDefault();
+        handleNext();
+      } else if (event.key === "ArrowLeft" || event.keyCode === 37) {
+        if (!canGoPrevious) return;
+        event.preventDefault();
+        handlePrevious();
+      }
+    };
+
+    document.addEventListener("keydown", handlePagination);
+    return () => document.removeEventListener("keydown", handlePagination);
+  }, [
+    isOpen,
+    isSearching,
+    isLoading,
+    page,
+    totalKnown,
+    totalPages,
+    apps.length,
+  ]);
+
   const isAppInPack = (app) => packAppIds.has(getAppId(app));
 
   const isAppSelected = (app) =>
