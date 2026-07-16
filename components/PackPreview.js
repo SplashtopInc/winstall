@@ -4,6 +4,7 @@ import { useState, useEffect} from "react";
 import { FiEdit, FiPackage, FiTrash2 } from "react-icons/fi";
 import Link from "next/link";
 import { deletePack as deletePackAPI } from "../utils/fetchPackAPI";
+import { invalidateOwnPacksCache } from "../utils/packHelpers";
 
 export default function PackPreview({ pack, hideMeta, showDelete=false, auth, deleted}){
     const [appIcons, setIcons] = useState([]);
@@ -27,7 +28,7 @@ export default function PackPreview({ pack, hideMeta, showDelete=false, auth, de
 
         if(!error && response){
             if(deleted) deleted(pack._id);
-            localStorage.removeItem("ownPacks");
+            invalidateOwnPacksCache();
         }
     }
 

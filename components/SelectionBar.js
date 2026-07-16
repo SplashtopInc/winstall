@@ -23,6 +23,7 @@ import {
   addAppsToPack,
   fetchUserPacks,
   syncOwnPacksCacheEntry,
+  writeOwnPacksCache,
 } from "../utils/packHelpers";
 
 import barStyles from "../styles/selectionBar.module.scss";
@@ -60,6 +61,13 @@ function SelectionBar({ router }) {
   }, [selectedApps.length]);
 
   useEffect(() => {
+    setPacks([]);
+    setPacksError("");
+    setDropdownOpen(false);
+    setShowCreateModal(false);
+  }, [session?.user?.id]);
+
+  useEffect(() => {
     if (!expanded) return;
 
     const handleClickOutside = (event) => {
@@ -81,7 +89,7 @@ function SelectionBar({ router }) {
     setLoadingPacks(true);
     setPacksError("");
 
-    const { packs: userPacks, error } = await fetchUserPacks();
+    const { packs: userPacks, error } = await fetchUserPacks(session.user.id);
 
     setLoadingPacks(false);
 
@@ -200,7 +208,7 @@ function SelectionBar({ router }) {
     setShowCreateModal(false);
     setPacks((current) => {
       const updated = [...current, pack];
-      localStorage.setItem("ownPacks", JSON.stringify(updated));
+      writeOwnPacksCache(updated, session?.user?.id);
       return updated;
     });
 

@@ -132,14 +132,35 @@ export async function removeAppFromPack(packId, existingApps, appIdToRemove) {
   return updatePack(packId, { apps });
 }
 
-export async function fetchUserPacks() {
-  const cached = localStorage.getItem("ownPacks");
-  if (cached != null) {
+const OWN_PACKS_KEY = "ownPacks";
+const OWN_PACKS_USER_KEY = "ownPacksUserId";
+
+export function writeOwnPacksCache(packs, userId) {
+  if (typeof window === "undefined") return;
+
+  localStorage.setItem(OWN_PACKS_KEY, JSON.stringify(packs || []));
+  if (userId != null) {
+    localStorage.setItem(OWN_PACKS_USER_KEY, String(userId));
+  }
+}
+
+export async function fetchUserPacks(userId) {
+  if (!userId) {
+    return { packs: [], error: "Not signed in" };
+  }
+
+  const cachedUserId = localStorage.getItem(OWN_PACKS_USER_KEY);
+  const cached = localStorage.getItem(OWN_PACKS_KEY);
+
+  if (cached != null && cachedUserId === String(userId)) {
     try {
       return { packs: JSON.parse(cached), fromCache: true };
     } catch {
-      localStorage.removeItem("ownPacks");
+      invalidateOwnPacksCache();
     }
+  } else if (cached != null) {
+    // Stale cache from another user (or pre-userId cache).
+    invalidateOwnPacksCache();
   }
 
   const { response, error } = await fetchMyPacks();
@@ -149,12 +170,15 @@ export async function fetchUserPacks() {
   }
 
   const packs = response || [];
-  localStorage.setItem("ownPacks", JSON.stringify(packs));
+  writeOwnPacksCache(packs, userId);
   return { packs, fromCache: false };
 }
 
 export function invalidateOwnPacksCache() {
-  localStorage.removeItem("ownPacks");
+  if (typeof window === "undefined") return;
+
+  localStorage.removeItem(OWN_PACKS_KEY);
+  localStorage.removeItem(OWN_PACKS_USER_KEY);
 }
 
 export const OWN_PACKS_UPDATED_EVENT = "winstall:own-packs-updated";
@@ -172,7 +196,7 @@ export function syncOwnPacksCacheEntry(updatedPack) {
   let wasPublic = false;
 
   try {
-    const cached = localStorage.getItem("ownPacks");
+    const cached = localStorage.getItem(OWN_PACKS_KEY);
     if (cached != null) {
       const packs = JSON.parse(cached);
       if (Array.isArray(packs)) {
@@ -186,11 +210,11 @@ export function syncOwnPacksCacheEntry(updatedPack) {
                 i === index ? { ...pack, ...updatedPack } : pack
               )
             : [...packs, updatedPack];
-        localStorage.setItem("ownPacks", JSON.stringify(next));
+        localStorage.setItem(OWN_PACKS_KEY, JSON.stringify(next));
       }
     }
   } catch {
-    localStorage.removeItem("ownPacks");
+    invalidateOwnPacksCache();
   }
 
   const isPublic = updatedPack.visibility === "public";

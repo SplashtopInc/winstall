@@ -18,6 +18,7 @@ import UserMenu from "./UserMenu";
 import DeleteAccountModal from "./DeleteAccountModal";
 import { useAuthGate } from "../ctx/AuthGateContext";
 import { deleteAccount } from "../utils/fetchUserAPI";
+import { invalidateOwnPacksCache } from "../utils/packHelpers";
 
 import NProgress from "nprogress";
 
@@ -179,6 +180,7 @@ const NavUser = () => {
   };
 
   const handleLogout = () => {
+    invalidateOwnPacksCache();
     signOut({ callbackUrl: router.asPath });
   };
 
@@ -192,7 +194,7 @@ const NavUser = () => {
       return { error };
     }
 
-    localStorage.removeItem("ownPacks");
+    invalidateOwnPacksCache();
     await signOut({ callbackUrl: router.asPath });
     return {};
   };
