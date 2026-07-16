@@ -369,9 +369,13 @@ export default function PacksPage() {
     if (myPacks.length === 0) {
       return (
         <div className={styles.emptyState}>
-          <div className={styles.emptyIcon} aria-hidden="true">
-            <FiPlus />
-          </div>
+          <img
+            className={styles.emptyIcon}
+            src="/assets/create_new_pack.svg"
+            draggable={false}
+            alt=""
+            aria-hidden="true"
+          />
           <h2 className={styles.emptyTitle}>No packs yet</h2>
           <p className={styles.emptyDescription}>
             Bundle your go-to apps into a single pack — install them all at once
@@ -379,7 +383,7 @@ export default function PacksPage() {
           </p>
           <button
             type="button"
-            className={styles.emptyCreateButton}
+            className="button dl accent"
             onClick={() => setShowCreateModal(true)}
           >
             <FiPlus /> Create Your First Pack

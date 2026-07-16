@@ -32,7 +32,7 @@
 }
 
 .tabActive {
-  border-color: rgba(155, 46, 255, 0.55);
+  border-color: var(--accent);
   color: rgba(155, 46, 255, 1);
   opacity: 1;
 }
@@ -283,19 +283,9 @@
 }
 
 .emptyIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 72px;
-  height: 72px;
-  border: 2px dashed rgba(155, 46, 255, 0.45);
-  border-radius: 12px;
-  color: rgba(155, 46, 255, 0.55);
-
-  svg {
-    width: 28px;
-    height: 28px;
-  }
+  width: 120px;
+  height: 120px;
+  display: block;
 }
 
 .emptyTitle {
@@ -312,33 +302,6 @@
   color: var(--textColor);
   opacity: 0.55;
   max-width: 480px;
-}
-
-.emptyCreateButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  padding: 14px 28px;
-  border-radius: 50px;
-  background: linear-gradient(to bottom, #6d1cdd, #fc3aa2);
-  color: #fff;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 16px;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.25);
-  transition: 0.3s all ease-in-out;
-  border: 0;
-  cursor: pointer;
-  font-family: inherit;
-
-  &:hover {
-    opacity: 0.85;
-  }
-
-  svg {
-    font-size: 18px;
-  }
 }
 
 .loading {
