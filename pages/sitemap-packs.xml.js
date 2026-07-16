@@ -1,3 +1,16 @@
+const escapeXml = (str) => {
+  return String(str).replace(/[&<>"']/g, (char) => {
+    switch (char) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&apos;';
+      default: return char;
+    }
+  });
+};
+
 function generatePacksSiteMap(urlPrefix, packs, users) {
   return `<?xml version="1.0" encoding="UTF-8"?>
    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -5,7 +18,7 @@ function generatePacksSiteMap(urlPrefix, packs, users) {
        .map(({ _id, updatedAt }) => {
          return `
        <url>
-           <loc>${urlPrefix}/packs/${_id}</loc>
+           <loc>${urlPrefix}/packs/${escapeXml(_id)}</loc>
            <lastmod>${updatedAt}</lastmod>
        </url>
      `;
@@ -15,7 +28,7 @@ function generatePacksSiteMap(urlPrefix, packs, users) {
        .map((id) => {
          return `
        <url>
-           <loc>${urlPrefix}/users/${id}</loc>
+           <loc>${urlPrefix}/users/${escapeXml(id)}</loc>
        </url>
      `;
        })
