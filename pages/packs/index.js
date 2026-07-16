@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getSession, signIn } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FiPlus } from "react-icons/fi";
 
@@ -61,6 +61,10 @@ function CreatePackCard({ onClick }) {
 
 export default function PacksPage() {
   const router = useRouter();
+  const { data: session, status: sessionStatus } = useSession();
+  const user = session?.user ?? null;
+  const userId = user?.id;
+  const sessionReady = sessionStatus !== "loading";
   const activeTab = router.query.tab === "public" ? "public" : "mine";
 
   const [publicPacks, setPublicPacks] = useState([]);
@@ -72,9 +76,7 @@ export default function PacksPage() {
   const [publicPage, setPublicPage] = useState(1);
   const [activePublicSearch, setActivePublicSearch] = useState("");
 
-  const [user, setUser] = useState(null);
   const [myPacks, setMyPacks] = useState([]);
-  const [sessionChecked, setSessionChecked] = useState(false);
   const [myPacksLoading, setMyPacksLoading] = useState(false);
   const [myPacksError, setMyPacksError] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -124,20 +126,6 @@ export default function PacksPage() {
       setMyPacksLoading(true);
     }
     setMyPacksError(null);
-
-    const session = await getSession();
-    setSessionChecked(true);
-
-    if (!session) {
-      setUser(null);
-      setMyPacks([]);
-      if (!silent) {
-        setMyPacksLoading(false);
-      }
-      return;
-    }
-
-    setUser(session.user);
 
     try {
       const { response: userPacks, error } = await fetchMyPacks();
@@ -195,15 +183,26 @@ export default function PacksPage() {
 
   useEffect(() => {
     if (activeTab !== "mine") return;
+    if (!sessionReady) return;
+
+    if (!userId) {
+      setMyPacks([]);
+      setMyPacksError(null);
+      setMyPacksLoading(false);
+      return;
+    }
+
     loadMyPacks();
-  }, [activeTab, loadMyPacks]);
+  }, [activeTab, loadMyPacks, sessionReady, userId]);
 
   useEffect(() => {
     if (!router.isReady || router.pathname !== "/packs") return;
 
     const refreshActiveTab = () => {
       if (activeTab === "mine") {
-        loadMyPacks({ silent: true });
+        if (userId) {
+          loadMyPacks({ silent: true });
+        }
       } else {
         loadPublicPacks({
           page: publicPage,
@@ -240,6 +239,7 @@ export default function PacksPage() {
     publicPage,
     router.isReady,
     router.pathname,
+    userId,
   ]);
 
   useEffect(() => {
@@ -335,7 +335,7 @@ export default function PacksPage() {
   );
 
   const renderMyPacks = () => {
-    if (!sessionChecked || myPacksLoading) {
+    if (!sessionReady || myPacksLoading) {
       return <p className={styles.loading}>Loading...</p>;
     }
 
