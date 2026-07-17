@@ -14,7 +14,7 @@ function formatPackDate(isoDate) {
   });
 }
 
-export default function PackCard({ pack, href }) {
+export default function PackCard({ pack, href, showVisibility = true }) {
   const apps = pack.apps || [];
   const visibleApps = apps.slice(0, MAX_VISIBLE_ICONS);
   const overflowCount = apps.length - visibleApps.length;
@@ -28,9 +28,11 @@ export default function PackCard({ pack, href }) {
   return (
     <Link href={linkHref} prefetch={false} className={styles.packCard}>
       <h3 className={styles.packTitle}>
-        <span className={styles.visibilityIcon} title={visibilityLabel}>
-          <VisibilityIcon aria-label={visibilityLabel} />
-        </span>
+        {showVisibility && (
+          <span className={styles.visibilityIcon} title={visibilityLabel}>
+            <VisibilityIcon aria-label={visibilityLabel} />
+          </span>
+        )}
         {pack.name}
       </h3>
       <p className={styles.packDescription}>{pack.description}</p>

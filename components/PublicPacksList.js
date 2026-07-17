@@ -115,7 +115,7 @@ export default function PublicPacksList({
       <ul className={styles.grid}>
         {packs.map((pack) => (
           <li key={pack._id}>
-            <PackCard pack={pack} />
+            <PackCard pack={pack} showVisibility={false} />
           </li>
         ))}
       </ul>
