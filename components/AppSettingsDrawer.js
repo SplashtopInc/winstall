@@ -40,11 +40,21 @@ const AppSettingsDrawer = ({
             return;
         }
 
-        setConfig({
+        const drawerState = installOptionsToDrawerState(app.installOptions);
+        const finalConfig = {
             ...DEFAULT_APP_CONFIG,
-            ...installOptionsToDrawerState(app.installOptions),
-        });
-    }, [isOpen, app?._id]);
+            ...drawerState,
+        };
+
+        // console.group(`🎨 AppSettingsDrawer Debug - ${app.name}`);
+        // console.log('1️⃣ Global Settings (defaultFilters):', defaultFilters);
+        // console.log('2️⃣ App InstallOptions (raw):', app.installOptions);
+        // console.log('3️⃣ Drawer State (converted):', drawerState);
+        // console.log('4️⃣ Final Config (merged):', finalConfig);
+        // console.groupEnd();
+
+        setConfig(finalConfig);
+    }, [isOpen, app?._id, defaultFilters]);
 
     const updateConfig = (key, val) => {
         const newConfig = { ...config, [key]: val };

@@ -17,7 +17,10 @@ export function normalizeInstallOptions(raw) {
 
   const normalized = {};
 
-  if (typeof raw.scope === "string" && raw.scope && ALLOWED_SCOPES.has(raw.scope)) {
+  if (raw._hasCustomConfig === true) {
+    normalized._hasCustomConfig = true;
+  }
+  if ("scope" in raw && typeof raw.scope === "string" && ALLOWED_SCOPES.has(raw.scope)) {
     normalized.scope = raw.scope;
   }
 
@@ -103,6 +106,7 @@ export function hasCustomScopeInstallOptions(installOptions) {
   const normalized = normalizeInstallOptions(installOptions);
 
   return (
+    normalized._hasCustomConfig ||
     "scope" in normalized ||
     normalized.interactive === true ||
     normalized.force === true
@@ -129,7 +133,12 @@ export function installOptionsToDrawerConfig(options) {
 
 export function hasScopedInstallOptions(installOptions) {
   const normalized = normalizeInstallOptions(installOptions);
-  return Boolean(normalized.scope || normalized.interactive || normalized.force);
+  return Boolean(
+    normalized._hasCustomConfig ||
+    "scope" in normalized ||
+    normalized.interactive ||
+    normalized.force
+  );
 }
 
 export function installOptionsToDrawerState(installOptions) {
@@ -152,7 +161,11 @@ export function drawerStateToInstallOptions(config) {
     });
   }
 
-  return drawerConfigToInstallOptions(config);
+  const options = drawerConfigToInstallOptions(config);
+  return {
+    ...options,
+    _hasCustomConfig: true,
+  };
 }
 
 export function installOptionsToAppDrawerConfig(installOptions) {
@@ -165,21 +178,6 @@ export function installOptionsToAppDrawerConfig(installOptions) {
 export function drawerConfigToInstallOptions(config, { useCustomScope = true } = {}) {
   if (!config || typeof config !== "object") {
     return {};
-  }
-
-  if (useCustomScope) {
-    const isDefault =
-      !config["--scope"] &&
-      !config["--interactive"] &&
-      config["--silent"] === true &&
-      !config["--force"] &&
-      !config["--override"] &&
-      !config["--log"] &&
-      !config["--location"];
-
-    if (isDefault) {
-      return {};
-    }
   }
 
   const candidate = {
