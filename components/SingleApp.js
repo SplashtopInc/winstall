@@ -265,7 +265,7 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
         <li>
           <Link href={`/apps?q=${`publisher: ${app.publisher}`}`}>
             <FiUser />
-            Other apps by {app.publisher}
+            {app.publisher}
           </Link>
         </li>
 
