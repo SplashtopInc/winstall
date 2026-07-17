@@ -258,11 +258,10 @@
     }
 
     .settingsIcon {
-        background-color: var(--main-bg) !important;
+        background: none;
         border-radius: 50px;
         text-decoration: none;
         color: var(--textColor);
-        box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.18);
         transition: 0.3s all ease-in-out;
         cursor: pointer;
         border: 0px;
