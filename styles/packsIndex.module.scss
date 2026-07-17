@@ -83,6 +83,18 @@
   overflow: hidden;
 }
 
+.visibilityIcon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 6px;
+  opacity: 0.6;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
 .packDescription {
   margin: 0 0 16px;
   font-size: 14px;

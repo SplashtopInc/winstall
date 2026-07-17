@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FiClock } from "react-icons/fi";
+import { FiClock, FiLock, FiGlobe } from "react-icons/fi";
 import AppIcon from "./AppIcon";
 import styles from "../styles/packsIndex.module.scss";
 
@@ -20,9 +20,19 @@ export default function PackCard({ pack, href }) {
   const overflowCount = apps.length - visibleApps.length;
   const linkHref = href || `/packs/${pack._id}`;
 
+  const visibility = pack.visibility || "private";
+  const isPrivate = visibility === "private";
+  const VisibilityIcon = isPrivate ? FiLock : FiGlobe;
+  const visibilityLabel = visibility.charAt(0).toUpperCase() + visibility.slice(1);
+
   return (
     <Link href={linkHref} prefetch={false} className={styles.packCard}>
-      <h3 className={styles.packTitle}>{pack.name}</h3>
+      <h3 className={styles.packTitle}>
+        <span className={styles.visibilityIcon} title={visibilityLabel}>
+          <VisibilityIcon aria-label={visibilityLabel} />
+        </span>
+        {pack.name}
+      </h3>
       <p className={styles.packDescription}>{pack.description}</p>
 
       <div className={styles.iconRow}>
