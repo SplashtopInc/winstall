@@ -1,4 +1,4 @@
-import { FiCheck, FiClock, FiPackage, FiThumbsUp } from "react-icons/fi";
+import { FiCheck, FiClock, FiPackage, FiThumbsUp, FiUser } from "react-icons/fi";
 import AppIcon from "./AppIcon";
 import { timeAgo } from "../utils/helpers";
 import styles from "../styles/addAppsDialog.module.scss";
@@ -43,6 +43,7 @@ export default function AddAppPickerCard({
       tabIndex={alreadyAdded ? -1 : 0}
       aria-pressed={selected}
       aria-disabled={alreadyAdded}
+      title={app._id ? `${app._id}` : undefined}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
     >
@@ -76,6 +77,12 @@ export default function AddAppPickerCard({
           <li>
             <FiPackage aria-hidden="true" />
             <span>v{version}</span>
+          </li>
+        )}
+        {app.publisher && (
+          <li>
+            <FiUser aria-hidden="true" />
+            <span>{app.publisher}</span>
           </li>
         )}
         {likeLabel && (
