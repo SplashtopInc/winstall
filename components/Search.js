@@ -20,8 +20,12 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
   const hideSearchingTimerRef = useRef(null);
 
   const normalizeAppsPayload = (payload) => {
-    if (!payload?.data) return [];
-    return payload.data;
+    if (!payload) return [];
+    // Handle direct array response (e.g., from /publishers/:id)
+    if (Array.isArray(payload)) return payload;
+    // Handle object with data property
+    if (payload.data) return payload.data;
+    return [];
   };
 
   useEffect(() => {
@@ -109,9 +113,29 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
     setResults([]);
     setHasSearchResponse(false);
     setIsLoading(true);
-    const { response, error } = await fetchWinstallAPI(
-      `/apps/search?q=${encodeURIComponent(query)}&limit=${resultLimit}`
-    );
+
+    // Parse field-specific search prefixes
+    const publisherMatch = query.match(/^publisher:\s*(.+)$/i);
+    let searchUrl;
+
+    if (publisherMatch) {
+      // Use dedicated publisher endpoint
+      const publisherName = publisherMatch[1].trim();
+      searchUrl = `/publishers/${encodeURIComponent(publisherName)}?limit=${resultLimit}`;
+    } else {
+      // Check for other field prefixes (name:, tags:, desc:)
+      const prefixMatch = query.match(/^(name|tags|desc):\s*(.+)$/i);
+
+      if (prefixMatch) {
+        const field = prefixMatch[1].toLowerCase();
+        const value = prefixMatch[2].trim();
+        searchUrl = `/apps/search?q=${encodeURIComponent(value)}&${field}=${encodeURIComponent(value)}&limit=${resultLimit}`;
+      } else {
+        searchUrl = `/apps/search?q=${encodeURIComponent(query)}&limit=${resultLimit}`;
+      }
+    }
+
+    const { response, error } = await fetchWinstallAPI(searchUrl);
 
     if (requestId !== activeRequestIdRef.current) return;
 
