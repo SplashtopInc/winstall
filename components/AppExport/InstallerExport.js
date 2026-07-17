@@ -6,7 +6,7 @@ import {
     installOptionsToWingetFlags,
 } from "../../utils/installOptions";
 
-const InstallerExport = ({ apps, filters = {} }) => {
+const InstallerExport = ({ apps, filters = {}, packId }) => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [countdown, setCountdown] = useState(10);
     const countdownTimerRef = useRef(null);
@@ -149,6 +149,17 @@ const InstallerExport = ({ apps, filters = {} }) => {
                 console.log('Installer ready, downloading from builder:', filename);
                 downloadFile(url, filename);
                 window.URL.revokeObjectURL(url);
+
+                // Increment download count for pack
+                if (packId) {
+                    fetch(`/api/packs/${packId}/stats`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ type: "download" }),
+                    }).catch(() => {
+                        // Silently fail - download count is not critical
+                    });
+                }
             }
             // Async mode: poll for status
             else if (response.status === 202) {
@@ -157,6 +168,17 @@ const InstallerExport = ({ apps, filters = {} }) => {
 
                 await pollStatus(data.statusUrl);
                 console.log('Installer downloaded successfully (async mode)');
+
+                // Increment download count for pack
+                if (packId) {
+                    fetch(`/api/packs/${packId}/stats`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ type: "download" }),
+                    }).catch(() => {
+                        // Silently fail - download count is not critical
+                    });
+                }
             }
             // Error handling
             else {

@@ -209,6 +209,17 @@ export default function PackDetailPage() {
     setDefaultFilters(toDefaultInstallFilters(transformed.defaultInstallOptions));
     setLoading(false);
 
+    // Increment view count for public/unlisted packs
+    if (transformed.visibility === "public" || transformed.visibility === "unlisted") {
+      fetch(`/api/packs/${packId}/stats`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "view" }),
+      }).catch(() => {
+        // Silently fail - view count is not critical
+      });
+    }
+
     const enriched = await enrichApps(transformed.apps || []);
     setApps(enriched);
   }, []);
@@ -736,6 +747,7 @@ export default function PackDetailPage() {
             ? "These options are saved with this pack."
             : "These options apply while exporting this pack."
         }
+        packId={pack._id}
       />
 
       {user && (

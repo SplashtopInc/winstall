@@ -77,6 +77,16 @@ const PackSchema = new mongoose.Schema(
         default: 0,
         min: 0,
       },
+      viewCount: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+      downloadCount: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
     },
   },
   { timestamps: { createdAt: true, updatedAt: true }, versionKey: false }

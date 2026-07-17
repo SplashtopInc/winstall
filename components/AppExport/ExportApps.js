@@ -14,6 +14,7 @@ const ExportApps = ({
     initialFilters,
     onDefaultFiltersChange,
     persistHint,
+    packId,
 }) => {
     const [ batScript, setBatScript ] = useState("");
     const [ psScript, setPsScript ] = useState("");
@@ -38,7 +39,7 @@ const ExportApps = ({
             {
                 title: "Download Installer",
                 key: ".installer",
-                element: <InstallerExport apps={apps} filters={filters} />
+                element: <InstallerExport apps={apps} filters={filters} packId={packId} />
             },
             {
                 title: "Batch",
@@ -62,7 +63,7 @@ const ExportApps = ({
                         />
             }
         ]
-    }, [ batScript, psScript, wingetScript, wingetImportCommand, apps, filters ])
+    }, [ batScript, psScript, wingetScript, wingetImportCommand, apps, filters, packId ])
 
     const handleScriptChange = useCallback(async () => {
         if (!apps) return;

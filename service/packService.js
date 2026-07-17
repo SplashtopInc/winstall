@@ -357,7 +357,7 @@ export async function createPack(
 export async function listPublicPacks({
   offset,
   limit,
-  sort = "recent",
+  sort = "popular",
   q,
   metadataOnly = false,
 } = {}) {
@@ -365,7 +365,7 @@ export async function listPublicPacks({
     offset,
     limit,
   });
-  const sortMode = sort === "popular" ? "popular" : "recent";
+  const sortMode = sort === "recent" ? "recent" : "popular";
   const searchQuery = parseSearchQuery(q);
   const filter = searchQuery
     ? buildPublicSearchFilter(searchQuery)
@@ -382,17 +382,36 @@ export async function listPublicPacks({
     };
   }
 
-  const sortSpec =
-    sortMode === "popular"
-      ? { "stats.likeCount": -1, createdAt: -1 }
-      : { createdAt: -1 };
+  let data;
 
-  const data = await Pack.find(filter)
-    .sort(sortSpec)
-    .skip(safeOffset)
-    .limit(safeLimit)
-    .lean()
-    .exec();
+  if (sortMode === "popular") {
+    // Use aggregation pipeline to sort by (likeCount + viewCount + downloadCount)
+    data = await Pack.aggregate([
+      { $match: filter },
+      {
+        $addFields: {
+          totalPopularity: {
+            $add: [
+              { $ifNull: ["$stats.likeCount", 0] },
+              { $ifNull: ["$stats.viewCount", 0] },
+              { $ifNull: ["$stats.downloadCount", 0] },
+            ],
+          },
+        },
+      },
+      { $sort: { totalPopularity: -1, createdAt: -1 } },
+      { $skip: safeOffset },
+      { $limit: safeLimit },
+    ]).exec();
+  } else {
+    // Recent mode: sort by createdAt only
+    data = await Pack.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(safeOffset)
+      .limit(safeLimit)
+      .lean()
+      .exec();
+  }
 
   return {
     total,
@@ -570,4 +589,32 @@ export async function copyPack(sourcePackId, userId) {
   const doc = await Pack.create(createPayload);
 
   return doc.toObject();
+}
+
+export async function incrementViewCount(packId) {
+  const result = await Pack.findOneAndUpdate(
+    { _id: packId, status: "active" },
+    { $inc: { "stats.viewCount": 1 } },
+    { new: true }
+  ).lean().exec();
+
+  if (!result) {
+    throw new PackError("Pack not found.", 404);
+  }
+
+  return { success: true };
+}
+
+export async function incrementDownloadCount(packId) {
+  const result = await Pack.findOneAndUpdate(
+    { _id: packId, status: "active" },
+    { $inc: { "stats.downloadCount": 1 } },
+    { new: true }
+  ).lean().exec();
+
+  if (!result) {
+    throw new PackError("Pack not found.", 404);
+  }
+
+  return { success: true };
 }
