@@ -6,8 +6,8 @@
 # Dependencies
 node_modules
 
-# Build output
-.next
+# Build output, standalone mode need this
+#.next
 
 # Environment files
 .env
