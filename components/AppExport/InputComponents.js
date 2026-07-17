@@ -8,7 +8,7 @@ function getCheckboxIcon(checked, disabled) {
     return checked ? "/assets/cb_check.svg" : "/assets/cb_uncheck.svg";
 }
 
-export const CheckboxConfig = ({ id, defaultChecked, updateConfig, hiddenOptions, labelText, disabled = false, inputId }) => {
+export const CheckboxConfig = ({ id, defaultChecked, updateConfig, hiddenOptions, labelText, disabled = false, inputId, hideParameterName = false }) => {
     if(hiddenOptions.includes(id)) return null;
 
     const htmlId = inputId || id;
@@ -33,7 +33,7 @@ export const CheckboxConfig = ({ id, defaultChecked, updateConfig, hiddenOptions
                     height={17}
                 />
             </span>
-            <p>{labelText} <code>{id}</code></p>
+            <p>{labelText} {!hideParameterName && <code>{id}</code>}</p>
         </label>
     )
 }

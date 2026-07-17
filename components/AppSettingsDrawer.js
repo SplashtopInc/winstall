@@ -116,6 +116,7 @@ const AppSettingsDrawer = ({
                             updateConfig={updateConfig}
                             hiddenOptions={[]}
                             labelText="Use custom configuration"
+                            hideParameterName={true}
                         />
 
                         <RadioConfig
