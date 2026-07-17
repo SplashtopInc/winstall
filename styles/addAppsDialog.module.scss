@@ -133,9 +133,9 @@
   width: 100%;
   min-height: 240px;
   padding: 20px;
-  border-radius: 12px;
+  border-radius: 10px;
   background-color: var(--card-bg);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0px 3px 5px #00000026;
   color: var(--textColor);
   border: 5px solid transparent;
   box-sizing: border-box;
@@ -194,15 +194,15 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   min-width: 0;
   flex-shrink: 0;
 
   img,
   picture {
     flex-shrink: 0;
-    width: 28px;
-    height: 28px;
+    width: 25px;
+    height: 25px;
   }
 }
 
@@ -217,8 +217,8 @@
 }
 
 .pickerCardDesc {
-  margin: 0 0 12px;
-  font-size: 14px;
+  margin: 10px 0;
+  font-size: 15px;
   line-height: 1.45;
   color: var(--textColor);
   overflow: hidden;
@@ -236,14 +236,14 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
   margin-top: auto;
   flex-shrink: 0;
 
   li {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     font-size: 15px;
     color: var(--textColor);
 
