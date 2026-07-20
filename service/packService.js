@@ -385,21 +385,45 @@ export async function listPublicPacks({
   let data;
 
   if (sortMode === "popular") {
-    // Use aggregation pipeline to sort by (likeCount + viewCount + downloadCount)
+    // Use HackerNews decay algorithm: Score = W / (T + 2)^G
+    // W = (Like * 10) + (Download * 5) + (View * 0.1)
+    // T = hours since updatedAt
+    // G = 1.0 (gravity factor)
+    const HOUR_IN_MS = 1000 * 60 * 60;
+
     data = await Pack.aggregate([
       { $match: filter },
       {
         $addFields: {
-          totalPopularity: {
+          // Calculate hours since last update
+          hoursSinceUpdate: {
+            $divide: [
+              { $subtract: ["$$NOW", { $ifNull: ["$updatedAt", "$createdAt"] }] },
+              HOUR_IN_MS,
+            ],
+          },
+          // Calculate weighted score: W = (Like * 10) + (Download * 5) + (View * 0.1)
+          weightedScore: {
             $add: [
-              { $ifNull: ["$stats.likeCount", 0] },
-              { $ifNull: ["$stats.viewCount", 0] },
-              { $ifNull: ["$stats.downloadCount", 0] },
+              { $multiply: [{ $ifNull: ["$stats.likeCount", 0] }, 10] },
+              { $multiply: [{ $ifNull: ["$stats.downloadCount", 0] }, 5] },
+              { $multiply: [{ $ifNull: ["$stats.viewCount", 0] }, 0.1] },
             ],
           },
         },
       },
-      { $sort: { totalPopularity: -1, createdAt: -1 } },
+      {
+        $addFields: {
+          // Calculate final score: Score = W / (T + 2)^1.0
+          hackerNewsScore: {
+            $divide: [
+              "$weightedScore",
+              { $pow: [{ $add: ["$hoursSinceUpdate", 2] }, 1.0] },
+            ],
+          },
+        },
+      },
+      { $sort: { hackerNewsScore: -1, createdAt: -1 } },
       { $skip: safeOffset },
       { $limit: safeLimit },
     ]).exec();
