@@ -132,8 +132,12 @@ function SelectionBar({ router }) {
       setSelectedApps([]);
       setExpanded(false);
       setDropdownOpen(false);
+
+      if (updatedPack?._id) {
+        router.push(`/packs/${updatedPack._id}`);
+      }
     },
-    [setSelectedApps]
+    [setSelectedApps, router]
   );
 
   const handleAddAppsToPack = useCallback(
