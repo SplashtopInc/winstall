@@ -390,6 +390,7 @@ export async function listPublicPacks({
     // T = hours since updatedAt
     // G = 1.0 (gravity factor)
     const HOUR_IN_MS = 1000 * 60 * 60;
+    const GRAVITY_FACTOR = 1.0;
 
     data = await Pack.aggregate([
       { $match: filter },
@@ -415,15 +416,15 @@ export async function listPublicPacks({
       {
         $addFields: {
           // Calculate final score: Score = W / (T + 2)^1.0
-          hackerNewsScore: {
+          totalPopularity: {
             $divide: [
               "$weightedScore",
-              { $pow: [{ $add: ["$hoursSinceUpdate", 2] }, 1.0] },
+              { $pow: [{ $add: ["$hoursSinceUpdate", 2] }, GRAVITY_FACTOR] },
             ],
           },
         },
       },
-      { $sort: { hackerNewsScore: -1, createdAt: -1 } },
+      { $sort: { totalPopularity: -1, createdAt: -1 } },
       { $skip: safeOffset },
       { $limit: safeLimit },
     ]).exec();
