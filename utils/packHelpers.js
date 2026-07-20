@@ -45,19 +45,22 @@ export function toAppSnapshot(app) {
 }
 
 export function mergePackApps(existingApps = [], newApps = []) {
-  const seen = new Set(
-    (existingApps || []).map(getAppId).filter(Boolean)
+  // Build map from existing apps: appId -> app
+  const appsById = new Map(
+    (existingApps || [])
+      .map((app) => [getAppId(app), app])
+      .filter(([id]) => id)
   );
-  const merged = [...(existingApps || [])];
 
+  // Override with new apps
   for (const app of newApps) {
     const id = getAppId(app);
-    if (!id || seen.has(id)) continue;
-    merged.push(app);
-    seen.add(id);
+    if (id) {
+      appsById.set(id, app);
+    }
   }
 
-  return merged;
+  return Array.from(appsById.values());
 }
 
 export function formatAppsForPatch(apps) {
