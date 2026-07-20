@@ -109,6 +109,20 @@ function Generate() {
         return a;
       }));
 
+      // Sync installOptions back to selectedApps context for persistence
+      setSelectedApps((prevApps) => prevApps.map((a) => {
+        if (a._id === app._id) {
+          const nextApp = { ...a };
+          if (installOptions && Object.keys(installOptions).length > 0) {
+            nextApp.installOptions = installOptions;
+          } else {
+            delete nextApp.installOptions;
+          }
+          return nextApp;
+        }
+        return a;
+      }));
+
       setSelectedAppForSettings((prevApp) => {
         if (!prevApp || prevApp._id !== app._id) return prevApp;
         const nextApp = { ...prevApp };

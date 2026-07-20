@@ -4,7 +4,7 @@ if (typeof window === 'undefined') {
 }
 
 import "../styles/base.scss";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 
 import SelectedContext from "../ctx/SelectedContext";
@@ -17,11 +17,72 @@ import PopularContext from "../ctx/PopularContext";
 import { AuthGateProvider } from "../ctx/AuthGateContext";
 import { SessionProvider } from "next-auth/react";
 
+const SELECTION_STORAGE_KEY = "winstall-selection";
+
+function loadSelectionFromStorage() {
+  if (typeof window === "undefined") return { apps: [], options: null };
+  
+  try {
+    const stored = localStorage.getItem(SELECTION_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return {
+        apps: Array.isArray(parsed.selectedApps) ? parsed.selectedApps : [],
+        options: parsed.defaultInstallOptions || null,
+      };
+    }
+  } catch (error) {
+    console.error("Failed to load selection from localStorage:", error);
+  }
+  
+  return { apps: [], options: null };
+}
+
+function saveSelectionToStorage(selectedApps, defaultInstallOptions) {
+  if (typeof window === "undefined") return;
+  
+  try {
+    if (selectedApps.length === 0) {
+      localStorage.removeItem(SELECTION_STORAGE_KEY);
+    } else {
+      localStorage.setItem(
+        SELECTION_STORAGE_KEY,
+        JSON.stringify({
+          selectedApps,
+          defaultInstallOptions,
+        })
+      );
+    }
+  } catch (error) {
+    console.error("Failed to save selection to localStorage:", error);
+  }
+}
+
 function winstall({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter();
+  const initialLoad = useRef(true);
 
   const [selectedApps, setSelectedApps] = useState([]);
   const [defaultInstallOptions, setDefaultInstallOptions] = useState(null);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    if (initialLoad.current) {
+      const { apps, options } = loadSelectionFromStorage();
+      if (apps.length > 0) {
+        setSelectedApps(apps);
+        setDefaultInstallOptions(options);
+      }
+      initialLoad.current = false;
+    }
+  }, []);
+
+  // Save to localStorage when selection changes
+  useEffect(() => {
+    if (!initialLoad.current) {
+      saveSelectionToStorage(selectedApps, defaultInstallOptions);
+    }
+  }, [selectedApps, defaultInstallOptions]);
 
   useEffect(() => {
     if (selectedApps.length === 0) {

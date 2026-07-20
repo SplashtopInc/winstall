@@ -110,9 +110,6 @@ function SelectionBar({ router }) {
   const { requireAuth } = useRequireAuth({
     resumeKey: "addToPack",
     onSuccess: openDropdown,
-    beforeSignIn: () => {
-      localStorage.setItem("winstallLogin", JSON.stringify(selectedApps));
-    },
     callbackUrl: router.asPath,
   });
 
@@ -154,21 +151,6 @@ function SelectionBar({ router }) {
     },
     [selectedApps, finishAddToPack]
   );
-
-  useEffect(() => {
-    const backup = localStorage.getItem("winstallLogin");
-    if (backup) {
-      try {
-        const apps = JSON.parse(backup);
-        if (Array.isArray(apps) && apps.length > 0) {
-          setSelectedApps(apps);
-        }
-        localStorage.removeItem("winstallLogin");
-      } catch {
-        localStorage.removeItem("winstallLogin");
-      }
-    }
-  }, [setSelectedApps]);
 
   const previewApps = selectedApps.slice(0, PREVIEW_ICON_LIMIT);
   const overflowCount =
