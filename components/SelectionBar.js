@@ -218,6 +218,10 @@ function SelectionBar({ router }) {
     const packName = pack.name || "pack";
     const { response, error } = await addAppsToPack(pack._id, pack.apps, selectedApps);
     finishAddToPack(packName, error, response);
+
+    if (!error) {
+      router.push(`/packs/${pack._id}`);
+    }
   };
 
   const selectionLabel = `Selected ${selectedApps.length} ${
