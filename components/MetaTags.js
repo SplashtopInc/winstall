@@ -51,6 +51,7 @@ const MetaTags = ({ title, desc="Bulk install Windows apps quickly with Windows 
 
         <link rel="apple-touch-icon" href={appleTouchIcon} />
         <link rel="manifest" href={manifestUrl} />
+        <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Winstall.app" />
       </Head>
     );
 }
