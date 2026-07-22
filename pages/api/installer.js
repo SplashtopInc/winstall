@@ -37,7 +37,6 @@ export default async function handler(req, res) {
 
 	try {
 		await redisClient.setEx(cacheKey, 3600, '0');
-
 		const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
 		const host = req.headers.host;
 		const { config, filename } = req.body;
@@ -82,7 +81,9 @@ export default async function handler(req, res) {
 				webhookHeaders.Authorization = `Basic ${Buffer.from(`${webhookAuthId}:${webhookAuthSecret}`).toString('base64')}`;
 			}
 
-			//console.log('[Installer] WebhookUrl:', builderWebhook);
+			if (process.env.NODE_ENV === 'development') {
+				console.log('[Installer] WebhookUrl:', builderWebhook);
+			}
 			const webhookResponse = await fetch(builderWebhook, {
 				method: 'POST',
 				headers: webhookHeaders,
@@ -108,6 +109,10 @@ export default async function handler(req, res) {
 			}
 
 			const url = `${builderBase}/installer`;
+			if (process.env.NODE_ENV === 'development') {
+				console.log('[Installer] BuilderUrl:', url);
+			}
+
 			const response = await fetch(url, {
 				method: 'POST',
 				headers: {
