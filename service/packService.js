@@ -620,7 +620,7 @@ export async function incrementViewCount(packId) {
   const result = await Pack.findOneAndUpdate(
     { _id: packId, status: "active" },
     { $inc: { "stats.viewCount": 1 } },
-    { new: true }
+    { new: true, timestamps: false }
   ).lean().exec();
 
   if (!result) {
@@ -634,7 +634,7 @@ export async function incrementDownloadCount(packId) {
   const result = await Pack.findOneAndUpdate(
     { _id: packId, status: "active" },
     { $inc: { "stats.downloadCount": 1 } },
-    { new: true }
+    { new: true, timestamps: false }
   ).lean().exec();
 
   if (!result) {

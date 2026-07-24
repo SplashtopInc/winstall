@@ -39,7 +39,7 @@ export async function likePack(packId, userId) {
   const updated = await Pack.findByIdAndUpdate(
     packId,
     { $inc: { "stats.likeCount": 1 } },
-    { returnDocument: "after" }
+    { returnDocument: "after", timestamps: false }
   )
     .lean()
     .exec();
@@ -63,7 +63,8 @@ export async function unlikePack(packId, userId) {
 
   await Pack.findOneAndUpdate(
     { _id: packId, "stats.likeCount": { $gt: 0 } },
-    { $inc: { "stats.likeCount": -1 } }
+    { $inc: { "stats.likeCount": -1 } },
+    { timestamps: false }
   ).exec();
 
   const updated = await Pack.findById(packId).lean().exec();
