@@ -83,7 +83,11 @@ export default async function handler(req, res) {
 
 			if (process.env.NODE_ENV === 'development') {
 				console.log('[Installer] WebhookUrl:', builderWebhook);
+			} else {
+				console.log('[Installer] WebhookUrl:', new URL(builderWebhook).hostname);
 			}
+			console.log('[Installer] InstallerVersion:', webhookVersion);
+
 			const webhookResponse = await fetch(builderWebhook, {
 				method: 'POST',
 				headers: webhookHeaders,
