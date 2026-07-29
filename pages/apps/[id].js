@@ -1,12 +1,14 @@
+import Skeleton from "react-loading-skeleton";
+import { useRouter } from "next/router";
+
 import styles from "../../styles/home.module.scss";
 
 import AppDetailView from "../../components/AppDetailView";
-import Footer from "../../components/Footer";
 import AppNotFound from "../../components/AppNotFound";
-import Skeleton from "react-loading-skeleton";
-
-import { useRouter } from "next/router";
+import DonateCard from "../../components/DonateCard";
+import Footer from "../../components/Footer";
 import MetaTags from "../../components/MetaTags";
+import RelatedApps from "../../components/RelatedApps";
 import fetchWinstallAPI from "../../utils/fetchWinstallAPI";
 
 function AppSkeleton() {
@@ -62,6 +64,8 @@ function AppDetail({ app }) {
           </>
         )}
       </div>
+
+      {!router.isFallback && app && <RelatedApps appId={app._id} />}
 
       <Footer />
     </div>
