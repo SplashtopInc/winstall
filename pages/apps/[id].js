@@ -8,6 +8,7 @@ import AppNotFound from "../../components/AppNotFound";
 import DonateCard from "../../components/DonateCard";
 import Footer from "../../components/Footer";
 import MetaTags from "../../components/MetaTags";
+import MoreByPublisher from "../../components/MoreByPublisher";
 import RelatedApps from "../../components/RelatedApps";
 import fetchWinstallAPI from "../../utils/fetchWinstallAPI";
 
@@ -32,6 +33,8 @@ function AppSkeleton() {
 
 function AppDetail({ app }) {
   const router = useRouter();
+  const showRelatedApps = process.env.NEXT_PUBLIC_SHOW_RELATED_APPS === 'true';
+  const showMoreByPublisher = process.env.NEXT_PUBLIC_SHOW_MORE_BY_PUBLISHER === 'true';
   const packageId =
     typeof router.query.id === "string" ? router.query.id : "";
 
@@ -65,7 +68,13 @@ function AppDetail({ app }) {
         )}
       </div>
 
-      {!router.isFallback && app && <RelatedApps appId={app._id} />}
+      {!router.isFallback && app && showMoreByPublisher && (
+        <MoreByPublisher publisher={app.publisher} currentAppId={app._id} />
+      )}
+
+      {!router.isFallback && app && showRelatedApps && (
+        <RelatedApps appId={app._id} />
+      )}
 
       <Footer />
     </div>
