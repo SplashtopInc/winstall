@@ -55,39 +55,7 @@ body {
   overflow-x: hidden;
 }
 
-header {
-  padding: 20px 0;
-  border-radius: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  a {
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 28px;
-    color: var(--accent);
-    border-bottom: 5px solid var(--textColor);
-    transition: 0.3s all ease-in-out;
-
-    &:hover {
-      border-bottom: 5px solid var(--accent);
-    }
-  }
-}
-
 .dark {
-  header {
-    a {
-      color: var(--textColor);
-      border-bottom: 5px solid var(--accent);
-
-      &:hover {
-        color: var(--accent);
-      }
-    }
-  }
-
   .button.accent {
     background-color: var(--accent);
     color: var(--textColor);
@@ -110,10 +78,19 @@ header {
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px 50px;
-  min-height: 100vh;
+  min-height: calc(100vh - 64px);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+
+  > * {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
 }
 
 input[type="text"].search {

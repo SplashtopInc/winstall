@@ -8,7 +8,7 @@ import SingleApp from "../components/SingleApp";
 import ListPackages from "../components/ListPackages";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 
-function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView, alreadySelected=[], limit=-1}) {
+function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView, alreadySelected=[], limit=-1, hideInput=false, onEmptyChange}) {
   const router = useRouter();
   const [results, setResults] = useState([])
   const [searchInput, setSearchInput] = useState("");
@@ -38,6 +38,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
       setSearchInput("");
       setResults([]);
       if(onSearch) onSearch();
+      if(onEmptyChange) onEmptyChange(false);
     }
   })
 
@@ -51,7 +52,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
   }, [searchInput]);
 
   useEffect(() => {
-    const canSearch = !!searchInput && searchInput.length >= 3;
+    const canSearch = !!searchInput && searchInput.trim().length > 0;
 
     if (!canSearch) {
       if (hideSearchingTimerRef.current) {
@@ -87,6 +88,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
   const handleSearch = async (inputVal) => {
     if(inputVal === ""){
       if(onSearch) onSearch("");
+      if(onEmptyChange) onEmptyChange(false);
       setSearchInput("");
       setResults([]);
       setHasSearchResponse(false);
@@ -94,18 +96,20 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
       return;
     }
 
-    if (inputVal.length < 3) {
+    const query = inputVal.trim();
+    if (!query) {
       if(onSearch) onSearch("");
+      if(onEmptyChange) onEmptyChange(false);
       setResults([]);
       setHasSearchResponse(false);
       setIsLoading(false);
       return;
     }
 
-    const query = inputVal.trim();
     const resultLimit = limit && limit > 0 ? limit : 60;
 
     if (onSearch) onSearch(query);
+    if (onEmptyChange) onEmptyChange(false);
 
     const requestId = activeRequestIdRef.current + 1;
     activeRequestIdRef.current = requestId;
@@ -144,6 +148,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
 
     if (error) {
       setResults([]);
+      if (onEmptyChange) onEmptyChange(true);
       return;
     }
 
@@ -158,53 +163,63 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
       }
     });
 
-    setResults(items.slice(0, resultLimit));
+    const nextResults = items.slice(0, resultLimit);
+    setResults(nextResults);
+    if (onEmptyChange) onEmptyChange(nextResults.length === 0);
   };
 
   return (
     <div>
-      <label htmlFor="search" className={styles.searchLabel}>{label || "Search for apps"}</label>
-      <div className={styles.searchBox}>
-        <div className={styles.searchInner}>
-          <FiSearch />
+      {!hideInput && (
+        <>
+          <label htmlFor="search" className={styles.searchLabel}>{label || "Search for apps"}</label>
+          <div className={styles.searchBox}>
+            <div className={styles.searchInner}>
+              <FiSearch />
 
-          <input
-            type="text"
-            minLength={2}
-            onChange={(e) => setSearchInput(e.target.value)}
-            id="search"
-            value={searchInput}
-            autoComplete="off"
-            autoFocus={true}
-            placeholder={placeholder || "Search for apps here"}
-          />
-        </div>
+              <input
+                type="text"
+                minLength={2}
+                onChange={(e) => setSearchInput(e.target.value)}
+                id="search"
+                value={searchInput}
+                autoComplete="off"
+                autoFocus={true}
+                placeholder={placeholder || "Search for apps here"}
+              />
+            </div>
 
-        <div className={styles.tip}>
-          <a href="#" title="Search tips"><FiHelpCircle /></a>
-          <div className={styles.tipData}>
-            <p>Use search prefixes to target a specific field in searches!</p>
-            <ul>
-              <li><code>name:</code> search for an app's name</li>
-              <li><code>publisher:</code> search for apps by a publisher</li>
-              <li><code>tags:</code> search for apps by a tag</li>
-              <li><code>desc:</code> search the description of apps</li>
-            </ul>
-          </div>
-        </div>
-        {showSearching && (
-          <span className={styles.searchingLabel}>Searching...</span>
-        )}
-        {searchInput && results.length === limit &&
-          <p className={styles.searchHint}>
-            Showing {results.length} result
-            {results.length > 1 && "s"}
-            . {results.length == limit &&
-              <a href={`/apps?q=${searchInput}`}>More</a>
+            <div className={styles.tip}>
+              <a href="#" title="Search tips"><FiHelpCircle /></a>
+              <div className={styles.tipData}>
+                <p>Use search prefixes to target a specific field in searches!</p>
+                <ul>
+                  <li><code>name:</code> search for an app's name</li>
+                  <li><code>publisher:</code> search for apps by a publisher</li>
+                  <li><code>tags:</code> search for apps by a tag</li>
+                  <li><code>desc:</code> search the description of apps</li>
+                </ul>
+              </div>
+            </div>
+            {showSearching && (
+              <span className={styles.searchingLabel}>Searching...</span>
+            )}
+            {searchInput && results.length === limit &&
+              <p className={styles.searchHint}>
+                Showing {results.length} result
+                {results.length > 1 && "s"}
+                . {results.length == limit &&
+                  <a href={`/apps?q=${searchInput}`}>More</a>
+                }
+              </p>
             }
-          </p>
-        }
-      </div>
+          </div>
+        </>
+      )}
+
+      {hideInput && showSearching && (
+        <p className={styles.searchingLabelStandalone}>Searching...</p>
+      )}
 
       {searchInput && !isLoading && hasSearchResponse && results.length !== 0 ? (
         <ListPackages>
@@ -222,8 +237,28 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
         </ListPackages>
       ) : (
           <>
-            {searchInput && !isLoading && hasSearchResponse && results.length === 0 && searchInput.length >= 3 ? (
-              <p className={styles.noresults}>Could not find any apps.</p>
+            {searchInput && !isLoading && hasSearchResponse && results.length === 0 && searchInput.trim() ? (
+              hideInput ? (
+                <div className={styles.emptyState}>
+                  <div className={styles.emptyIcon} aria-hidden="true">
+                    <img
+                      src="/assets/search_empty.svg"
+                      alt=""
+                      width={32}
+                      height={32}
+                      draggable={false}
+                    />
+                  </div>
+                  <h2 className={styles.emptyTitle}>
+                    No apps found for "<span className={styles.emptyQuery}>{searchInput}</span>"
+                  </h2>
+                  <p className={styles.emptyDesc}>
+                    We couldn't find any apps matching your search. Try a different keyword or browse these suggestions.
+                  </p>
+                </div>
+              ) : (
+                <p className={styles.noresults}>Could not find any apps.</p>
+              )
             ) : ""}
           </>
         )}

@@ -12,10 +12,12 @@ import {
   FiChevronDown,
   FiX,
   FiUser,
+  FiSearch,
 } from "react-icons/fi";
 
 import UserMenu from "./UserMenu";
 import DeleteAccountModal from "./DeleteAccountModal";
+import SearchDialog from "./SearchDialog";
 import { useAuthGate } from "../ctx/AuthGateContext";
 import { deleteAccount } from "../utils/fetchUserAPI";
 import { invalidateOwnPacksCache } from "../utils/packHelpers";
@@ -36,6 +38,7 @@ Router.onRouteChangeError = () => {
 
 function Nav() {
   const [ddShown, setDDShown] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const navRef = useRef(null);
   const router = useRouter();
   const pathname = router.pathname;
@@ -86,9 +89,9 @@ function Nav() {
   };
 
   return (
-    <header>
-      <div className={styles.leftSection}>
-        <div className={styles.brand}>
+    <header className={styles.header}>
+      <div className={styles.inner}>
+        <Link href="/" className={styles.brand}>
           <img
             src="/assets/winstall_logo.svg"
             alt="winstall"
@@ -101,61 +104,75 @@ function Nav() {
             className={`${styles.brandLogo} ${styles.brandLogoDark}`}
             draggable={false}
           />
-        </div>
+        </Link>
 
         <div className={styles.nav}>
           <Link
             href="/"
-            className={`${styles.mainLink} ${(pathname === '/' || pathname === '') ? styles.selected : ''}`}
+            className={`${styles.mainLink} ${
+              pathname === "/" || pathname === "" ? styles.selected : ""
+            }`}
           >
             Discover App
           </Link>
-          <span className={styles.linkWithTag}>
-            <Link
-              href="/express"
-              className={`${styles.mainLink} ${pathname === '/express' ? styles.selected : ''}`}
-            >
-              Express Setup
-            </Link>
-            <img src="/tag_new.svg" alt="new" className={styles.newTag} />
-          </span>
-          <span className={styles.linkWithTag}>
-            <Link
-              href="/packs"
-              className={`${styles.mainLink} ${pathname.startsWith('/packs') ? styles.selected : ''}`}
-            >
-              App Packs
-            </Link>
-            <img src="/tag_new.svg" alt="new" className={styles.newTag} />
-          </span>
+          <Link
+            href="/express"
+            className={`${styles.mainLink} ${
+              pathname === "/express" ? styles.selected : ""
+            }`}
+          >
+            Express Setup
+            <span className={styles.badge}>New</span>
+          </Link>
+          <Link
+            href="/packs"
+            className={`${styles.mainLink} ${
+              pathname.startsWith("/packs") ? styles.selected : ""
+            }`}
+          >
+            App Packs
+            <span className={styles.badge}>New</span>
+          </Link>
         </div>
-      </div>
 
-      <div className={styles.profile} ref={navRef}>
-        <Link href="/apps">
-          <FiPackage />
-          <p>Apps</p>
-        </Link>
-        {/* <a
-          href="https://ko-fi.com/mehedi"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={styles.justIcon}
+        <div className={styles.profile} ref={navRef}>
+          <button
+            type="button"
+            className={styles.searchTrigger}
+            aria-label="Search apps"
+            onClick={() => setSearchOpen(true)}
+          >
+            <FiSearch size={15} strokeWidth={2.5} />
+            <span className={styles.searchTriggerText}>Search apps...</span>
+          </button>
+          <Link href="/apps" className={styles.navBtn}>
+            <FiPackage size={16} />
+            <span>Apps</span>
+          </Link>
+          <span
+            onClick={switchTheme}
+            className={`${styles.navBtn} ${styles.navBtnIcon}`}
+            role="button"
+            aria-label="Switch theme"
+          >
+            <FiMoon className="moon" size={18} />
+            <FiSun className="sun" size={18} />
+            <p className={styles.ddOnly}>Switch theme</p>
+          </span>
+          <NavUser />
+        </div>
+
+        <span
+          className={`mobileDD ${styles.dropdown}`}
+          onClick={toggleDD}
+          role="button"
+          aria-label="Menu"
         >
-          <FiHeart />
-          <p className={styles.ddOnly}>Support winstall</p>
-        </a> */}
-        <span onClick={switchTheme} className={styles.justIcon}>
-          <FiMoon className="moon" />
-          <FiSun className="sun" />
-          <p className={styles.ddOnly}>Switch theme</p>
+          {ddShown ? <FiX /> : <FiChevronDown />}
         </span>
-        <NavUser />
       </div>
 
-      <span className={`mobileDD ${styles.dropdown}`} onClick={toggleDD}>
-        {ddShown ? <FiX /> : <FiChevronDown />}
-      </span>
+      <SearchDialog isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );
 }
@@ -203,7 +220,7 @@ const NavUser = () => {
     <div className={styles.userMenuAnchor}>
       <span
         onClick={handleAvatarClick}
-        className={`${styles.justIcon} ${
+        className={`${styles.navBtn} ${styles.navBtnIcon} ${
           isLoggedIn ? styles.userAvatar : styles.userAvatarLoggedOut
         }`}
         role="button"
@@ -215,7 +232,7 @@ const NavUser = () => {
         aria-expanded={isLoggedIn ? menuOpen : undefined}
       >
         {!isLoggedIn ? (
-          <FiUser />
+          <FiUser size={18} />
         ) : avatarImage ? (
           <img src={avatarImage} alt="" referrerPolicy="no-referrer" />
         ) : (

@@ -3,7 +3,7 @@ import styles from "../../styles/home.module.scss";
 import SingleApp from "../../components/SingleApp";
 
 import Footer from "../../components/Footer";
-import Error from "../../components/Error";
+import AppNotFound from "../../components/AppNotFound";
 
 import Skeleton from "react-loading-skeleton";
 
@@ -32,13 +32,19 @@ function AppSkeleton() {
 
 function AppDetail({ app, popular}) {
     const router = useRouter();
-    const fallbackMessage = {
-        title: "Sorry! We could not load this app.",
-        subtitle: "Unfortunately, this app could not be loaded. Either it does not exist, or something else went wrong. Please try again later."
-    }
+    const packageId = typeof router.query.id === "string" ? router.query.id : "";
 
     if(!router.isFallback && !app){
-        return <Error {...fallbackMessage}/>
+        return (
+          <div>
+            <MetaTags
+              title="App not found | winstall"
+              path={packageId ? `/apps/${packageId}` : "/apps"}
+            />
+            <AppNotFound packageId={packageId} />
+            <Footer />
+          </div>
+        );
     }
 
     return (

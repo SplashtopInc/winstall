@@ -1,6 +1,5 @@
 import styles from "../styles/home.module.scss";
 
-import Search from "../components/Search";
 import PopularApps from "../components/PopularApps";
 import MetaTags from "../components/MetaTags";
 import Recommendations from "../components/Recommendations";
@@ -66,7 +65,7 @@ function Home({ popular, appsTotal, recommended, error, buildTime }) {
     return <Error title="Oops!" subtitle={clientError} />;
   }
 
-  const searchLabel = `${Math.floor(data.appsTotal / 50) * 50}+ packages and growing.`;
+  const packagesCount = `${Math.floor(data.appsTotal / 50) * 50}+ packages and growing.`;
 
   return (
     <div>
@@ -75,12 +74,14 @@ function Home({ popular, appsTotal, recommended, error, buildTime }) {
         <div className="illu-box">
           <div>
             <h1>
-              Browse the winget repository.
+              Browse the winget <br/>repository.
             </h1>
             <p className={styles.lead}>
               Install Windows apps quickly with Windows Package Manager.
             </p>
-            <Search label={searchLabel} limit={4}/>
+            {data.appsTotal > 0 && (
+              <p className={styles.count}>{packagesCount}</p>
+            )}
           </div>
           <div className="art">
               <img

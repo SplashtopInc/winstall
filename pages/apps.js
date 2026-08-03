@@ -24,6 +24,7 @@ function Store({ data, error, buildTime }) {
   const router = useRouter();
   const [apps, setApps] = useState([]);
   const [searchInput, setSearchInput] = useState();
+  const [searchEmpty, setSearchEmpty] = useState(false);
   const [sort, setSort] = useState();
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -247,20 +248,24 @@ function Store({ data, error, buildTime }) {
   };
 
   const Title = () => {
+    const queryText = searchInput || router.query.q;
+
     return (
       <>
-        {!searchInput && (
+        {!queryText && (
           <h1>
             All apps
             {totalKnown ? ` (${total.toLocaleString()})` : ""}
           </h1>
         )}
-        {searchInput && (
+        {queryText && (
           <>
-            {searchInput.startsWith("tags: ") && (
-              <h1>Tag: {searchInput.split(": ")[1]}</h1>
+            {String(queryText).startsWith("tags: ") && (
+              <h1>Tag: {String(queryText).split(": ")[1]}</h1>
             )}
-            {!searchInput.startsWith("tags: ") && <h1>Search results</h1>}
+            {!String(queryText).startsWith("tags: ") && (
+              <h1>Search results for "{queryText}"</h1>
+            )}
           </>
         )}
       </>
@@ -288,16 +293,23 @@ function Store({ data, error, buildTime }) {
     <div>
       <MetaTags title="Apps - winstall" path="/apps" />
 
-      <div className={styles.controls}>
-        <Title />
+      {!searchEmpty && (
+        <div className={styles.controls}>
+          <Title />
 
-        <Pagination small disable={searchInput ? true : false} />
-      </div>
+          <Pagination small disable={searchInput ? true : false} />
+        </div>
+      )}
 
       <Search
-        onSearch={(q) => setSearchInput(q)}
+        onSearch={(q) => {
+          setSearchInput(q);
+          if (!q) setSearchEmpty(false);
+        }}
+        onEmptyChange={setSearchEmpty}
         label={"Search for apps"}
         placeholder={"Enter you search term here"}
+        hideInput={Boolean(router.query.q)}
       />
 
       <div className={styles.controls}>
@@ -335,13 +347,15 @@ function Store({ data, error, buildTime }) {
         </ul>
       )}
 
-      <div className={styles.pagination}>
-        <Pagination disable={searchInput ? true : false} />
-        <em>
-          Hit the <FiArrowLeftCircle /> and <FiArrowRightCircle /> keys on your
-          keyboard to navigate between pages quickly.
-        </em>
-      </div>
+      {!searchInput && (
+        <div className={styles.pagination}>
+          <Pagination disable={searchInput ? true : false} />
+          <em>
+            Hit the <FiArrowLeftCircle /> and <FiArrowRightCircle /> keys on your
+            keyboard to navigate between pages quickly.
+          </em>
+        </div>
+      )}
 
       <Footer />
     </div>

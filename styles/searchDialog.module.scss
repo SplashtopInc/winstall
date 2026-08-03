@@ -1,0 +1,325 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: hsla(260, 30%, 10%, 0.42);
+  z-index: 1100;
+  display: flex;
+  justify-content: center;
+  padding-top: 72px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.overlayOpen {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dialog {
+  width: 560px;
+  max-width: calc(100vw - 32px);
+  max-height: 480px;
+  background: var(--main-bg);
+  border-radius: 16px;
+  box-shadow:
+    0 4px 8px hsla(260, 30%, 20%, 0.06),
+    0 20px 56px hsla(260, 30%, 20%, 0.16);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(10px) scale(0.97);
+  transition: transform 0.2s cubic-bezier(0, 0, 0.2, 1);
+  align-self: flex-start;
+  font-family: "Nunito", sans-serif;
+}
+
+.overlayOpen .dialog {
+  transform: translateY(0) scale(1);
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-bottom: 1px solid color-mix(in srgb, var(--textColor) 8%, transparent);
+  flex-shrink: 0;
+}
+
+.searchIcon {
+  color: color-mix(in srgb, var(--textColor) 45%, transparent);
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--textColor);
+  background: transparent;
+  min-width: 0;
+
+  &::placeholder {
+    color: color-mix(in srgb, var(--textColor) 45%, transparent);
+    font-weight: 500;
+  }
+}
+
+.clearButton {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: none;
+  background: var(--card-bg);
+  color: color-mix(in srgb, var(--textColor) 45%, transparent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  padding: 0;
+
+  &:hover {
+    opacity: 0.85;
+    color: var(--textColor);
+  }
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 8px 8px;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--textColor) 20%, transparent);
+    border-radius: 2px;
+  }
+}
+
+.sectionLabel {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: color-mix(in srgb, var(--textColor) 45%, transparent);
+  padding: 8px 12px 4px;
+}
+
+.recentTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 12px 10px;
+}
+
+.recentTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  background: var(--card-bg);
+  border: 1px solid color-mix(in srgb, var(--textColor) 8%, transparent);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--textColor) 72%, transparent);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  font-family: inherit;
+  line-height: 1.4;
+
+  &:hover {
+    background: color-mix(in srgb, var(--card-bg) 70%, var(--textColor));
+    border-color: color-mix(in srgb, var(--textColor) 14%, transparent);
+    color: var(--textColor);
+  }
+
+  svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+}
+
+.recentAppIcon {
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+
+  :global(img),
+  :global(picture) {
+    width: 14px;
+    height: 14px;
+  }
+
+  :global(img) {
+    object-fit: contain;
+    border-radius: 3px;
+  }
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+
+  &:hover,
+  &.itemActive {
+    background: var(--card-bg);
+
+    .itemArrow {
+      opacity: 1;
+    }
+  }
+}
+
+.itemIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+
+  :global(img),
+  :global(picture) {
+    width: 20px;
+    height: 20px;
+  }
+
+  :global(img) {
+    object-fit: contain;
+  }
+}
+
+.itemInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--textColor);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  mark {
+    background: none;
+    color: var(--accent);
+    font-weight: 800;
+  }
+}
+
+.itemMeta {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--textColor) 45%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemArrow {
+  color: color-mix(in srgb, var(--textColor) 45%, transparent);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.footer {
+  border-top: 1px solid color-mix(in srgb, var(--textColor) 8%, transparent);
+  padding: 7px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+  background: color-mix(in srgb, var(--card-bg) 40%, var(--main-bg));
+}
+
+.footerHints {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--textColor) 45%, transparent);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  kbd {
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    background: var(--main-bg);
+    border: 1px solid color-mix(in srgb, var(--textColor) 14%, transparent);
+    border-radius: 4px;
+    padding: 0 4px;
+    line-height: 1.7;
+    color: color-mix(in srgb, var(--textColor) 72%, transparent);
+  }
+}
+
+.viewAll {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  margin-left: auto;
+
+  &:hover {
+    color: var(--altAccent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+}
+
+@media (max-width: 600px) {
+  .overlay {
+    padding-top: 48px;
+  }
+
+  .dialog {
+    max-height: calc(100vh - 64px);
+  }
+}

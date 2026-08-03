@@ -1,42 +1,82 @@
-
-
 .intro {
-    padding-top: 50px;
-    margin-bottom: 50px;
+  padding: 48px 0 32px;
+  margin-bottom: 0;
 
-    h1{
-        max-width: 600px;
-        font-size: 45px;
+  h1 {
+    max-width: 600px;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--textColor);
+    margin: 0;
+  }
+
+  :global(.illu-box .art) {
+    height: auto;
+    align-self: stretch;
+    position: relative;
+    min-height: 0;
+
+    img {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 100%;
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
     }
+  }
 }
 
-p.lead {
-    font-size: 150%;
+.lead {
+  font-size: 16px;
+  color: var(--hero-lead, #5c5c70);
+  margin-top: 10px;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.count {
+  font-size: 14px;
+  color: var(--hero-count, #8e8e9f);
+  font-weight: 600;
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+
+:global(.dark) {
+  .intro {
+    --hero-lead: rgba(255, 255, 255, 0.7);
+    --hero-count: rgba(255, 255, 255, 0.55);
+  }
 }
 
 .searchFilters {
-    display: flex;
-    gap: 20px;
-    align-items: flex-end;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  flex-wrap: wrap;
 }
 
-.selectedApps{
-    padding-bottom: 20px;
-    margin-top: 50px;
+.selectedApps {
+  padding-bottom: 20px;
+  margin-top: 50px;
 }
 
-@media(max-width: 590px){
-    .intro{
-        padding-top: 0px !important;
+@media (max-width: 590px) {
+  .intro {
+    padding-top: 24px !important;
 
-        textarea{
-            width: auto !important;
-        }
+    textarea {
+      width: auto !important;
     }
+  }
 
-    .searchFilters {
-        flex-direction: column;
-        align-items: stretch;
-    }
+  .searchFilters {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

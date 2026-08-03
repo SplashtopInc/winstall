@@ -148,8 +148,8 @@ function winstall({ Component, pageProps: { session, ...pageProps } }) {
         <SelectedContext.Provider value={selectedAppValue}>
           <PopularContext.Provider value={popularApps}>
             <>
+              <Nav />
               <div className="container">
-                <Nav />
                 <Component {...pageProps} />
               </div>
               <SelectionBar />
