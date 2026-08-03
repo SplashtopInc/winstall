@@ -24,7 +24,6 @@ function Store({ data, error, buildTime }) {
   const router = useRouter();
   const [apps, setApps] = useState([]);
   const [searchInput, setSearchInput] = useState();
-  const [searchEmpty, setSearchEmpty] = useState(false);
   const [sort, setSort] = useState();
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -259,14 +258,7 @@ function Store({ data, error, buildTime }) {
           </h1>
         )}
         {queryText && (
-          <>
-            {String(queryText).startsWith("tags: ") && (
-              <h1>Tag: {String(queryText).split(": ")[1]}</h1>
-            )}
-            {!String(queryText).startsWith("tags: ") && (
-              <h1>Search results for "{queryText}"</h1>
-            )}
-          </>
+          <h1>Search results for &quot;{queryText}&quot;</h1>
         )}
       </>
     );
@@ -293,20 +285,16 @@ function Store({ data, error, buildTime }) {
     <div>
       <MetaTags title="Apps - winstall" path="/apps" />
 
-      {!searchEmpty && (
-        <div className={styles.controls}>
-          <Title />
+      <div className={styles.controls}>
+        <Title />
 
-          <Pagination small disable={searchInput ? true : false} />
-        </div>
-      )}
+        <Pagination small disable={searchInput ? true : false} />
+      </div>
 
       <Search
         onSearch={(q) => {
           setSearchInput(q);
-          if (!q) setSearchEmpty(false);
         }}
-        onEmptyChange={setSearchEmpty}
         label={"Search for apps"}
         placeholder={"Enter you search term here"}
         hideInput={Boolean(router.query.q)}

@@ -444,7 +444,7 @@ const Tags = ({ tags }) => {
       <ul>
         {tags.map((tag, i) => (
           <li key={i}>
-            <Link href={`/apps?q=tags: ${tag}`}>
+            <Link href={{ pathname: "/apps", query: { q: `tags: ${tag}` } }}>
               {tag}
             </Link>
           </li>

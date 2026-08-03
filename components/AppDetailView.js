@@ -310,7 +310,7 @@ export default function AppDetailView({ app }) {
             {app.tags.map((tag) => (
               <Link
                 key={tag}
-                href={`/apps?q=tags: ${tag}`}
+                href={{ pathname: "/apps", query: { q: `tags: ${tag}` } }}
                 className={styles.tag}
               >
                 {tag}
