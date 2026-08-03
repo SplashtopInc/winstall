@@ -193,7 +193,7 @@ export default function AppDetailView({ app }) {
 
       <div className={styles.inst}>
         <div className={styles.instHead}>
-          <p className={styles.instLabel}>Install with winget</p>
+          <p className={styles.instLabel}>Install {app.name} with winget</p>
           {versions.length > 0 && (
             <div className={styles.verWrap}>
               <label className={styles.verLabel} htmlFor="app-version-select">

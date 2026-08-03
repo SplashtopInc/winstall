@@ -215,7 +215,8 @@
 .btnPrimary {
   background: var(--accent);
   color: #fff;
-  min-width: 148px;
+  min-width: 160px;
+  justify-content: flex-start;
 
   &:hover {
     background: var(--altAccent);
