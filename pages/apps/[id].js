@@ -55,7 +55,7 @@ function AppDetail({ app }) {
           <>
             <MetaTags
               title={`Install ${app.name} with WinGet | winstall`}
-              desc={`Install ${app.name} via WinGet. Copy the winget install command instantly. ${app.desc}`}
+              desc={`Install ${app.name} via WinGet. Copy the winget install command instantly. ${app.fullDesc || app.desc}`}
               path={`/apps/${app._id}`}
             />
             <AppDetailView app={app} />
@@ -79,6 +79,7 @@ function slimAppForDetailPage(app) {
     _id: app._id,
     name: app.name,
     desc: app.desc || "",
+    fullDesc: app.fullDesc || "",
     homepage: app.homepage || "",
     icon: app.icon || "",
     latestVersion: app.latestVersion || "",

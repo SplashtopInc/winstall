@@ -29,10 +29,24 @@ export default function AppDetailView({ app }) {
   const [toast, setToast] = useState("");
   const [shareOpen, setShareOpen] = useState(false);
   const [copyStatus, setCopyStatus] = useState("idle");
+  const [tagsExpanded, setTagsExpanded] = useState(false);
   const shareRef = useRef(null);
+
+  const TAG_PREVIEW_COUNT = 8;
+  const allTags = Array.isArray(app.tags) ? app.tags : [];
+  const tagsOverflow = allTags.length > TAG_PREVIEW_COUNT;
+  const visibleTags =
+    tagsExpanded || !tagsOverflow
+      ? allTags
+      : allTags.slice(0, TAG_PREVIEW_COUNT);
+  const hiddenTagCount = allTags.length - TAG_PREVIEW_COUNT;
 
   const shareUrl = buildSiteUrl(`/apps/${app._id}`);
   const shareText = `Install ${app.name} instantly with winget.\nGet it on Winstall:\n${shareUrl}\n#winget #winstall`;
+
+  useEffect(() => {
+    setTagsExpanded(false);
+  }, [app._id]);
 
   useEffect(() => {
     setVersion(latestVersion);
@@ -303,11 +317,11 @@ export default function AppDetailView({ app }) {
 
       <section className={styles.about}>
         <p className={styles.aboutText}>
-          {app.desc || "No description available for this app."}
+          {app.fullDesc || app.desc || "No description available for this app."}
         </p>
-        {app.tags?.length > 0 && (
+        {allTags.length > 0 && (
           <div className={styles.tags}>
-            {app.tags.map((tag) => (
+            {visibleTags.map((tag) => (
               <Link
                 key={tag}
                 href={{ pathname: "/apps", query: { q: `tags: ${tag}` } }}
@@ -316,6 +330,16 @@ export default function AppDetailView({ app }) {
                 {tag}
               </Link>
             ))}
+            {tagsOverflow && (
+              <button
+                type="button"
+                className={styles.tagMore}
+                onClick={() => setTagsExpanded((v) => !v)}
+                aria-expanded={tagsExpanded}
+              >
+                {tagsExpanded ? "Show less" : `+${hiddenTagCount} more`}
+              </button>
+            )}
           </div>
         )}
       </section>

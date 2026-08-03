@@ -353,6 +353,24 @@
   }
 }
 
+.tagMore {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 50px;
+  border: 1.5px dashed color-mix(in srgb, var(--textColor) 22%, transparent);
+  background: transparent;
+  color: var(--detail-faint, #8e8e9f);
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+}
+
 .info {
   margin-top: 32px;
   padding-top: 28px;
