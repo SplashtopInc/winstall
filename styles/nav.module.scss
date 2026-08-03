@@ -53,7 +53,7 @@
 
   .brandLogo {
     display: block;
-    height: 48px;
+    height: 36px;
     width: auto;
   }
 
@@ -83,8 +83,8 @@
     height: auto !important;
     border-radius: 8px !important;
     border-bottom: none !important;
-    font-weight: 700;
-    font-size: 18px;
+    font-weight: 600;
+    font-size: 20px;
     color: var(--textColor) !important;
     line-height: 1.2;
     text-decoration: none;
@@ -140,9 +140,10 @@
   align-items: center;
   gap: 8px;
   min-width: 220px;
-  padding: 8px 16px;
+  height: 40px;
+  padding: 0 16px;
   margin-right: 4px;
-  background: var(--nav-hover-bg, #f7f6f9);
+  background: var(--main-bg);
   border: 1px solid var(--nav-border, #e5e4e8);
   border-radius: 999px;
   cursor: pointer;
@@ -150,10 +151,11 @@
   color: var(--nav-muted, #8e8e9f);
   font-family: inherit;
   box-shadow: none;
+  box-sizing: border-box;
 
   &:hover {
-    border-color: var(--nav-border-hover, #d0cfd4);
-    background: var(--nav-hover-bg-strong, #eeedf1);
+    border-color: var(--nav-border, #e5e4e8);
+    background: var(--nav-hover-bg, #f7f6f9);
   }
 
   svg {
@@ -182,7 +184,7 @@
   transition: all 0.15s ease;
   font-family: inherit;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 400;
   padding: 0 16px;
   gap: 6px;
   text-decoration: none !important;
@@ -340,11 +342,11 @@
 }
 
 :global(.dark) .searchTrigger {
-  background: #2d2e30;
+  background: var(--main-bg);
 }
 
 :global(.dark) .navBtn {
-  background: transparent !important;
+  background: var(--main-bg) !important;
 }
 
 @media (max-width: 900px) {

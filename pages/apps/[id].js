@@ -1,82 +1,71 @@
 import styles from "../../styles/home.module.scss";
 
-import SingleApp from "../../components/SingleApp";
-
+import AppDetailView from "../../components/AppDetailView";
 import Footer from "../../components/Footer";
 import AppNotFound from "../../components/AppNotFound";
-
 import Skeleton from "react-loading-skeleton";
 
 import { useRouter } from "next/router";
 import MetaTags from "../../components/MetaTags";
 import fetchWinstallAPI from "../../utils/fetchWinstallAPI";
-import DonateCard from "../../components/DonateCard";
 
 function AppSkeleton() {
-    return (
-      <div>
-        <div className="skeleton-group">
-          <Skeleton circle={true} height={30} width={30} />
-          <Skeleton count={1} height={25} />
-        </div>
-        <Skeleton count={5} height={20} />
-        <div className="skeleton-list">
-          <Skeleton count={5} width={250} />
-        </div>
-        <div className="skeleton-button">
-          <Skeleton count={1} width={140} height={50} />
-        </div>
+  return (
+    <div>
+      <div className="skeleton-group">
+        <Skeleton circle={true} height={44} width={44} />
+        <Skeleton count={1} height={28} />
       </div>
-    );
+      <Skeleton count={1} height={56} style={{ marginTop: 20 }} />
+      <Skeleton count={3} height={20} style={{ marginTop: 24 }} />
+      <div className="skeleton-list">
+        <Skeleton count={5} width={250} />
+      </div>
+      <div className="skeleton-button">
+        <Skeleton count={1} width={180} height={44} />
+      </div>
+    </div>
+  );
 }
 
-function AppDetail({ app, popular}) {
-    const router = useRouter();
-    const packageId = typeof router.query.id === "string" ? router.query.id : "";
+function AppDetail({ app }) {
+  const router = useRouter();
+  const packageId =
+    typeof router.query.id === "string" ? router.query.id : "";
 
-    if(!router.isFallback && !app){
-        return (
-          <div>
-            <MetaTags
-              title="App not found | winstall"
-              path={packageId ? `/apps/${packageId}` : "/apps"}
-            />
-            <AppNotFound packageId={packageId} />
-            <Footer />
-          </div>
-        );
-    }
-
+  if (!router.isFallback && !app) {
     return (
       <div>
-        <div className={styles.intro}>
-          <div className="illu-box">
-            {router.isFallback ? (
-              <AppSkeleton/>
-            ) : (
-              <div>
-                <MetaTags
-                  title={`Install ${app.name} with WinGet | winstall`}
-                  desc={`Install ${app.name} via WinGet. Copy the winget install command instantly. ${app.desc}`}
-                  path={`/apps/${app._id}`}
-                />
-                <ul className="largeApp"><SingleApp app={app} large={true}/></ul>
-                <DonateCard addMargin="top"/>
-              </div>
-            )}
-            <div className="art">
-              <img
-                src="/assets/logo.svg"
-                draggable={false}
-                alt="winstall logo"
-              />
-            </div>
-          </div>
-        </div>
-
+        <MetaTags
+          title="App not found | winstall"
+          path={packageId ? `/apps/${packageId}` : "/apps"}
+        />
+        <AppNotFound packageId={packageId} />
         <Footer />
       </div>
     );
+  }
+
+  return (
+    <div>
+      <div className={styles.intro}>
+        {router.isFallback ? (
+          <AppSkeleton />
+        ) : (
+          <>
+            <MetaTags
+              title={`Install ${app.name} with WinGet | winstall`}
+              desc={`Install ${app.name} via WinGet. Copy the winget install command instantly. ${app.desc}`}
+              path={`/apps/${app._id}`}
+            />
+            <AppDetailView app={app} />
+          </>
+        )}
+      </div>
+
+      <Footer />
+    </div>
+  );
 }
 
 /**
@@ -84,54 +73,50 @@ function AppDetail({ app, popular}) {
  * Full API payloads (esp. installers[] per version) easily exceed Next.js's 128 kB page-data limit.
  */
 function slimAppForDetailPage(app) {
-    if (!app) return null;
+  if (!app) return null;
 
-    return {
-        _id: app._id,
-        name: app.name,
-        desc: app.desc || "",
-        homepage: app.homepage || "",
-        icon: app.icon || "",
-        latestVersion: app.latestVersion || "",
-        license: app.license || "",
-        licenseUrl: app.licenseUrl || "",
-        minOS: app.minOS || "",
-        publisher: app.publisher || "",
-        tags: Array.isArray(app.tags) ? app.tags : [],
-        updatedAt: app.updatedAt || null,
-        versions: Array.isArray(app.versions)
-            ? app.versions.map((v) => ({
-                  version: v.version,
-                  installerType: v.installerType || "",
-                  // Download link only uses installers[0]
-                  installers:
-                      Array.isArray(v.installers) && v.installers.length
-                          ? [v.installers[0]]
-                          : [],
-              }))
-            : [],
-    };
+  return {
+    _id: app._id,
+    name: app.name,
+    desc: app.desc || "",
+    homepage: app.homepage || "",
+    icon: app.icon || "",
+    latestVersion: app.latestVersion || "",
+    license: app.license || "",
+    licenseUrl: app.licenseUrl || "",
+    minOS: app.minOS || "",
+    publisher: app.publisher || "",
+    copyright: app.copyright || "",
+    tags: Array.isArray(app.tags) ? app.tags : [],
+    updatedAt: app.updatedAt || null,
+    versions: Array.isArray(app.versions)
+      ? app.versions.map((v) => ({
+          version: v.version,
+        }))
+      : [],
+  };
 }
 
 export async function getStaticPaths() {
-    return {
-        paths: [],
-        fallback: true,
-    };
+  return {
+    paths: [],
+    fallback: true,
+  };
 }
 
 export async function getStaticProps({ params }) {
-    try{
-        let { response: app } = await fetchWinstallAPI(`/apps/${params.id}`);
+  try {
+    let { response: app } = await fetchWinstallAPI(`/apps/${params.id}`);
 
-        // Don't transform icon here - let AppIcon component handle it
-        // This ensures NEXT_PUBLIC_WINSTALL_API_BASE is read at runtime,not build time
+    const slimApp = slimAppForDetailPage(app);
 
-        const slimApp = slimAppForDetailPage(app);
-        return { props: slimApp ? { app: slimApp } : {}, revalidate: 3600 }
-    } catch(err) {
-        return { props: {}, revalidate: 3600 };
-    }
+    return {
+      props: slimApp ? { app: slimApp } : {},
+      revalidate: 3600,
+    };
+  } catch (err) {
+    return { props: {}, revalidate: 3600 };
+  }
 }
 
 export default AppDetail;
