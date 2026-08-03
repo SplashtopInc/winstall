@@ -1,0 +1,82 @@
+[
+  {
+    "id": "sba-switch-tv",
+    "product": "SBA",
+    "angle": "Switch_TV",
+    "headline": "Switch from TeamViewer to Splashtop and save at least 50%",
+    "body": "Transparent pricing, no 28 day cancellation trap, high performance and reliability, best in class customer service.",
+    "cta": "Start free trial",
+    "targetUrl": "https://www.splashtop.com/products/remote-access",
+    "enabled": true
+  },
+  {
+    "id": "sba-remote-access",
+    "product": "SBA",
+    "angle": "RemoteAccess",
+    "headline": "Your build machine, from anywhere.",
+    "body": "Full-speed remote to your GPU and local tools not a laggy screen share.",
+    "cta": "Start free trial",
+    "targetUrl": "https://www.splashtop.com/products/remote-access",
+    "enabled": true
+  },
+  {
+    "id": "aem-fleet-deploy",
+    "product": "AEM",
+    "angle": "FleetDeploy",
+    "headline": "One winget script. Every PC.",
+    "body": "Turn today’s install into zero touch deployment across your fleet with Splashtop AEM.",
+    "cta": "Start free trial",
+    "targetUrl": "https://www.splashtop.com/aem",
+    "enabled": true
+  },
+  {
+    "id": "srs-switch-tv",
+    "product": "SRS",
+    "angle": "Switch_TV",
+    "headline": "Switch from TeamViewer QuickSupport to Splashtop SOS and save at least 50%",
+    "body": "Transparent pricing, no 28 day cancellation trap, instant unattended access when installs go wrong, best in class customer service.",
+    "cta": "Start free trial",
+    "targetUrl": "https://www.splashtop.com/sos",
+    "enabled": true
+  },
+  {
+    "id": "srs-instant-support",
+    "product": "SRS",
+    "angle": "InstantSupport",
+    "headline": "Install stuck? Be on their PC in seconds.",
+    "body": "Send one link no agent to pre install. Fix it live.",
+    "cta": "Start free trial",
+    "targetUrl": "https://www.splashtop.com/sos",
+    "enabled": true
+  },
+  {
+    "id": "ent-no-overhead",
+    "product": "ENT",
+    "angle": "NoOverhead",
+    "headline": "Enterprise remote access without the heavy stack.",
+    "body": "SSO, centralized control, and compliance without a months long rollout.",
+    "cta": "Start free trial",
+    "targetUrl": "https://www.splashtop.com/enterprise",
+    "enabled": true
+  },
+  {
+    "id": "ssw-cloud-access",
+    "product": "SSW",
+    "angle": "CloudAccess",
+    "headline": "Access AWS and Azure without a standing VPN.",
+    "body": "Give engineers time bound access to the tools they need not the whole network.",
+    "cta": "Explore",
+    "targetUrl": "https://www.splashtop.com/secure",
+    "enabled": true
+  },
+  {
+    "id": "ssd-guardian-alert",
+    "product": "SSD",
+    "angle": "GuardianAlert",
+    "headline": "When something’s wrong on Mom’s PC, you’ll know and can help.",
+    "body": "Get an alert, then remote in and fix it. 7 days of free protection to start.",
+    "cta": "Start free protection",
+    "targetUrl": "https://www.splashtop.com/shield",
+    "enabled": true
+  }
+]

@@ -442,7 +442,7 @@ export default function AppDetailView({ app }) {
       </section>
 
       <div className={styles.donateWrap}>
-        <DonateCard addMargin="" />
+        <DonateCard addMargin="" placement="app-detail" />
       </div>
 
       <Toast message={toast} onDismiss={() => setToast("")} duration={2000} />

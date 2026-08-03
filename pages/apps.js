@@ -329,7 +329,9 @@ function Store({ data, error, buildTime }) {
                 showSelectCheckbox
               />
 
-              {index % 15 === 0 && <DonateCard addMargin="" />}
+              {index % 15 === 0 && (
+                <DonateCard addMargin="" placement="apps-list" />
+              )}
             </React.Fragment>
           ))}
         </ul>

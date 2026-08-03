@@ -93,7 +93,7 @@ function Home({ popular, appsTotal, recommended, error, buildTime }) {
         </div>
       </div>
 
-      <DonateCard />
+      <DonateCard placement="home" />
 
 
       <PopularApps apps={data.popular} />
