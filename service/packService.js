@@ -45,7 +45,9 @@ function normalizeAppSnapshot(item) {
   const snapshot = {
     appId,
     appName,
-    appVersion: String(item.appVersion ?? item.latestVersion ?? ""),
+    appVersion: String(
+      item.selectedVersion ?? item.appVersion ?? item.latestVersion ?? ""
+    ),
   };
 
   if (item.icon) {

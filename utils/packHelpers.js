@@ -31,7 +31,8 @@ export function toAppSnapshot(app) {
   const snapshot = {
     appId,
     appName: app.appName ?? app.name ?? "",
-    appVersion: app.appVersion ?? app.latestVersion ?? "",
+    appVersion:
+      app.selectedVersion ?? app.appVersion ?? app.latestVersion ?? "",
     icon: app.icon,
     publisher: app.publisher,
   };
