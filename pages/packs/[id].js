@@ -15,6 +15,7 @@ import {
 import PageWrapper from "../../components/PageWrapper";
 import MetaTags from "../../components/MetaTags";
 import Error from "../../components/Error";
+import PackNotFound from "../../components/PackNotFound";
 import PackDetailAppCard from "../../components/PackDetailAppCard";
 import InstallDrawer from "../../components/InstallDrawer";
 import CreatePackModal from "../../components/CreatePackModal";
@@ -139,6 +140,7 @@ export default function PackDetailPage() {
   const [apps, setApps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [notFound, setNotFound] = useState(false);
   const [user, setUser] = useState(null);
   const [installDrawerOpen, setInstallDrawerOpen] = useState(false);
   const [copying, setCopying] = useState(false);
@@ -190,11 +192,21 @@ export default function PackDetailPage() {
   const loadPack = useCallback(async (packId) => {
     setLoading(true);
     setError(null);
+    setNotFound(false);
 
-    const { response, error: fetchError } = await fetchPackById(packId);
+    const {
+      response,
+      error: fetchError,
+      status: fetchStatus,
+    } = await fetchPackById(packId);
 
     if (fetchError) {
-      setError(fetchError);
+      const isMissing =
+        fetchStatus === 404 ||
+        /could not find pack|pack not found/i.test(String(fetchError));
+
+      setNotFound(isMissing);
+      setError(isMissing ? null : fetchError);
       setPack(null);
       setApps([]);
       setDefaultFilters(DEFAULT_INSTALL_FILTERS);
@@ -569,6 +581,18 @@ export default function PackDetailPage() {
         <div className={styles.page}>
           <p className={styles.loading}>Loading...</p>
         </div>
+      </PageWrapper>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <PageWrapper>
+        <MetaTags
+          title="Pack not found | winstall"
+          path={typeof id === "string" ? `/packs/${id}` : "/packs"}
+        />
+        <PackNotFound />
       </PageWrapper>
     );
   }

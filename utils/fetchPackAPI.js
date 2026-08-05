@@ -4,7 +4,7 @@ const API_PREFIX = "/api/packs";
  * @param {string} path - path relative to /api/packs
  * @param {RequestInit} [givenOptions]
  * @param {boolean} [throwErr]
- * @returns {Promise<{ response: any, error: string | null }>}
+ * @returns {Promise<{ response: any, error: string | null, status: number | null }>}
  */
 const fetchPackAPI = async (path, givenOptions = {}, throwErr) => {
   const method = givenOptions.method || "GET";
@@ -18,6 +18,7 @@ const fetchPackAPI = async (path, givenOptions = {}, throwErr) => {
 
   let response = null;
   let error = null;
+  let status = null;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -35,6 +36,8 @@ const fetchPackAPI = async (path, givenOptions = {}, throwErr) => {
       redirect: "follow",
       signal: controller.signal,
     });
+
+    status = res.status;
 
     if (!res.ok) {
       let errorBody;
@@ -66,7 +69,7 @@ const fetchPackAPI = async (path, givenOptions = {}, throwErr) => {
     clearTimeout(timeoutId);
   }
 
-  return { response, error };
+  return { response, error, status };
 };
 
 export async function fetchMyPacks() {
