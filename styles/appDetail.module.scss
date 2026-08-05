@@ -468,6 +468,175 @@
   margin-top: 40px;
 }
 
+/* Related / More by publisher — compact card grid */
+.related {
+  margin-top: 36px;
+  padding-top: 28px;
+  border-top: 1px solid var(--detail-brd, #edecf0);
+}
+
+.relatedHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.relatedTitle {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--textColor);
+}
+
+.relatedMore {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--altAccent);
+  }
+}
+
+.relGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.relCard {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: opacity 0.15s ease;
+  border: 3px solid transparent;
+  position: relative;
+  min-width: 0;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.relCardOn {
+  border-color: var(--accent);
+}
+
+.relTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.relIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  text-decoration: none;
+
+  :global(img),
+  :global(picture) {
+    width: 36px;
+    height: 36px;
+  }
+
+  :global(img) {
+    width: 36px !important;
+    height: 36px !important;
+    object-fit: contain;
+  }
+}
+
+.relAdd {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: var(--main-bg);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.15s ease;
+  }
+
+  &:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+}
+
+.relAddOn {
+  background: var(--accent);
+  color: #fff;
+
+  svg {
+    transform: rotate(45deg);
+  }
+}
+
+.relLink {
+  color: inherit;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.relName {
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--textColor);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.relPub {
+  font-size: 13px;
+  opacity: 0.75;
+  color: var(--textColor);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.relatedLoading {
+  font-size: 15px;
+  color: var(--detail-muted, #5c5c70);
+  margin: 0;
+}
+
 :global(.dark) {
   .publisher,
   .aboutText {
@@ -487,8 +656,13 @@
   .actions,
   .info,
   .infoLinks,
-  .shareSep {
+  .shareSep,
+  .related {
     --detail-brd: #333438;
+  }
+
+  .relatedLoading {
+    --detail-muted: rgba(255, 255, 255, 0.7);
   }
 
   .shareMenu {
@@ -507,6 +681,10 @@
 
   .infoGrid {
     column-gap: 24px;
+  }
+
+  .relGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import styles from "../styles/apps.module.scss";
-import SingleApp from "./SingleApp";
+import styles from "../styles/appDetail.module.scss";
+import RelatedAppCard from "./RelatedAppCard";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
+
+const MAX_PUBLISHER_APPS = 4;
 
 const MoreByPublisher = ({ publisher, currentAppId }) => {
   const [apps, setApps] = useState([]);
@@ -28,7 +30,6 @@ const MoreByPublisher = ({ publisher, currentAppId }) => {
           return;
         }
 
-        // Normalize response structure
         let items = [];
         if (Array.isArray(response)) {
           items = response;
@@ -40,14 +41,11 @@ const MoreByPublisher = ({ publisher, currentAppId }) => {
           items = response.data;
         }
 
-        // Filter out current app
         const filtered = items.filter((app) => app._id !== currentAppId);
         setTotalCount(filtered.length);
 
-        // Limit to 8 for display
-        const limited = filtered.slice(0, 8);
+        const limited = filtered.slice(0, MAX_PUBLISHER_APPS);
 
-        // Transform icons to full URLs
         limited.forEach((app) => {
           if (app.icon && !app.icon.startsWith("http") && !app.iconUrl) {
             const iconName = app.icon.replace(".png", "");
@@ -69,39 +67,42 @@ const MoreByPublisher = ({ publisher, currentAppId }) => {
 
   if (loading) {
     return (
-      <div className="homeBlock">
-        <div className="box">
-          <h2 className="blockHeader" style={{ display: 'inline-block' }}>More by {publisher}</h2>
+      <section className={styles.related} aria-label={`More by ${publisher}`}>
+        <div className={styles.relatedHead}>
+          <h2 className={styles.relatedTitle}>More by {publisher}</h2>
         </div>
-        <p>Loading apps...</p>
-      </div>
+        <p className={styles.relatedLoading}>Loading apps...</p>
+      </section>
     );
   }
 
   if (error) {
-    return null; // Silently fail - publisher apps are optional
+    return null;
   }
 
   if (!apps || apps.length === 0) {
-    return null; // Don't show section if no other apps by this publisher
+    return null;
   }
 
   return (
-    <div className="homeBlock">
-      <div className="box">
-        <h2 className="blockHeader" style={{ display: 'inline-block' }}>More by {publisher}</h2>
-        {totalCount > 8 && (
-          <Link href={`/apps?q=publisher: ${publisher}`} style={{ fontSize: '16px' }}>
+    <section className={styles.related} aria-label={`More by ${publisher}`}>
+      <div className={styles.relatedHead}>
+        <h2 className={styles.relatedTitle}>More by {publisher}</h2>
+        {totalCount > MAX_PUBLISHER_APPS && (
+          <Link
+            href={`/apps?q=publisher: ${publisher}`}
+            className={styles.relatedMore}
+          >
             More
           </Link>
         )}
       </div>
-      <ul className={`${styles.all} ${styles.storeList}`}>
+      <div className={styles.relGrid}>
         {apps.map((app) => (
-          <SingleApp key={app._id} app={app} showSelectCheckbox />
+          <RelatedAppCard key={app._id} app={app} />
         ))}
-      </ul>
-    </div>
+      </div>
+    </section>
   );
 };
 

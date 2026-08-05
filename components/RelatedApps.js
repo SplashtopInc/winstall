@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import styles from "../styles/apps.module.scss";
-import SingleApp from "./SingleApp";
+import styles from "../styles/appDetail.module.scss";
+import RelatedAppCard from "./RelatedAppCard";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
+
+const MAX_RELATED = 4;
 
 const RelatedApps = ({ appId }) => {
   const [apps, setApps] = useState([]);
@@ -13,7 +15,7 @@ const RelatedApps = ({ appId }) => {
       try {
         setLoading(true);
         const { response, error: fetchError } = await fetchWinstallAPI(
-          `/apps/related/${appId}?limit=8`
+          `/apps/related/${appId}?limit=${MAX_RELATED}`
         );
 
         if (fetchError) {
@@ -21,7 +23,6 @@ const RelatedApps = ({ appId }) => {
           return;
         }
 
-        // Normalize response structure (similar to /apps/search)
         let items = [];
 
         if (Array.isArray(response)) {
@@ -34,7 +35,8 @@ const RelatedApps = ({ appId }) => {
           items = response.data;
         }
 
-        // Transform icons to full URLs
+        items = items.slice(0, MAX_RELATED);
+
         items.forEach((app) => {
           if (app.icon && !app.icon.startsWith("http") && !app.iconUrl) {
             const iconName = app.icon.replace(".png", "");
@@ -58,34 +60,34 @@ const RelatedApps = ({ appId }) => {
 
   if (loading) {
     return (
-      <div className="homeBlock">
-        <div className="box">
-          <h2 className="blockHeader" style={{ display: 'inline-block' }}>Related Apps</h2>
+      <section className={styles.related} aria-label="Related apps">
+        <div className={styles.relatedHead}>
+          <h2 className={styles.relatedTitle}>Related apps</h2>
         </div>
-        <p>Loading related apps...</p>
-      </div>
+        <p className={styles.relatedLoading}>Loading related apps...</p>
+      </section>
     );
   }
 
   if (error) {
-    return null; // Silently fail - related apps are optional
+    return null;
   }
 
   if (!apps || apps.length === 0) {
-    return null; // Don't show section if no related apps
+    return null;
   }
 
   return (
-    <div className="homeBlock">
-      <div className="box">
-        <h2 className="blockHeader" style={{ display: 'inline-block' }}>Related Apps</h2>
+    <section className={styles.related} aria-label="Related apps">
+      <div className={styles.relatedHead}>
+        <h2 className={styles.relatedTitle}>Related apps</h2>
       </div>
-      <ul className={`${styles.all} ${styles.storeList}`}>
+      <div className={styles.relGrid}>
         {apps.map((app) => (
-          <SingleApp key={app._id} app={app} showSelectCheckbox />
+          <RelatedAppCard key={app._id} app={app} />
         ))}
-      </ul>
-    </div>
+      </div>
+    </section>
   );
 };
 
