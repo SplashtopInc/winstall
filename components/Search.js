@@ -6,7 +6,21 @@ import styles from "../styles/search.module.scss";
 
 import SingleApp from "../components/SingleApp";
 import ListPackages from "../components/ListPackages";
+import TrySearching from "../components/TrySearching";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
+
+function suggestionQueryFromSearch(input) {
+  const q = String(input || "").trim();
+  if (!q) return "";
+
+  const publisherMatch = q.match(/^publisher:\s*(.+)$/i);
+  if (publisherMatch) return publisherMatch[1].trim();
+
+  const prefixMatch = q.match(/^(name|tags|desc):\s*(.+)$/i);
+  if (prefixMatch) return prefixMatch[2].trim();
+
+  return q;
+}
 
 function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView, alreadySelected=[], limit=-1, hideInput=false, onEmptyChange}) {
   const router = useRouter();
@@ -238,27 +252,33 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
       ) : (
           <>
             {searchInput && !isLoading && hasSearchResponse && results.length === 0 && searchInput.trim() ? (
-              hideInput ? (
-                <div className={styles.emptyState}>
-                  <div className={styles.emptyIcon} aria-hidden="true">
-                    <img
-                      src="/assets/search_empty.svg"
-                      alt=""
-                      width={32}
-                      height={32}
-                      draggable={false}
-                    />
+              <div className={styles.emptyWrap}>
+                {hideInput ? (
+                  <div className={styles.emptyState}>
+                    <div className={styles.emptyIcon} aria-hidden="true">
+                      <img
+                        src="/assets/search_empty.svg"
+                        alt=""
+                        width={32}
+                        height={32}
+                        draggable={false}
+                      />
+                    </div>
+                    <h2 className={styles.emptyTitle}>
+                      No apps found for "<span className={styles.emptyQuery}>{searchInput}</span>"
+                    </h2>
+                    <p className={styles.emptyDesc}>
+                      We couldn't find any apps matching your search. Try a different keyword or browse these suggestions.
+                    </p>
                   </div>
-                  <h2 className={styles.emptyTitle}>
-                    No apps found for "<span className={styles.emptyQuery}>{searchInput}</span>"
-                  </h2>
-                  <p className={styles.emptyDesc}>
-                    We couldn't find any apps matching your search. Try a different keyword or browse these suggestions.
-                  </p>
-                </div>
-              ) : (
-                <p className={styles.noresults}>Could not find any apps.</p>
-              )
+                ) : (
+                  <p className={styles.noresults}>Could not find any apps.</p>
+                )}
+                <TrySearching
+                  query={suggestionQueryFromSearch(searchInput)}
+                  className={styles.suggestions}
+                />
+              </div>
             ) : ""}
           </>
         )}

@@ -1,9 +1,13 @@
+.wrap {
+  width: 100%;
+}
+
 .emptyState {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 80px 32px;
+  padding: 80px 32px 40px;
 }
 
 .emptyIcon {
@@ -52,4 +56,10 @@
   margin: 0;
   max-width: 420px;
   line-height: 1.5;
+}
+
+.suggestions {
+  width: 100%;
+  padding-bottom: 48px;
+  text-align: left;
 }

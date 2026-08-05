@@ -51,7 +51,7 @@ function AppDetail({ app }) {
 
   return (
     <div>
-      <div className={styles.intro}>
+      <div className={styles.introDetail}>
         {router.isFallback ? (
           <AppSkeleton />
         ) : (

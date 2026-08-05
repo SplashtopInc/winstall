@@ -139,7 +139,12 @@
 }
 
 .noresults{
-    position: absolute;
+    text-align: center;
+    margin: 40px 0 0;
+}
+
+.emptyWrap{
+    width: 100%;
 }
 
 .emptyState{
@@ -147,7 +152,7 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 80px 32px;
+    padding: 80px 32px 40px;
 }
 
 .emptyIcon{
@@ -185,6 +190,12 @@
     margin: 0;
     max-width: 400px;
     line-height: 1.5;
+}
+
+.suggestions{
+    width: 100%;
+    padding-bottom: 48px;
+    text-align: left;
 }
 
 .searchingLabelStandalone{

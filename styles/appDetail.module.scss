@@ -1,6 +1,6 @@
 .page {
   width: 100%;
-  padding: 0 0 72px;
+  padding: 0;
 }
 
 .identity {
@@ -406,24 +406,24 @@
 
 .infoValue {
   display: block;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--textColor);
+  font-size: 14px;
+  font-weight: 400;
+  color: #000;
   line-height: 1.35;
   word-break: break-word;
 }
 
 .mono {
   font-family: "SF Mono", Consolas, monospace;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 400;
 }
 
 .infoValueLink {
   display: inline;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--textColor);
+  font-size: 14px;
+  font-weight: 400;
+  color: #000;
   text-decoration: none;
   line-height: 1.35;
   word-break: break-word;
@@ -514,16 +514,17 @@
 
 .relCard {
   background: var(--card-bg);
-  border-radius: 10px;
-  padding: 16px;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  transition: opacity 0.15s ease;
-  border: 3px solid transparent;
+  gap: 12px;
+  transition: opacity 0.15s ease, border-color 0.15s ease;
+  border: 2px solid transparent;
   position: relative;
   min-width: 0;
+  box-sizing: border-box;
 
   &:hover {
     opacity: 0.9;
@@ -538,28 +539,29 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 4px;
+  gap: 12px;
 }
 
 .relIcon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
   text-decoration: none;
+  border-bottom: none;
+  margin-bottom: 0;
 
   :global(img),
   :global(picture) {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
 
   :global(img) {
-    width: 36px !important;
-    height: 36px !important;
+    width: 40px !important;
+    height: 40px !important;
     object-fit: contain;
   }
 }
@@ -569,7 +571,7 @@
   height: 28px;
   border-radius: 50%;
   border: 2px solid var(--accent);
-  background: var(--main-bg);
+  background: transparent;
   color: var(--accent);
   display: flex;
   align-items: center;
@@ -578,11 +580,12 @@
   transition: background 0.15s ease, color 0.15s ease;
   padding: 0;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
 
   svg {
     width: 14px;
     height: 14px;
+    stroke-width: 2.5;
     transition: transform 0.15s ease;
   }
 
@@ -604,14 +607,16 @@
 .relLink {
   color: inherit;
   text-decoration: none;
+  border-bottom: none;
+  margin-bottom: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   min-width: 0;
 }
 
 .relName {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   line-height: 1.3;
   color: var(--textColor);
@@ -620,15 +625,17 @@
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  border-bottom: none;
 }
 
 .relPub {
   font-size: 13px;
-  opacity: 0.75;
-  color: var(--textColor);
+  font-weight: 500;
+  color: var(--detail-muted, #5c5c70);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  border-bottom: none;
 }
 
 .relatedLoading {
@@ -639,7 +646,8 @@
 
 :global(.dark) {
   .publisher,
-  .aboutText {
+  .aboutText,
+  .relPub {
     --detail-muted: rgba(255, 255, 255, 0.7);
   }
 
@@ -647,6 +655,11 @@
   .verLabel,
   .infoKey {
     --detail-faint: rgba(255, 255, 255, 0.55);
+  }
+
+  .infoValue,
+  .infoValueLink {
+    color: #fff;
   }
 
   .cmd {
@@ -689,10 +702,6 @@
 }
 
 @media (max-width: 590px) {
-  .page {
-    padding-bottom: 48px;
-  }
-
   .title {
     font-size: 26px;
   }
