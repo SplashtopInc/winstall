@@ -33,8 +33,6 @@ function AppSkeleton() {
 
 function AppDetail({ app }) {
   const router = useRouter();
-  const showRelatedApps = process.env.NEXT_PUBLIC_SHOW_RELATED_APPS === 'true';
-  const showMoreByPublisher = process.env.NEXT_PUBLIC_SHOW_MORE_BY_PUBLISHER === 'true';
   const packageId =
     typeof router.query.id === "string" ? router.query.id : "";
 
@@ -68,11 +66,11 @@ function AppDetail({ app }) {
         )}
       </div>
 
-      {!router.isFallback && app && showMoreByPublisher && (
+      {!router.isFallback && app && (
         <MoreByPublisher publisher={app.publisher} currentAppId={app._id} />
       )}
 
-      {!router.isFallback && app && showRelatedApps && (
+      {!router.isFallback && app && (
         <RelatedApps appId={app._id} />
       )}
 
