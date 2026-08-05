@@ -1,5 +1,5 @@
 .page {
-  padding-top: 40px;
+  padding-top: 48px;
   padding-bottom: 64px;
 }
 
@@ -62,7 +62,7 @@
   border: 2px solid transparent;
   box-sizing: border-box;
   background-color: var(--card-bg);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
   color: var(--textColor);
   text-decoration: none;
   transition: 0.2s all ease-in-out;
@@ -178,7 +178,7 @@
   box-sizing: border-box;
   background-color: #f0f2f5;
   border: 2px dashed #ccc;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
   cursor: pointer;
   font-family: inherit;
   color: var(--textColor);
@@ -186,7 +186,7 @@
 
   &:hover {
     border-color: #b3b3b3;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
   }
 }
 

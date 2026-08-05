@@ -20,13 +20,13 @@ const DonateCard = ({ addMargin = "both", placement = "home" }) => {
       <p>{ad.body}</p>
       <div className={styles.buttons}>
         <a
-          className="button spacer accent donate"
-          id="starWine"
+          className={styles.cta}
           href={ad.href}
           rel="sponsored noopener"
           target="_blank"
         >
-          <FiPlus /> {ad.cta}
+          <FiPlus aria-hidden="true" />
+          {ad.cta}
         </a>
       </div>
     </div>

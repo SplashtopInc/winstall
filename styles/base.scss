@@ -1,6 +1,6 @@
 .light {
   --main-bg: #fff;
-  --card-bg: #e9eaed;
+  --card-bg: #f0eff1;
   --textColor: #333;
   --altTextColor: #fff;
   --accent: #9b2eff;
@@ -22,6 +22,7 @@
   --altAccent: #6b14bd;
   --error: rgb(255 149 149);
   --positive-bg: #19a246;
+  --detail-brd: #333438;
 
   .react-loading-skeleton {
     background-color: #2d2f30 !important;
@@ -77,7 +78,7 @@ body {
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 20px 50px;
+  padding: 0 50px 20px;
   min-height: calc(100vh - 64px);
   display: flex;
   flex-direction: column;
@@ -103,7 +104,7 @@ input[type="text"].search {
   font-size: 17px;
   min-width: 250px;
   color: var(--textColor);
-  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
+  box-shadow: none;
 }
 
 .box {
@@ -138,6 +139,8 @@ input[type="text"].search {
 }
 
 .generate-container {
+  padding-top: 48px;
+
   .art {
     margin-top: 50px;
   }
@@ -152,7 +155,7 @@ input[type="text"].search {
   background-color: #9b2eff;
   color: #fff;
   line-height: 70px;
-  box-shadow: -3px -6px 20px rgba(0, 0, 0, 0.18);
+  box-shadow: none;
   z-index: 9;
 
   .inner {
@@ -211,7 +214,7 @@ input[type="text"].search {
       cursor: pointer;
       color: var(--textColor);
       transition: 0.3s all ease-in-out;
-      box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.18);
+      box-shadow: none;
       display: flex;
       align-items: center;
       font-family: "Nunito", sans-serif;
@@ -283,7 +286,7 @@ input[type="text"].search {
   text-decoration: none;
   color: var(--textColor);
   font-size: 18px;
-  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
+  box-shadow: none;
   transition: 0.3s all ease-in-out;
   cursor: pointer;
   border: 0px;
@@ -426,7 +429,7 @@ article {
   }
 
   .container {
-    padding: 20px 25px;
+    padding: 0 25px 20px;
   }
 }
 
@@ -696,18 +699,26 @@ article {
 }
 
 .homeBlock {
-  padding-top: 20px;
+  margin-top: 18px;
+  padding-top: 8px;
+  border-top: 1px solid var(--detail-brd, #edecf0);
 
   h2.blockHeader {
-    margin: 0px;
-    border-bottom: 3px solid var(--accent);
-    padding-bottom: 5px;
-    margin-bottom: 10px !important;
+    margin: 0;
+    padding-bottom: 0;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--textColor);
+  }
+
+  > .box {
+    margin-bottom: 18px;
   }
 
   h3.blockSubtitle {
-    margin: 0px;
-    padding-top: 10px;
+    margin: 0;
+    padding-top: 0;
     opacity: 0.75;
   }
 
@@ -716,6 +727,24 @@ article {
     margin: 0px;
     height: 25px;
     font-size: 15px;
+  }
+
+  .viewAll {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--accent);
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: none;
+    margin: 0;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--altAccent);
+      opacity: 1;
+    }
   }
 }
 

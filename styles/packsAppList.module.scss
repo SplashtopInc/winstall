@@ -8,7 +8,7 @@
         background-color: var(--card-bg);
         padding: 20px;
         border-radius: 10px;
-        box-shadow: 0px 3px 5px #00000026;
+        box-shadow: none;
         position: relative;
     }
 
@@ -28,7 +28,7 @@
         background-color: var(--main-bg) !important;
         border-radius: 50px;
         color: var(--textColor);
-        box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.18);
+        box-shadow: none;
         transition: 0.3s all ease-in-out;
         cursor: pointer;
         border: 0px;

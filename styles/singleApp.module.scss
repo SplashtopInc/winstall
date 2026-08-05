@@ -13,7 +13,7 @@
     // cursor: pointer;
     overflow: hidden;
     transition: 0.1s all ease-in-out;
-    box-shadow: 0px 3px 5px #00000026;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -224,7 +224,7 @@
         border-radius: 50px;
         text-decoration: none;
         color: var(--textColor);
-        box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.18);
+        box-shadow: none;
         transition: 0.3s all ease-in-out;
         cursor: pointer;
         border: 0px;
@@ -339,7 +339,7 @@
     cursor: pointer;
     opacity: 0;
     transition: opacity 0.15s ease, background-color 0.15s ease;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
 
     svg {
         width: 16px;
@@ -468,7 +468,7 @@
                 color: var(--textColor);
                 display: inline-block;
                 font-size: 14px;
-                box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.18);
+                box-shadow: none;
                 transition: 0.3s all ease-in-out;
 
                 &:hover, &:focus, &:active{
@@ -582,7 +582,7 @@
     padding: 15px !important;
     background-color: var(--card-bg) !important;
     border-radius: 10px !important;
-    box-shadow: 0px 3px 5px #00000026 !important;
+    box-shadow: none !important;
 }
 
 .copy {

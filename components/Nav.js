@@ -17,8 +17,8 @@ import {
 
 import UserMenu from "./UserMenu";
 import DeleteAccountModal from "./DeleteAccountModal";
-import SearchDialog from "./SearchDialog";
 import { useAuthGate } from "../ctx/AuthGateContext";
+import { useSearchDialog } from "../ctx/SearchDialogContext";
 import { deleteAccount } from "../utils/fetchUserAPI";
 import { invalidateOwnPacksCache } from "../utils/packHelpers";
 
@@ -38,7 +38,7 @@ Router.onRouteChangeError = () => {
 
 function Nav() {
   const [ddShown, setDDShown] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const { openSearch } = useSearchDialog();
   const navRef = useRef(null);
   const router = useRouter();
   const pathname = router.pathname;
@@ -140,7 +140,7 @@ function Nav() {
             type="button"
             className={styles.searchTrigger}
             aria-label="Search apps"
-            onClick={() => setSearchOpen(true)}
+            onClick={openSearch}
           >
             <FiSearch size={15} strokeWidth={2.5} />
             <span className={styles.searchTriggerText}>Search apps...</span>
@@ -171,8 +171,6 @@ function Nav() {
           {ddShown ? <FiX /> : <FiChevronDown />}
         </span>
       </div>
-
-      <SearchDialog isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );
 }

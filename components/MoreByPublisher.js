@@ -93,7 +93,7 @@ const MoreByPublisher = ({ publisher, currentAppId }) => {
             href={`/apps?q=publisher: ${publisher}`}
             className={styles.relatedMore}
           >
-            More
+            View All &gt;
           </Link>
         )}
       </div>

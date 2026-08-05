@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import Link from "next/link";
-import { FiPlus } from "react-icons/fi";
+import { FiCheck } from "react-icons/fi";
 import styles from "../styles/appDetail.module.scss";
 import SelectedContext from "../ctx/SelectedContext";
 import AppIcon from "./AppIcon";
@@ -39,6 +39,16 @@ const RelatedAppCard = ({ app }) => {
     <article
       className={`${styles.relCard} ${selected ? styles.relCardOn : ""}`}
     >
+      <button
+        type="button"
+        className={`${styles.relCheck} ${selected ? styles.relCheckOn : ""}`}
+        onClick={handleAppSelect}
+        aria-pressed={selected}
+        aria-label={selected ? `Deselect ${app.name}` : `Select ${app.name}`}
+      >
+        {selected && <FiCheck aria-hidden="true" />}
+      </button>
+
       <div className={styles.relTop}>
         <Link
           href="/apps/[id]"
@@ -55,15 +65,6 @@ const RelatedAppCard = ({ app }) => {
             iconPng={app.iconPng}
           />
         </Link>
-        <button
-          type="button"
-          className={`${styles.relAdd} ${selected ? styles.relAddOn : ""}`}
-          onClick={handleAppSelect}
-          aria-pressed={selected}
-          aria-label={selected ? `Remove ${app.name}` : `Add ${app.name}`}
-        >
-          <FiPlus aria-hidden="true" />
-        </button>
       </div>
       <Link
         href="/apps/[id]"

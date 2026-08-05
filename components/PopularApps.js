@@ -4,7 +4,6 @@ import ListPackages from "../components/ListPackages";
 
 import PopularContext from "../ctx/PopularContext";
 
-import { FiPackage } from "react-icons/fi";
 import { useEffect, useContext } from "react";
 
 let PopularApps = ({ apps }) => {
@@ -22,9 +21,8 @@ let PopularApps = ({ apps }) => {
         <div className="homeBlock">
           <div className="box">
             <h2 className="blockHeader">Popular Apps</h2>
-            <Link href="/apps" className="button small">
-              <FiPackage />
-              View All
+            <Link href="/apps" className="viewAll">
+              View All &gt;
             </Link>
           </div>
           <h3 className="blockSubtitle">

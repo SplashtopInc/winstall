@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import styles from "../styles/recommendations.module.scss"
-import { FiPackage, FiPlus, FiGlobe, FiHome, FiChevronRight, FiCrosshair, FiUserPlus, FiZap, FiMusic, FiCode, FiStar, FiBookOpen } from "react-icons/fi";
+import { FiPlus, FiGlobe, FiHome, FiChevronRight, FiCrosshair, FiUserPlus, FiMusic, FiCode, FiStar, FiBookOpen } from "react-icons/fi";
 import { useEffect, useContext, useState, useRef } from "react";
 import PackAppsList from "./PackAppsList";
 import AppIcon from "./AppIcon";
@@ -13,9 +13,8 @@ const Recommendations = ({ packs }) => {
     <div className="homeBlock">
       <div className="box">
         <h2 className="blockHeader">Featured Packs</h2>
-        <Link href="/packs" className="button small">
-          <FiPackage />
-          View All
+        <Link href="/packs" className="viewAll">
+          View All &gt;
         </Link>
       </div>
       <h3 className="blockSubtitle">

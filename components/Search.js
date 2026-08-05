@@ -8,6 +8,7 @@ import SingleApp from "../components/SingleApp";
 import ListPackages from "../components/ListPackages";
 import TrySearching from "../components/TrySearching";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
+import { useSearchDialog } from "../ctx/SearchDialogContext";
 
 function suggestionQueryFromSearch(input) {
   const q = String(input || "").trim();
@@ -22,8 +23,9 @@ function suggestionQueryFromSearch(input) {
   return q;
 }
 
-function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView, alreadySelected=[], limit=-1, hideInput=false, onEmptyChange}) {
+function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView, alreadySelected=[], limit=-1, hideInput=false, onEmptyChange, asGlobalTrigger=false}) {
   const router = useRouter();
+  const { openSearch } = useSearchDialog();
   const [results, setResults] = useState([])
   const [searchInput, setSearchInput] = useState("");
   const [urlQuery, setUrlQuery] = useState();
@@ -184,7 +186,26 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
 
   return (
     <div>
-      {!hideInput && (
+      {asGlobalTrigger && (
+        <>
+          <label className={styles.searchLabel}>{label || "Search for apps"}</label>
+          <button
+            type="button"
+            className={`${styles.searchBox} ${styles.searchTriggerBox}`}
+            onClick={openSearch}
+            aria-label={label || "Search for apps"}
+          >
+            <div className={styles.searchInner}>
+              <FiSearch />
+              <span className={styles.triggerPlaceholder}>
+                {placeholder || "Search for apps here"}
+              </span>
+            </div>
+          </button>
+        </>
+      )}
+
+      {!hideInput && !asGlobalTrigger && (
         <>
           <label htmlFor="search" className={styles.searchLabel}>{label || "Search for apps"}</label>
           <div className={styles.searchBox}>
@@ -244,6 +265,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
               preventGlobalSelect={preventGlobalSelect}
               pack={isPackView}
               hideBorder={true}
+              showSelectCheckbox
               key={`${app._id}`}
               preSelected={alreadySelected.findIndex(a => a._id === app._id) != -1 ? true : false}
             />

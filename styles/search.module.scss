@@ -4,7 +4,7 @@
 }
 
 .searchBox{
-    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
+    box-shadow: none;
     border-radius: 50px;
     height: 50px;
     background-color: var(--card-bg);
@@ -125,6 +125,36 @@
         margin-top: 0px;
     }
 
+}
+
+.searchTriggerBox {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  min-width: 280px;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.triggerPlaceholder {
+  padding: 0 15px;
+  font-size: 17px;
+  color: var(--textColor);
+  opacity: 0.45;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @media(max-width: 495px){

@@ -1,5 +1,5 @@
 .page {
-  padding-top: 50px;
+  padding-top: 48px;
   padding-bottom: 64px;
 }
 
@@ -496,6 +496,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.3;
 }
 
 .versionCell {

@@ -56,7 +56,7 @@ function UserProfile({ uid }) {
       {user && user.errors ? (
         <Error title="User does not exist" />
       ) : (
-        <div>
+        <div className={styles.page}>
           <div className={styles.controls}>
             <h1>{title}</h1>
 

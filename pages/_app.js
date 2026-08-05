@@ -15,6 +15,7 @@ import Nav from "../components/Nav";
 import SelectionBar from "../components/SelectionBar";
 import PopularContext from "../ctx/PopularContext";
 import { AuthGateProvider } from "../ctx/AuthGateContext";
+import { SearchDialogProvider } from "../ctx/SearchDialogContext";
 import { SessionProvider } from "next-auth/react";
 
 const SELECTION_STORAGE_KEY = "winstall-selection";
@@ -145,17 +146,19 @@ function winstall({ Component, pageProps: { session, ...pageProps } }) {
   return (
     <SessionProvider session={session} refetchInterval={5 * 60}>
       <AuthGateProvider>
-        <SelectedContext.Provider value={selectedAppValue}>
-          <PopularContext.Provider value={popularApps}>
-            <>
-              <Nav />
-              <div className="container">
-                <Component {...pageProps} />
-              </div>
-              <SelectionBar />
-            </>
-          </PopularContext.Provider>
-        </SelectedContext.Provider>
+        <SearchDialogProvider>
+          <SelectedContext.Provider value={selectedAppValue}>
+            <PopularContext.Provider value={popularApps}>
+              <>
+                <Nav />
+                <div className="container">
+                  <Component {...pageProps} />
+                </div>
+                <SelectionBar />
+              </>
+            </PopularContext.Provider>
+          </SelectedContext.Provider>
+        </SearchDialogProvider>
       </AuthGateProvider>
     </SessionProvider>
   );

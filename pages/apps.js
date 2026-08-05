@@ -266,7 +266,7 @@ function Store({ data, error, buildTime }) {
 
   if (isLoading) {
     return (
-      <div>
+      <div className={styles.page}>
         <MetaTags title="Apps - winstall" path="/apps" />
         <div className={styles.controls}>
           <h1>Loading apps...</h1>
@@ -282,13 +282,13 @@ function Store({ data, error, buildTime }) {
   if (!apps) return <></>;
 
   return (
-    <div>
+    <div className={styles.page}>
       <MetaTags title="Apps - winstall" path="/apps" />
 
       <div className={styles.controls}>
         <Title />
 
-        <Pagination small disable={searchInput ? true : false} />
+        {!searchInput && !router.query.q && <Pagination small />}
       </div>
 
       <Search
@@ -296,8 +296,9 @@ function Store({ data, error, buildTime }) {
           setSearchInput(q);
         }}
         label={"Search for apps"}
-        placeholder={"Enter you search term here"}
+        placeholder={"Search apps..."}
         hideInput={Boolean(router.query.q)}
+        asGlobalTrigger={!router.query.q}
       />
 
       <div className={styles.controls}>

@@ -105,7 +105,7 @@
   color: var(--textColor);
   cursor: pointer;
   line-height: 1.3;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
@@ -123,7 +123,7 @@
   border-radius: 10px;
   overflow: hidden;
   min-height: 56px;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
 }
 
 .cmdText {
@@ -173,9 +173,10 @@
 .actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 12px;
   margin-top: 20px;
-  padding-bottom: 32px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--detail-brd, #edecf0);
 }
 
@@ -195,7 +196,7 @@
   transition: all 0.2s ease;
   text-decoration: none;
   color: inherit;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+  box-shadow: none;
 
   &:active {
     transform: scale(0.97);
@@ -225,7 +226,7 @@
 
 .btnPrimaryOn {
   background: #e11d48;
-  box-shadow: 0 3px 5px rgba(225, 29, 72, 0.28);
+  box-shadow: none;
 
   &:hover {
     background: #be123c;
@@ -243,26 +244,31 @@
   width: 50px;
   height: 50px;
   padding: 0;
-  border-radius: 50px;
-  border: none;
-  background: var(--card-bg);
-  color: var(--textColor);
+  border-radius: 999px;
+  border: 1px solid var(--detail-brd-strong, #e5e4e8);
+  background: var(--main-bg);
+  color: var(--detail-muted, #5c5c70);
   cursor: pointer;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
-  transition: all 0.2s ease;
+  box-shadow: none;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
 
   svg {
     width: 18px;
     height: 18px;
+    flex-shrink: 0;
   }
 
   &:hover {
-    opacity: 0.75;
+    background: var(--nav-hover-bg, #f7f6f9);
+    color: var(--textColor);
+    opacity: 1;
   }
 
   &[aria-expanded="true"] {
+    background: var(--nav-hover-bg, #f7f6f9);
+    color: var(--textColor);
     opacity: 1;
-    background: color-mix(in srgb, var(--card-bg) 70%, var(--textColor));
   }
 }
 
@@ -347,7 +353,7 @@
   color: var(--textColor);
   text-decoration: none;
   transition: opacity 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
 
   &:hover {
     opacity: 0.75;
@@ -373,8 +379,8 @@
 }
 
 .info {
-  margin-top: 32px;
-  padding-top: 28px;
+  margin-top: 16px;
+  padding-top: 8px;
   border-top: 1px solid var(--detail-brd, #edecf0);
 }
 
@@ -436,7 +442,7 @@
 
 .infoLinks {
   list-style: none;
-  margin: 22px 0 0;
+  margin: 11px 0 0;
   padding: 16px 0 0;
   border-top: 1px solid var(--detail-brd, #edecf0);
   display: grid;
@@ -470,8 +476,8 @@
 
 /* Related / More by publisher — compact card grid */
 .related {
-  margin-top: 36px;
-  padding-top: 28px;
+  margin-top: 18px;
+  padding-top: 8px;
   border-top: 1px solid var(--detail-brd, #edecf0);
 }
 
@@ -516,19 +522,15 @@
   background: var(--card-bg);
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: opacity 0.15s ease, border-color 0.15s ease;
+  transition: border-color 0.15s ease;
   border: 2px solid transparent;
   position: relative;
   min-width: 0;
   box-sizing: border-box;
-
-  &:hover {
-    opacity: 0.9;
-  }
 }
 
 .relCardOn {
@@ -540,6 +542,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  min-height: 28px;
 }
 
 .relIcon {
@@ -566,41 +569,56 @@
   }
 }
 
-.relAdd {
+.relCheck {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
   width: 28px;
   height: 28px;
   border-radius: 50%;
   border: 2px solid var(--accent);
-  background: transparent;
-  color: var(--accent);
+  background-color: var(--main-bg);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  transition: background 0.15s ease, color 0.15s ease;
   padding: 0;
   cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
   box-shadow: none;
 
   svg {
-    width: 14px;
-    height: 14px;
-    stroke-width: 2.5;
-    transition: transform 0.15s ease;
+    width: 16px;
+    height: 16px;
+    stroke-width: 3px;
   }
 
   &:hover {
-    background: var(--accent);
-    color: #fff;
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    opacity: 1;
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }
 
-.relAddOn {
-  background: var(--accent);
-  color: #fff;
+.relCard:hover .relCheck,
+.relCheckOn {
+  opacity: 1;
+}
 
-  svg {
-    transform: rotate(45deg);
+.relCheckOn {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (hover: none) {
+  .relCheck {
+    opacity: 1;
   }
 }
 
@@ -672,6 +690,12 @@
   .shareSep,
   .related {
     --detail-brd: #333438;
+  }
+
+  .btnGhost {
+    --detail-brd-strong: #333438;
+    --detail-muted: rgba(255, 255, 255, 0.7);
+    --nav-hover-bg: #2a2a2e;
   }
 
   .relatedLoading {

@@ -64,6 +64,7 @@
   gap: 20px;
   align-items: flex-end;
   flex-wrap: wrap;
+  padding-top: 36px;
 }
 
 .selectedApps {
@@ -73,15 +74,9 @@
 
 @media (max-width: 590px) {
   .intro {
-    padding-top: 24px !important;
-
     textarea {
       width: auto !important;
     }
-  }
-
-  .introDetail {
-    padding-top: 24px;
   }
 
   .searchFilters {

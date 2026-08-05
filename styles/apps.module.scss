@@ -17,6 +17,14 @@
     }
 }
 
+.page {
+    padding-top: 48px;
+
+    h1 {
+        margin-top: 0;
+    }
+}
+
 .all{
     grid-template-columns: repeat(4, 1fr);
 }
@@ -67,7 +75,7 @@
     text-decoration: none;
     color: var(--textColor);
     font-size: 18px;
-    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.18);
+    box-shadow: none;
     transition: 0.3s all ease-in-out;
     cursor: pointer;
     border: 0px;

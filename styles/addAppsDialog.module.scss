@@ -35,8 +35,10 @@
 .topControls {
   flex-shrink: 0;
   display: flex;
-  justify-content: flex-end;
-  padding: 16px 48px 0;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 48px 0;
 }
 
 .header {
@@ -82,8 +84,9 @@
 }
 
 .searchSection {
-  flex-shrink: 0;
-  padding: 24px 48px 0;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
 }
 
 .controls {
@@ -135,7 +138,7 @@
   padding: 20px;
   border-radius: 10px;
   background-color: var(--card-bg);
-  box-shadow: 0px 3px 5px #00000026;
+  box-shadow: none;
   color: var(--textColor);
   border: 5px solid transparent;
   box-sizing: border-box;
@@ -181,7 +184,7 @@
   font-weight: 700;
   line-height: 1;
   pointer-events: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
 
   svg {
     width: 14px;
@@ -338,7 +341,7 @@
   height: 70px;
   background-color: #9b2eff;
   color: #fff;
-  box-shadow: -3px -6px 20px rgba(0, 0, 0, 0.18);
+  box-shadow: none;
   z-index: 2;
 
   .inner {
@@ -379,7 +382,7 @@
     justify-content: center;
     opacity: 0.75;
     transition: 0.3s all ease-in-out;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+    box-shadow: none;
 
     &:hover {
       opacity: 1;
@@ -403,7 +406,7 @@
     cursor: pointer;
     color: var(--accent);
     transition: 0.3s all ease-in-out;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.18);
+    box-shadow: none;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -440,7 +443,7 @@
   }
 
   .pickerCard {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    box-shadow: none;
   }
 }
 
@@ -477,6 +480,16 @@
   .pagination {
     padding-left: 24px;
     padding-right: 24px;
+  }
+
+  .topControls {
+    flex-direction: column;
+    align-items: stretch;
+    padding-top: 24px;
+  }
+
+  .searchSection {
+    padding: 0;
   }
 
   .selectionBar .inner {

@@ -7,7 +7,6 @@ import {
   FiTrash,
   FiPlus,
   FiSearch,
-  FiHelpCircle,
 } from "react-icons/fi";
 
 import AddAppPickerCard from "./AddAppPickerCard";
@@ -459,56 +458,31 @@ export default function AddAppsDialog({
           </h2>
         </header>
 
-        <div className={dialogStyles.searchSection}>
-          <label htmlFor="add-apps-search" className={searchStyles.searchLabel}>
-            Search for apps
-          </label>
-          <div className={searchStyles.searchBox}>
-            <div className={searchStyles.searchInner}>
-              <FiSearch />
-              <input
-                type="text"
-                id="add-apps-search"
-                minLength={2}
-                value={searchInput}
-                autoComplete="off"
-                placeholder="Enter you search term here"
-                onChange={(event) => setSearchInput(event.target.value)}
-              />
-            </div>
-            <div className={searchStyles.tip}>
-              <a href="#" title="Search tips" onClick={(event) => event.preventDefault()}>
-                <FiHelpCircle />
-              </a>
-              <div className={searchStyles.tipData}>
-                <p>Use search prefixes to target a specific field in searches!</p>
-                <ul>
-                  <li>
-                    <code>name:</code> search for an app&apos;s name
-                  </li>
-                  <li>
-                    <code>publisher:</code> search for apps by a publisher
-                  </li>
-                  <li>
-                    <code>tags:</code> search for apps by a tag
-                  </li>
-                  <li>
-                    <code>desc:</code> search the description of apps
-                  </li>
-                </ul>
+        <div className={dialogStyles.topControls}>
+          <div className={dialogStyles.searchSection}>
+            <label htmlFor="add-apps-search" className={searchStyles.searchLabel}>
+              Search for apps
+            </label>
+            <div className={searchStyles.searchBox}>
+              <div className={searchStyles.searchInner}>
+                <FiSearch />
+                <input
+                  type="text"
+                  id="add-apps-search"
+                  minLength={2}
+                  value={searchInput}
+                  autoComplete="off"
+                  placeholder="Enter your search term here"
+                  onChange={(event) => setSearchInput(event.target.value)}
+                />
               </div>
+              {showSearching && (
+                <span className={searchStyles.searchingLabel}>Searching...</span>
+              )}
             </div>
-            {showSearching && (
-              <span className={searchStyles.searchingLabel}>Searching...</span>
-            )}
           </div>
+          {!isSearching && <Pagination small />}
         </div>
-
-        {!isSearching && (
-          <div className={dialogStyles.topControls}>
-            <Pagination small />
-          </div>
-        )}
 
         {!isSearching && (
           <div className={dialogStyles.controls}>

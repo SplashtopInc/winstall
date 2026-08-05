@@ -106,7 +106,7 @@
         font-size: 15px;
         font-family: inherit;
         color: var(--textColor);
-        box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.15);
+        box-shadow: none;
     }
 
     button{
@@ -155,7 +155,7 @@
     text-decoration: none;
     color: var(--textColor);
     font-size: 18px;
-    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
+    box-shadow: none;
     transition: 0.3s all ease-in-out;
     cursor: pointer;
     border: 0px;
