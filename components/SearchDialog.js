@@ -236,6 +236,7 @@ function SearchDialog({ isOpen, onClose }) {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={handleKeyDown}
+            onMouseDown={() => setActiveIndex(-1)}
             placeholder="Search apps..."
             autoComplete="off"
             spellCheck={false}
