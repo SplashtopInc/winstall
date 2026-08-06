@@ -113,7 +113,6 @@
   border-radius: 50px;
   text-decoration: none;
   transition: all 0.3s ease;
-  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
 }
 
@@ -123,7 +122,6 @@
 
   &:hover {
     background: var(--altAccent);
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -600,10 +598,8 @@
   border-radius: 50px;
   text-decoration: none;
   transition: all 0.3s ease;
-  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
 
   &:hover {
     background: color-mix(in srgb, white 90%, var(--accent) 10%);
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
   }
 }
