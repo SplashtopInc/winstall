@@ -164,7 +164,7 @@ export default function AppDetailView({ app }) {
     setTimeout(() => setCopyStatus("idle"), 2000);
   };
 
-  const copyright = app.copyright || (app.publisher ? `© ${app.publisher}` : "");
+  const copyright = app.copyright || "";
 
   return (
     <div className={styles.page}>
