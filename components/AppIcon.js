@@ -1,7 +1,7 @@
 import popularAppsList from "../data/popularApps.json";
 import categoryAppsList from "../data/categoryApps.json";
 import { useState } from "react";
-import { getApiBase } from "../utils/runtimeConfig";
+import { getIconBase } from "../utils/runtimeConfig";
 
 function GenericAppIcon() {
   return (
@@ -44,8 +44,8 @@ const AppIcon = ({ id, name, icon, iconUrl, iconPng }) => {
 
   return (
     <AppPicture
-      srcSetPng={`${getApiBase()}/icons/${icon}.png`}
-      srcSetWebp={`${getApiBase()}/icons/next/${icon}.webp`}
+      srcSetPng={`${getIconBase()}/icons/${icon}.png`}
+      srcSetWebp={`${getIconBase()}/icons/next/${icon}.webp`}
     />
   );
 };

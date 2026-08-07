@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import detailStyles from "../styles/appDetail.module.scss";
 import RelatedAppCard from "./RelatedAppCard";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
-import { getApiBase } from "../utils/runtimeConfig";
+import { getIconBase } from "../utils/runtimeConfig";
 
 const MAX_SUGGESTIONS = 4;
 
@@ -20,8 +20,8 @@ function withIconUrls(apps) {
       const iconName = app.icon.replace(".png", "");
       return {
         ...app,
-        iconUrl: `${getApiBase()}/icons/next/${iconName}.webp`,
-        iconPng: `${getApiBase()}/icons/${iconName}.png`,
+        iconUrl: `${getIconBase()}/icons/next/${iconName}.webp`,
+        iconPng: `${getIconBase()}/icons/${iconName}.png`,
       };
     }
     return app;

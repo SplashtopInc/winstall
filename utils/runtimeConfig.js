@@ -1,13 +1,13 @@
-let _apiBase = null;
+let _iconBase = null;
 
-export const getApiBase = () => {
+export const getIconBase = () => {
   if (typeof window !== 'undefined') {
-    if (_apiBase === null) {
-      _apiBase = document.querySelector('meta[name="winstall-api-base"]')?.getAttribute('content') || '';
+    if (_iconBase === null) {
+      _iconBase = document.querySelector('meta[name="winstall-icon-base"]')?.getAttribute('content') || '';
     }
-    return _apiBase;
+    return _iconBase;
   }
-  return process.env.WINSTALL_API_BASE || '';
+  return process.env.WINSTALL_ICON_BASE || '';
 };
 
 export const getRuntimeConfig = async () => {

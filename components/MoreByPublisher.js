@@ -3,7 +3,7 @@ import Link from "next/link";
 import styles from "../styles/appDetail.module.scss";
 import RelatedAppCard from "./RelatedAppCard";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
-import { getApiBase } from "../utils/runtimeConfig";
+import { getIconBase } from "../utils/runtimeConfig";
 
 const MAX_PUBLISHER_APPS = 4;
 
@@ -50,8 +50,8 @@ const MoreByPublisher = ({ publisher, currentAppId }) => {
         limited.forEach((app) => {
           if (app.icon && !app.icon.startsWith("http") && !app.iconUrl) {
             const iconName = app.icon.replace(".png", "");
-            app.iconUrl = `${getApiBase()}/icons/next/${iconName}.webp`;
-            app.iconPng = `${getApiBase()}/icons/${iconName}.png`;
+            app.iconUrl = `${getIconBase()}/icons/next/${iconName}.webp`;
+            app.iconPng = `${getIconBase()}/icons/${iconName}.png`;
           }
         });
 

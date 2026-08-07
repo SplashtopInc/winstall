@@ -17,7 +17,7 @@ import {
 import { useRouter } from "next/router";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { getRevalidateTime } from "../utils/revalidateCache";
-import { getApiBase } from "../utils/runtimeConfig";
+import { getIconBase } from "../utils/runtimeConfig";
 import Error from "../components/Error";
 import DonateCard from "../components/DonateCard";
 
@@ -100,8 +100,8 @@ function Store({ data, error, buildTime }) {
       normalized.items.forEach(app => {
         if (app.icon && !app.icon.startsWith('http') && !app.iconUrl) {
           const iconName = app.icon.replace('.png', '');
-          app.iconUrl = `${getApiBase()}/icons/next/${iconName}.webp`;
-          app.iconPng = `${getApiBase()}/icons/${iconName}.png`;
+          app.iconUrl = `${getIconBase()}/icons/next/${iconName}.webp`;
+          app.iconPng = `${getIconBase()}/icons/${iconName}.png`;
         }
       });
     }

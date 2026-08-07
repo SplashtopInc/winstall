@@ -9,7 +9,7 @@ import ListPackages from "../components/ListPackages";
 import TrySearching from "../components/TrySearching";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { useSearchDialog } from "../ctx/SearchDialogContext";
-import { getApiBase } from "../utils/runtimeConfig";
+import { getIconBase } from "../utils/runtimeConfig";
 
 function suggestionQueryFromSearch(input) {
   const q = String(input || "").trim();
@@ -175,8 +175,8 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
     items.forEach(app => {
       if (app.icon && !app.icon.startsWith('http') && !app.iconUrl) {
         const iconName = app.icon.replace('.png', '');
-        app.iconUrl = `${getApiBase()}/icons/next/${iconName}.webp`;
-        app.iconPng = `${getApiBase()}/icons/${iconName}.png`;
+        app.iconUrl = `${getIconBase()}/icons/next/${iconName}.webp`;
+        app.iconPng = `${getIconBase()}/icons/${iconName}.png`;
       }
     });
 

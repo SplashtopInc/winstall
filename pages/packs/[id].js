@@ -35,7 +35,7 @@ import {
 } from "../../utils/packHelpers";
 import fetchWinstallAPI from "../../utils/fetchWinstallAPI";
 import { compareVersion } from "../../utils/helpers";
-import { getApiBase } from "../../utils/runtimeConfig";
+import { getIconBase } from "../../utils/runtimeConfig";
 import {
   DEFAULT_INSTALL_FILTERS,
   fromDefaultInstallFilters,
@@ -46,7 +46,7 @@ import { hasInstallOptions } from "../../utils/installOptions";
 import styles from "../../styles/packDetail.module.scss";
 
 function transformPackIcons(pack, apiBase) {
-  const base = apiBase || getApiBase();
+  const base = apiBase || getIconBase();
   if (!pack) return pack;
 
   return {
@@ -211,7 +211,7 @@ export default function PackDetailPage() {
       return;
     }
 
-    const apiBase = getApiBase();
+    const apiBase = getIconBase();
     const transformed = transformPackIcons(response, apiBase);
     setPack(transformed);
     setApps(transformed.apps || []);
@@ -321,7 +321,7 @@ export default function PackDetailPage() {
   };
 
   const handlePackMadePublic = (updatedPack) => {
-    const apiBase = getApiBase();
+    const apiBase = getIconBase();
     const transformed = transformPackIcons(updatedPack, apiBase);
     setPack((current) => ({
       ...current,
@@ -332,7 +332,7 @@ export default function PackDetailPage() {
   };
 
   const handlePackUpdated = (updatedPack) => {
-    const apiBase = getApiBase();
+    const apiBase = getIconBase();
     const transformed = transformPackIcons(updatedPack, apiBase);
     setPack((current) => ({
       ...current,
@@ -360,7 +360,7 @@ export default function PackDetailPage() {
     }
 
     if (response) {
-      const apiBase = getApiBase();
+      const apiBase = getIconBase();
       const transformed = transformPackIcons(response, apiBase);
       setPack((current) => ({
         ...current,
@@ -389,7 +389,7 @@ export default function PackDetailPage() {
       }
 
       if (response) {
-        const apiBase = getApiBase();
+        const apiBase = getIconBase();
         const transformed = transformPackIcons(response, apiBase);
         // Keep optimistic UI filters — don't reset from the response payload.
         setPack((current) => ({
@@ -518,7 +518,7 @@ export default function PackDetailPage() {
   const handleAppsAdded = async (updatedPack) => {
     if (!updatedPack) return;
 
-    const apiBase = getApiBase();
+    const apiBase = getIconBase();
     const transformed = transformPackIcons(updatedPack, apiBase);
     setPack((current) => ({
       ...current,
@@ -557,7 +557,7 @@ export default function PackDetailPage() {
     }
 
     if (response) {
-      const apiBase = getApiBase();
+      const apiBase = getIconBase();
       const transformed = transformPackIcons(response, apiBase);
       setPack((current) => ({
         ...current,

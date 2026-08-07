@@ -5,7 +5,7 @@ class MyDocument extends Document {
     return (
       <Html lang="en" data-scroll-behavior="smooth">
         <Head>
-          <meta name="winstall-api-base" content={process.env.WINSTALL_API_BASE || ''} />
+          <meta name="winstall-icon-base" content={process.env.WINSTALL_ICON_BASE || ''} />
           <script src="https://cmp.osano.com/169nu5TMub7Nk2Epy/7c82a576-285f-4b1c-8d4b-a1a4da5b7346/osano.js"></script>
           <script
             dangerouslySetInnerHTML={{

@@ -13,7 +13,7 @@ import Error from "../../components/Error";
 import { LoginButtons } from "../../components/LoginPanel";
 import { fetchMyPacks, fetchPublicPacks } from "../../utils/fetchPackAPI";
 import { setLastLoginProvider } from "../../utils/lastLoginProvider";
-import { getApiBase } from "../../utils/runtimeConfig";
+import { getIconBase } from "../../utils/runtimeConfig";
 import {
   OWN_PACKS_UPDATED_EVENT,
   PUBLIC_PACKS_UPDATED_EVENT,
@@ -24,7 +24,7 @@ import styles from "../../styles/packsIndex.module.scss";
 const PACKS_PER_PAGE = 24;
 
 function transformPackIcons(packs, apiBase) {
-  const base = apiBase || getApiBase();
+  const base = apiBase || getIconBase();
   if (!base || !packs) return packs;
 
   return packs.map((pack) => ({
@@ -102,7 +102,7 @@ export default function PacksPage() {
         setPublicPacksError(error);
         setPublicPacks([]);
       } else if (response?.data) {
-        setPublicPacks(transformPackIcons(response.data, getApiBase()));
+        setPublicPacks(transformPackIcons(response.data, getIconBase()));
         setPublicTotal(typeof response.total === "number" ? response.total : 0);
         setPublicCurrentOffset(
           typeof response.offset === "number" ? response.offset : offset
@@ -131,7 +131,7 @@ export default function PacksPage() {
         setMyPacksError(error);
         setMyPacks([]);
       } else if (userPacks) {
-        setMyPacks(transformPackIcons(userPacks, getApiBase()));
+        setMyPacks(transformPackIcons(userPacks, getIconBase()));
       }
     } catch (err) {
       setMyPacksError(err.message || "Failed to load packs.");
@@ -244,7 +244,7 @@ export default function PacksPage() {
       const updatedPack = event.detail;
       if (!updatedPack?._id) return;
 
-      const [pack] = transformPackIcons([updatedPack], getApiBase());
+      const [pack] = transformPackIcons([updatedPack], getIconBase());
       setMyPacks((current) =>
         current.map((item) =>
           item._id === pack._id ? { ...item, ...pack } : item
@@ -306,7 +306,7 @@ export default function PacksPage() {
   const handlePackCreated = (newPack) => {
     const [pack] = transformPackIcons(
       [{ ...newPack, apps: newPack.apps || [] }],
-      getApiBase()
+      getIconBase()
     );
     setMyPacks((current) => [pack, ...current]);
     setShowCreateModal(false);

@@ -13,7 +13,7 @@ import AddAppPickerCard from "./AddAppPickerCard";
 import { ListSort, applySort } from "./ListSort";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { addAppsToPack } from "../utils/packHelpers";
-import { getApiBase } from "../utils/runtimeConfig";
+import { getIconBase } from "../utils/runtimeConfig";
 import dialogStyles from "../styles/addAppsDialog.module.scss";
 import searchStyles from "../styles/search.module.scss";
 
@@ -68,7 +68,7 @@ function normalizeAppsPayload(payload) {
 }
 
 function transformAppIcons(apps) {
-  const base = getApiBase();
+  const base = getIconBase();
   apps.forEach((app) => {
     if (app.icon && !app.icon.startsWith("http") && !app.iconUrl) {
       const iconName = app.icon.replace(".png", "");
