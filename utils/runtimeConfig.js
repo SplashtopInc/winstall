@@ -7,7 +7,7 @@ export const getApiBase = () => {
     }
     return _apiBase;
   }
-  return process.env.WINSTALL_API_BASE || process.env.NEXT_PUBLIC_WINSTALL_API_BASE || '';
+  return process.env.WINSTALL_API_BASE || '';
 };
 
 export const getRuntimeConfig = async () => {
