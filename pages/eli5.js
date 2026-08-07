@@ -143,9 +143,6 @@ export default function Explainer() {
 
         <div className={styles.contentCol}>
           <section id="winget" className={styles.contentSection}>
-          <div className={styles.sectionEyebrow} aria-hidden="true">
-            🪟
-          </div>
           <h2 className={styles.blockHeader}>How Winget Works</h2>
           <p className={styles.leadText}>
             Winget (Windows Package Manager) is Microsoft&apos;s official
@@ -204,9 +201,6 @@ export default function Explainer() {
         </section>
 
         <section id="winstall" className={styles.contentSection}>
-          <div className={styles.sectionEyebrow} aria-hidden="true">
-            ⚡
-          </div>
           <h2 className={styles.blockHeader}>How to Use winstall</h2>
           <p className={styles.leadText}>
             Winget is powerful, but remembering exact package IDs is painful.
@@ -277,11 +271,11 @@ export default function Explainer() {
           </ol>
 
           <div className={styles.sectionActions}>
-            <Link href="/express" className={styles.btnPrimary}>
-              Open Express Setup
-            </Link>
-            <Link href="/apps" className={styles.btnSecondary}>
+            <Link href="/apps" className={styles.btnPrimary}>
               Browse All Apps
+            </Link>
+            <Link href="/express" className={styles.btnSecondary}>
+              Open Express Setup
             </Link>
           </div>
         </section>
