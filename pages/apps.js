@@ -277,8 +277,8 @@ function Store({ data, error, buildTime }) {
     );
   }
 
-  if (error) return <Error title="Oops!" subtitle={error} />;
-  if (clientError) return <Error title="Oops!" subtitle={clientError} />;
+  if (error) return <Error detail={error} />;
+  if (clientError) return <Error detail={clientError} />;
 
   if (!apps) return <></>;
 

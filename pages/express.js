@@ -39,7 +39,7 @@ function ExpressSetup({ error, categoryApps }) {
   const [searchInput, setSearchInput] = useState("");
 
   if (error) {
-    return <Error title="Oops!" subtitle={error} />;
+    return <Error detail={error} />;
   }
 
   // Use enriched data if available, fallback to static data

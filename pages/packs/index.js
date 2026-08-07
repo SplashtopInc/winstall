@@ -360,7 +360,7 @@ export default function PacksPage() {
     }
 
     if (myPacksError) {
-      return <Error title="Oops!" subtitle={myPacksError} />;
+      return <Error detail={myPacksError} />;
     }
 
     if (myPacks.length === 0) {

@@ -54,7 +54,11 @@ function UserProfile({ uid }) {
       )}
 
       {user && user.errors ? (
-        <Error title="User does not exist" />
+        <Error
+          title="User does not exist"
+          description="This user profile couldn't be found, or the account may no longer be available."
+          showRetry={false}
+        />
       ) : (
         <div className={styles.page}>
           <div className={styles.controls}>

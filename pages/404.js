@@ -5,7 +5,7 @@ export default function Custom404() {
   return (
     <>
       <MetaTags title="Not found | winstall" />
-      <Error/>
+      <Error notFound showRetry={false} />
     </>
   )
 }

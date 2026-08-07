@@ -598,11 +598,12 @@ export default function PackDetailPage() {
     return (
       <PageWrapper>
         <Error
-          title="Sorry! We could not load this pack."
-          subtitle={
-            error ||
-            "This pack could not be loaded. It may not exist or you may not have access."
-          }
+          title="This pack couldn't be loaded"
+          detail={error || undefined}
+          description="Something went wrong while loading this pack. It may be temporarily unavailable — try again, or browse other packs."
+          primaryHref="/packs"
+          primaryLabel="Browse App Packs"
+          primaryIcon="grid"
         />
       </PageWrapper>
     );

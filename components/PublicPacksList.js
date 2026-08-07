@@ -85,7 +85,7 @@ export default function PublicPacksList({
   }
 
   if (error) {
-    return <Error title="Oops!" subtitle={error} />;
+    return <Error detail={error} />;
   }
 
   const summary = isSearching

@@ -58,11 +58,11 @@ function Home({ popular, appsTotal, recommended, error, buildTime }) {
   }
 
   if (error) {
-    return <Error title="Oops!" subtitle={error} />;
+    return <Error detail={error} />;
   }
 
   if (clientError) {
-    return <Error title="Oops!" subtitle={clientError} />;
+    return <Error detail={clientError} />;
   }
 
   const packagesCount = `${Math.floor(data.appsTotal / 50) * 50}+ packages and growing.`;
