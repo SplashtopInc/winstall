@@ -1,5 +1,6 @@
 import popularAppsList from "../data/popularApps.json";
 import categoryAppsList from "../data/categoryApps.json";
+import localIconOverrides from "../data/localIconOverrides.json";
 import { useState } from "react";
 import { getIconBase } from "../utils/runtimeConfig";
 
@@ -15,17 +16,26 @@ function GenericAppIcon() {
   );
 }
 
+function LocalAppIcon({ img }) {
+  return (
+    <AppPicture
+      srcSetPng={`/assets/apps/fallback/${img.replace("webp", "png")}`}
+      srcSetWebp={`/assets/apps/${img}`}
+    />
+  );
+}
+
 const AppIcon = ({ id, name, icon, iconUrl, iconPng }) => {
   const targetApp =
     Object.values(popularAppsList).find((app) => app._id === id) ||
     Object.values(categoryAppsList).flat().find((app) => app._id === id);
   if (targetApp) {
-    return (
-      <AppPicture
-        srcSetPng={`/assets/apps/fallback/${targetApp.img.replace("webp", "png")}`}
-        srcSetWebp={`/assets/apps/${targetApp.img}`}
-      />
-    );
+    return <LocalAppIcon img={targetApp.img} />;
+  }
+
+  const overrideImg = localIconOverrides[id];
+  if (overrideImg) {
+    return <LocalAppIcon img={overrideImg} />;
   }
 
   if (iconUrl && iconPng) {
