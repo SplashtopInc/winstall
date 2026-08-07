@@ -13,14 +13,11 @@ import AddAppPickerCard from "./AddAppPickerCard";
 import { ListSort, applySort } from "./ListSort";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { addAppsToPack } from "../utils/packHelpers";
+import { getApiBase } from "../utils/runtimeConfig";
 import dialogStyles from "../styles/addAppsDialog.module.scss";
 import searchStyles from "../styles/search.module.scss";
 
 const APPS_PER_PAGE = 60;
-
-function getApiBase() {
-  return process.env.NEXT_PUBLIC_WINSTALL_API_BASE || "";
-}
 
 function normalizeAppsPayload(payload) {
   if (!payload) {

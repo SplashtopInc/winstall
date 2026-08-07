@@ -35,6 +35,7 @@ import {
 } from "../../utils/packHelpers";
 import fetchWinstallAPI from "../../utils/fetchWinstallAPI";
 import { compareVersion } from "../../utils/helpers";
+import { getApiBase } from "../../utils/runtimeConfig";
 import {
   DEFAULT_INSTALL_FILTERS,
   fromDefaultInstallFilters,
@@ -43,10 +44,6 @@ import {
 import { hasInstallOptions } from "../../utils/installOptions";
 
 import styles from "../../styles/packDetail.module.scss";
-
-function getApiBase() {
-  return process.env.NEXT_PUBLIC_WINSTALL_API_BASE || "";
-}
 
 function transformPackIcons(pack, apiBase) {
   const base = apiBase || getApiBase();

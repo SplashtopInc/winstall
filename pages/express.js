@@ -13,6 +13,7 @@ import Footer from "../components/Footer";
 import Error from "../components/Error";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { getRevalidateTime } from "../utils/revalidateCache";
+import { getApiBase } from "../utils/runtimeConfig";
 
 const categoryNames = {
   "all": "All",
@@ -164,8 +165,8 @@ export async function getStaticProps() {
 
         if (appData.icon && !appData.icon.startsWith("http") && !appData.iconUrl) {
           const iconName = appData.icon.replace(".png", "");
-          appData.iconUrl = `${process.env.NEXT_PUBLIC_WINSTALL_API_BASE}/icons/next/${iconName}.webp`;
-          appData.iconPng = `${process.env.NEXT_PUBLIC_WINSTALL_API_BASE}/icons/${iconName}.png`;
+          appData.iconUrl = `${getApiBase()}/icons/next/${iconName}.webp`;
+          appData.iconPng = `${getApiBase()}/icons/${iconName}.png`;
         }
 
         return {

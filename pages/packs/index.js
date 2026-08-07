@@ -13,6 +13,7 @@ import Error from "../../components/Error";
 import { LoginButtons } from "../../components/LoginPanel";
 import { fetchMyPacks, fetchPublicPacks } from "../../utils/fetchPackAPI";
 import { setLastLoginProvider } from "../../utils/lastLoginProvider";
+import { getApiBase } from "../../utils/runtimeConfig";
 import {
   OWN_PACKS_UPDATED_EVENT,
   PUBLIC_PACKS_UPDATED_EVENT,
@@ -21,10 +22,6 @@ import {
 import styles from "../../styles/packsIndex.module.scss";
 
 const PACKS_PER_PAGE = 24;
-
-function getApiBase() {
-  return process.env.NEXT_PUBLIC_WINSTALL_API_BASE || "";
-}
 
 function transformPackIcons(packs, apiBase) {
   const base = apiBase || getApiBase();
