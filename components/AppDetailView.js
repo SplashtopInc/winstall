@@ -11,6 +11,7 @@ import AppIcon from "./AppIcon";
 import DonateCard from "./DonateCard";
 import Toast from "./Toast";
 import { buildSiteUrl, compareVersion, timeAgo } from "../utils/helpers";
+import { trackAppStats } from "../utils/trackAppStats";
 
 export default function AppDetailView({ app }) {
   const { selectedApps, setSelectedApps } = useContext(SelectedContext);
@@ -31,6 +32,7 @@ export default function AppDetailView({ app }) {
   const [copyStatus, setCopyStatus] = useState("idle");
   const [tagsExpanded, setTagsExpanded] = useState(false);
   const shareRef = useRef(null);
+  const viewTrackedRef = useRef(false);
 
   const TAG_PREVIEW_COUNT = 8;
   const allTags = Array.isArray(app.tags) ? app.tags : [];
@@ -46,6 +48,36 @@ export default function AppDetailView({ app }) {
 
   useEffect(() => {
     setTagsExpanded(false);
+  }, [app._id]);
+
+  useEffect(() => {
+    viewTrackedRef.current = false;
+  }, [app._id]);
+
+  useEffect(() => {
+    if (!app?._id || viewTrackedRef.current) return;
+
+    const trackView = () => {
+      if (viewTrackedRef.current) return;
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") {
+        return;
+      }
+      viewTrackedRef.current = true;
+      trackAppStats(app._id, "view");
+    };
+
+    trackView();
+
+    if (typeof document === "undefined") return undefined;
+
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") {
+        trackView();
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
   }, [app._id]);
 
   useEffect(() => {
@@ -112,6 +144,7 @@ export default function AppDetailView({ app }) {
       await navigator.clipboard.writeText(installCmd);
       setCopied(true);
       setToast("Command copied");
+      trackAppStats(app._id, "download");
       setTimeout(() => setCopied(false), 1800);
     } catch {
       setToast("Copy failed");
