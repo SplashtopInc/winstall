@@ -14,7 +14,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^5.9.2",
     "mongoose": "^9.7.0",
-    "nanoid": "^5.1.11",
+    "nanoid": "^3.3.17",
     "next": "^15.5.15",
     "next-auth": "^4.24.14",
     "nprogress": "^0.2.0",
@@ -35,7 +35,8 @@
     "next": {
       "react": "^18.3.1",
       "react-dom": "^18.3.1"
-    }
+    },
+    "nanoid": "^3.3.17"
   },
   "scripts": {
     "dev": "npm run clean:sw && next dev --turbopack",
