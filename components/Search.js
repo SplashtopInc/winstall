@@ -50,11 +50,13 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
     if (router.isReady && router.query && router.query.q && urlQuery !== router.query.q){
       setSearchInput(router.query.q);
       setUrlQuery(router.query.q)
-    } else if(results != 0 && urlQuery && router.query && !router.query.q){
-      // if we previously had a query, going back should reset it.
+    } else if(urlQuery && router.isReady && router.query && !router.query.q){
+      // Previously had a URL query; clear when ?q= is gone (e.g. Apps nav click).
       setSearchInput("");
       setResults([]);
-      if(onSearch) onSearch();
+      setUrlQuery(undefined);
+      setHasSearchResponse(false);
+      if(onSearch) onSearch("");
       if(onEmptyChange) onEmptyChange(false);
     }
   })
