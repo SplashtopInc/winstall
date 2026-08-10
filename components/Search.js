@@ -35,6 +35,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
   const [hasSearchResponse, setHasSearchResponse] = useState(false);
   const activeRequestIdRef = useRef(0);
   const hideSearchingTimerRef = useRef(null);
+  const skipDebounceRef = useRef(false);
 
   const normalizeAppsPayload = (payload) => {
     if (!payload) return [];
@@ -48,8 +49,10 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
   useEffect(() => {
     // if we have a ?q param on the url, we deal with it
     if (router.isReady && router.query && router.query.q && urlQuery !== router.query.q){
+      skipDebounceRef.current = true;
       setSearchInput(router.query.q);
-      setUrlQuery(router.query.q)
+      setUrlQuery(router.query.q);
+      if (onSearch) onSearch(router.query.q);
     } else if(urlQuery && router.isReady && router.query && !router.query.q){
       // Previously had a URL query; clear when ?q= is gone (e.g. Apps nav click).
       setSearchInput("");
@@ -63,9 +66,16 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
 
   useEffect(() => {
     if (searchInput === undefined || searchInput === null) return;
+
+    let delay = 300;
+    if (skipDebounceRef.current && String(searchInput).trim()) {
+      delay = 0;
+      skipDebounceRef.current = false;
+    }
+
     const timer = setTimeout(() => {
       handleSearch(searchInput);
-    }, 300);
+    }, delay);
 
     return () => clearTimeout(timer);
   }, [searchInput]);

@@ -36,6 +36,7 @@ function Store({ data, error, buildTime }) {
 
   const appsPerPage = 60;
   const totalPages = totalKnown ? Math.ceil(total / appsPerPage) : 0;
+  const isSearchMode = Boolean(searchInput || router.query?.q);
 
   const normalizeAppsPayload = (payload) => {
     if (!payload) return { items: [], total: 0, totalKnown: false, offset: 0, limit: 0 };
@@ -289,7 +290,7 @@ function Store({ data, error, buildTime }) {
       <div className={styles.controls}>
         <Title />
 
-        {!searchInput && !router.query.q && <Pagination small />}
+        {!isSearchMode && <Pagination small />}
       </div>
 
       <Search
@@ -303,7 +304,7 @@ function Store({ data, error, buildTime }) {
       />
 
       <div className={styles.controls}>
-        {!searchInput && (
+        {!isSearchMode && (
           <>
             <p>
               {apps.length === 0
@@ -321,7 +322,7 @@ function Store({ data, error, buildTime }) {
         )}
       </div>
 
-      {!searchInput && (
+      {!isSearchMode && (
         <ul className={`${styles.all} ${styles.storeList}`}>
           {apps.map((app, index) => (
             <React.Fragment key={app._id}>
@@ -339,7 +340,7 @@ function Store({ data, error, buildTime }) {
         </ul>
       )}
 
-      {!searchInput && (
+      {!isSearchMode && (
         <div className={styles.pagination}>
           <Pagination disable={searchInput ? true : false} />
           <em>
