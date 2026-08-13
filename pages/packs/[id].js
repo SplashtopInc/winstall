@@ -36,6 +36,7 @@ import {
 import fetchWinstallAPI from "../../utils/fetchWinstallAPI";
 import { compareVersion } from "../../utils/helpers";
 import { getIconBase } from "../../utils/runtimeConfig";
+import { trackPackStats } from "../../utils/trackPackStats";
 import {
   DEFAULT_INSTALL_FILTERS,
   fromDefaultInstallFilters,
@@ -218,15 +219,9 @@ export default function PackDetailPage() {
     setDefaultFilters(toDefaultInstallFilters(transformed.defaultInstallOptions));
     setLoading(false);
 
-    // Increment view count for public/unlisted packs
+    // Track view for public/unlisted packs (analytics when flag on)
     if (transformed.visibility === "public" || transformed.visibility === "unlisted") {
-      fetch(`/api/packs/${packId}/stats`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "view" }),
-      }).catch(() => {
-        // Silently fail - view count is not critical
-      });
+      trackPackStats(packId, "view");
     }
 
     const enriched = await enrichApps(transformed.apps || []);

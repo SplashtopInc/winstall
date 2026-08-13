@@ -3,12 +3,14 @@ import {
   formatPacksForResponse,
   listPublicPacks,
 } from "../../../service/packService";
-import { sendPackError } from "./session";
+import { logLocalPackApiDeprecation, sendPackError } from "./session";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
+
+  logLocalPackApiDeprecation(req);
 
   const { offset, limit, sort, q } = req.query;
 

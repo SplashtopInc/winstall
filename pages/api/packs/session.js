@@ -1,8 +1,19 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
 import { PackError } from "../../../service/packService";
+import { isPackApiViaWinstall } from "../../../utils/packApiConfig";
+
+export function logLocalPackApiDeprecation(req) {
+  if (!isPackApiViaWinstall()) return;
+  const method = req?.method || "?";
+  const url = req?.url || "?";
+  console.warn(
+    `[packs API] Deprecated local handler hit while PACK_API_VIA_WINSTALL is on: ${method} ${url}`
+  );
+}
 
 export async function requireSessionUser(req, res) {
+  logLocalPackApiDeprecation(req);
   const session = await getServerSession(req, res, authOptions);
   const userId = session?.user?.id;
 
@@ -15,6 +26,7 @@ export async function requireSessionUser(req, res) {
 }
 
 export async function getOptionalSessionUser(req, res) {
+  logLocalPackApiDeprecation(req);
   const session = await getServerSession(req, res, authOptions);
   return session?.user?.id ?? null;
 }

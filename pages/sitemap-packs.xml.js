@@ -1,12 +1,18 @@
 const escapeXml = (str) => {
   return String(str).replace(/[&<>"']/g, (char) => {
     switch (char) {
-      case '&': return '&amp;';
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '"': return '&quot;';
-      case "'": return '&apos;';
-      default: return char;
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case '"':
+        return "&quot;";
+      case "'":
+        return "&apos;";
+      default:
+        return char;
     }
   });
 };
@@ -23,7 +29,7 @@ function generatePacksSiteMap(urlPrefix, packs, users) {
        </url>
      `;
        })
-       .join('')}
+       .join("")}
      ${users
        .map((id) => {
          return `
@@ -32,45 +38,61 @@ function generatePacksSiteMap(urlPrefix, packs, users) {
        </url>
      `;
        })
-       .join('')}
+       .join("")}
    </urlset>
  `;
 }
 
-function PacksSiteMap() {
-}
+function PacksSiteMap() {}
 
 export async function getServerSideProps({ req, res }) {
-  const protocol = req.headers['x-forwarded-proto'] || 'http';
-  const host = req.headers['host'];
+  const protocol = req.headers["x-forwarded-proto"] || "http";
+  const host = req.headers["host"];
   const urlPrefix = protocol + "://" + host;
 
   try {
-    // Query packs from local MongoDB
-    const { connectMongoose } = require('../lib/mongoose');
-    const mongoose = await connectMongoose();
+    const { isPackApiViaWinstall } = require("../utils/packApiConfig");
+    let allPacks = [];
 
-    // Import Pack model to register it
-    require('../dbModel/Pack');
-    const Pack = mongoose.models.Pack;
-    const allPacks = await Pack.find({
-      visibility: 'public',
-      status: 'active'
-    })
-      .sort({ createdAt: -1 })
-      .select('_id userId updatedAt')
-      .lean();
+    if (isPackApiViaWinstall()) {
+      const { fetchAllPublicPacksFromApi } = require("../utils/packApiServer");
+      const { packs, error } = await fetchAllPublicPacksFromApi({
+        limit: 100,
+        sort: "recent",
+      });
+      if (error) {
+        throw new Error(error);
+      }
+      allPacks = (packs || []).map((pack) => ({
+        _id: pack._id,
+        userId: pack.userId,
+        updatedAt: pack.updatedAt,
+      }));
+    } else {
+      const { connectMongoose } = require("../lib/mongoose");
+      const mongoose = await connectMongoose();
 
-    const users = Array.from(new Set(allPacks.map(pack => pack.userId)));
+      require("../dbModel/Pack");
+      const Pack = mongoose.models.Pack;
+      allPacks = await Pack.find({
+        visibility: "public",
+        status: "active",
+      })
+        .sort({ createdAt: -1 })
+        .select("_id userId updatedAt")
+        .lean();
+    }
+
+    const users = Array.from(new Set(allPacks.map((pack) => pack.userId)));
     const sitemap = generatePacksSiteMap(urlPrefix, allPacks, users);
 
-    res.setHeader('Content-Type', 'text/xml');
+    res.setHeader("Content-Type", "text/xml");
     res.write(sitemap);
     res.end();
   } catch (err) {
-    console.error('[sitemap-packs] Failed to generate sitemap:', err.message);
+    console.error("[sitemap-packs] Failed to generate sitemap:", err.message);
     res.statusCode = 500;
-    res.end('Error generating sitemap');
+    res.end("Error generating sitemap");
   }
 
   return {
