@@ -54,11 +54,11 @@ Pack payloads returned to the UI MUST remain usable by existing Pack pages and h
 
 ### Requirement: Pack view and download counts use analytics track
 
-After cutover, Pack view and download increments MUST be recorded via winstall-api analytics (`POST /analytics/track` with `targetType` pack), not by locally `$inc`-ing Pack documents through `/api/packs/:id/stats`. Track requests MUST include a `sessionId` and event type `view` or `download`. Failures of track MUST NOT block core Pack UX. Lifetime counts for display MUST be read from `GET /packs/:id/stats` (PackStats), not from embedded Pack `stats`.
+After cutover, Pack view and download increments MUST be recorded via winstall-api analytics (`POST /analytics/track` with `targetType` pack) reached through the Web BFF (`POST /api/winstall/analytics/track`). The browser MUST NOT POST `/api/packs/:id/stats` while the cutover flag is on. Track requests MUST include a `sessionId` and event type `view` or `download`. Failures of track MUST NOT block core Pack UX. Lifetime counts for display MUST be read from `GET /packs/:id/stats` (PackStats), not from embedded Pack `stats`.
 
 #### Scenario: Viewing a public pack tracks view
 - **WHEN** a user views a public or unlisted pack detail after cutover
-- **THEN** the system records a pack `view` track to the API analytics path (directly or via a thin Web proxy), with `sessionId`
+- **THEN** the system records a pack `view` track via `/api/winstall/analytics/track` with `sessionId`, not via `/api/packs/:id/stats`
 
 #### Scenario: Local pack stats $inc is not the authority
 - **WHEN** Pack traffic has been cut over to the API
@@ -86,11 +86,15 @@ When a user deletes their account, the system MUST remove that user’s active P
 
 ### Requirement: Local Pack routes retained; no browser JWT direct access
 
-This change MUST NOT remove `pages/api/packs/*`, local `packService`, or `dbModel/Pack*` as a rollback surface. The browser MUST NOT be required to hold or send an API JWT for Pack operations in this change; session cookie + BFF proxy remains the authenticated client path.
+This change MUST NOT remove `pages/api/packs/*`, local `packService`, or `dbModel/Pack*` as a rollback surface. While the cutover flag is on, the system MUST NOT send Pack CRUD, list, SSR, or stats/track requests to `/api/packs/*`; those modules exist only for flag-off rollback. The browser MUST NOT be required to hold or send an API JWT for Pack operations in this change; session cookie + BFF proxy remains the authenticated client path.
 
 #### Scenario: Local pack API files still present after adapter ships
 - **WHEN** this change is implemented and cut over
 - **THEN** local `/api/packs` route modules MAY still exist in the repo for rollback, even if unused by the primary client path
+
+#### Scenario: Flag on sends no traffic to local pack routes
+- **WHEN** the Pack API cutover flag is on
+- **THEN** browser and SSR Pack traffic MUST go through `/api/winstall…` or server-side API credentials, and MUST NOT call `/api/packs/*` (including `/api/packs/:id/stats`)
 
 #### Scenario: No client-held API JWT required for Pack
 - **WHEN** a user creates or edits a pack after this change

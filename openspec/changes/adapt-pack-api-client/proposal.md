@@ -6,7 +6,7 @@
 
 - 将 `fetchPackAPI`（及同类客户端入口）从 `/api/packs/*` 改为经 `/api/winstall` 调用 API Pack 路由，并做**路径/方法映射**（API 风格 ≠ 旧 BFF 形状）。
 - 扩展 `/api/winstall` 的鉴权代签规则，覆盖新路径（如 `GET /packs/me`、`POST /packs`、`POST /packs/:id/copy` 等写/本人读）。
-- 详情页 / 列表等对 stats 的写入从本地 `POST /api/packs/:id/stats`（`$inc`）改为走 API `POST /analytics/track`（及读 `GET /packs/:id/stats`）；展示侧不再依赖 Pack 文档内嵌 `stats`。
+- 详情页 / 列表等对 stats 的写入从本地 `POST /api/packs/:id/stats`（`$inc`）改为经 BFF `POST /api/winstall/analytics/track`（及读 `GET /packs/:id/stats`）；**flag on 时不得再请求 `pages/api/packs/*`**（含 stats）。展示侧不再依赖 Pack 文档内嵌 `stats`。
 - SSR / 构建期读路径（首页官方推荐 Pack、`sitemap-packs` 等）改为经服务端凭据调 API，不再 `Pack.find` 本地权威库。
 - 用户删号时的 Pack 级联改为调 API（经 BFF 或服务端 AuthKey），避免孤儿 Pack。
 - **不删除**本期本地 `pages/api/packs/*`、`service/packService`、`dbModel/Pack*`（切流稳定后再拆；可保留作回滚面）。

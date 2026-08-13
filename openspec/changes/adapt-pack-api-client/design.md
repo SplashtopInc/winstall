@@ -8,9 +8,9 @@ See proposal.md — Why。本仓 Pack 权威仍在本地：`fetchPackAPI` → `/
 
 - 单一适配入口把 Pack CRUD/列表切到 API（经 BFF）
 - 更新 BFF `requiresAuth` 覆盖新 API 路径（尤其 `POST /packs`、`GET /packs/me`）
-- Pack view/download 对齐 App：Web 薄代理 → `POST /analytics/track`
+- Pack view/download 经 BFF `POST /analytics/track`（flag on 不经 `pages/api/packs/`）
 - SSR/sitemap/删号级联改读/写 API
-- 切流可回滚到本地 `/api/packs`（代码保留）
+- 切流可回滚到本地 `/api/packs`（代码保留；flag on 时该目录零 HTTP）
 
 **Non-Goals:**
 
@@ -39,6 +39,8 @@ See proposal.md — Why。本仓 Pack 权威仍在本地：`fetchPackAPI` → `/
 | `createPack` | `POST /api/winstall/packs` |
 | `fetchPackById` / `updatePack` / `deletePack` | `/api/winstall/packs/:id` |
 | `copyPack` | `POST /api/winstall/packs/:id/copy` |
+| `trackPackStats`（flag on） | `POST /api/winstall/analytics/track` |
+| `fetchPackStats`（flag on） | `GET /api/winstall/packs/:id/stats` |
 
 客户端继续 `credentials: "same-origin"` 打 BFF；由 BFF 代签用户 JWT。服务端 SSR 若直连 API，用 `AuthKey`/`AuthSecret`（及需要时的 user 上下文），可复用/扩展 `fetchWinstallAPI` 的 server 分支。
 
@@ -63,17 +65,18 @@ See proposal.md — Why。本仓 Pack 权威仍在本地：`fetchPackAPI` → `/
 
 **备选**: 详情永远匿名 — 拒绝，所有者无法打开自己的 private pack。
 
-### Decision 4: Pack stats 对齐 App 的薄代理模式
+### Decision 4: Pack stats 经 BFF analytics，不经本地 `/api/packs`
 
 **选择**:
 
-1. 新增或改造 Web 入口（优先 `pages/api/packs/[id]/stats.js` 改为转发，或 `pages/api/packs/[id]/track` / 复用通用 analytics 代理）→ 服务端 `POST {api}/analytics/track`，body：`{ event: type, targetType: "pack", targetId: id, sessionId }`，带头 `AuthKey`/`AuthSecret`。
-2. 详情页等调用方补上 `sessionId`（复用 `utils/sessionId.js` / `trackAppStats` 模式，可抽 `trackPackStats`）。
-3. 需要展示终身量时另调 `GET /api/winstall/packs/:id/stats`（或服务端直连）。
+1. **flag on**：`trackPackStats` 打 `POST /api/winstall/analytics/track`，body：`{ event, targetType: "pack", targetId, sessionId }`。BFF 已用 AuthKey/Secret 转发；`requiresAuth` 不匹配该 path，不代签用户 JWT（与现网 App 服务端 track 同等威胁模型）。
+2. **flag off**：仍 `POST /api/packs/:id/stats`，本地 `$inc`（回滚面）。
+3. 需要展示终身量时：`GET /api/winstall/packs/:id/stats`（或服务端直连）。详情/下载调用方继续 `getSessionId()`，失败不挡 UX。
+4. **不**把 `pages/api/packs/[id]/stats.js` 当作切流后的 track 入口。该文件只服务 flag-off；其中为迁就老 URL 加的 analytics proxy 分支应去掉，避免 flag on 仍命中待删目录。
 
-**理由**: App 路径已验证；避免客户端直打 analytics；本地 `$inc` 退出权威路径。
+**理由**: flag on 必须对 `pages/api/packs/` 零 HTTP，否则后期无法整夹删除该包。App 的 `/api/apps/:id/stats` 薄代理可继续存在——那是另一个目录，不挡 Pack 清理。
 
-**备选**: 客户端经 BFF `POST /analytics/track` — 也可行；与 App 现用「按 id 的 stats 路由」二选一，实现时保持一种并改完所有调用点。
+**备选**: 改造 `/api/packs/:id/stats` 为 analytics 代理（原选择）— **拒绝**，热路径留在待删包里。新建 `/api/packs/:id/track` — 同样拒绝。另抽 Web `/api/analytics/track` — 本期不需要，BFF 已能转发。
 
 ### Decision 5: SSR / sitemap 走服务端 API，不经浏览器 BFF
 
@@ -99,11 +102,13 @@ See proposal.md — Why。本仓 Pack 权威仍在本地：`fetchPackAPI` → `/
 
 **备选**: 无开关直接改死 — 仅适合测试同库已共用 collection 且可接受瞬间切换时。
 
-### Decision 8: 本地路由保留但主路径停用
+### Decision 8: 本地路由保留但 flag on 零依赖
 
-**选择**: 不删 `pages/api/packs/*`；切流后主客户端不再调用。可选：在本地 handler 打 deprecation log，便于发现漏改调用点。
+**选择**: 本期不删 `pages/api/packs/*`（回滚面）。**不变量**：`PACK_API_VIA_WINSTALL`（及客户端 `NEXT_PUBLIC_*`）为 on 时，浏览器、SSR、客户端 helper **不得**请求 `/api/packs/*`（含 stats）。该目录仅在 flag off 时接收流量。本地 handler 的 deprecation log 在 flag on 时应保持沉默；若仍打出，视为漏改。
 
-**理由**: 回滚面；满足 spec「保留本地路由」。
+后续 cleanup change：删整个 `pages/api/packs/`，再砍 `fetchPackAPI` / SSR / 删号的 flag-off 分支与 `packService` / `Pack` 模型。删号里对本地 Mongo 的残留双清不属于本 API 包，随 model 一起拆。
+
+**理由**: 代码留着 ≠ 切流后还走这些接口。零 HTTP 才能让后期删除变成机械清理，而不是再发现 stats 热路径。
 
 ## Risks / Trade-offs
 
@@ -112,7 +117,9 @@ See proposal.md — Why。本仓 Pack 权威仍在本地：`fetchPackAPI` → `/
 - **[Risk] 详情无 JWT 导致 owner 打不开 private** → Mitigation：Decision 3  
 - **[Risk] Pack track 无 sessionId 被 API 拒** → Mitigation：对齐 App，强制 `getSessionId()`  
 - **[Risk] 官方推荐过滤在公开列表分页下不全** → Mitigation：提高 limit / 循环分页直到收齐 creator；或后续 API 按 userId 查  
-- **[Trade-off] 保留本地路由增加「两套入口」迷惑** → 可接受至 cleanup change；用开关与日志降低误用  
+- **[Risk] flag on 仍打 `/api/packs/:id/stats`** → Mitigation：Decision 4/8；`trackPackStats` 按开关分支；deprecation log 验收零命中  
+- **[Trade-off] Pack track 与 App 入口不一致**（BFF analytics vs `/api/apps/:id/stats`）→ 接受；好让 `pages/api/packs/` 可独立删除  
+- **[Trade-off] 保留本地路由增加「两套入口」迷惑** → 可接受至 cleanup change；用开关与「flag on 零命中」约束降低误用  
 - **[Trade-off] 删号 N 次 DELETE** → 用户 Pack 数量有限（公开上限 10），可接受  
 
 ## Migration Plan
@@ -122,9 +129,8 @@ See proposal.md — Why。本仓 Pack 权威仍在本地：`fetchPackAPI` → `/
 3. **验证（开关开）**: 创建/编辑/删除/复制、我的列表、公开列表分页与搜索、详情（含 private 所有者）、view track、首页推荐、sitemap、删号后 API 无孤儿。  
 4. **生产切流**: 维护窗或低峰开开关；监控 4xx/5xx 与空列表。  
 5. **回滚**: 关开关；确认本地库在窗口内仍可读（若生产已停写本地，回滚需同时恢复写或接受只读旧数据——运维需知情）。  
-6. **后续 change**: 删除本地 Pack API/service/model；可选 JWT 直连（需求 4）。
+6. **后续 change**: 确认 flag on 下 `pages/api/packs/` 零命中后，删除该目录及 flag-off 分支 / `packService` / `Pack` 模型；可选 JWT 直连（需求 4）。
 
 ## Open Questions
 
-- 官方推荐 Pack：首期「拉公开列表再按 `NEXT_OFFICIAL_PACKS_CREATOR` 过滤」是否足够，或是否要在 API 增加按 `userId` 列表接口（不阻塞适配，只影响推荐完整性）。  
-- Pack stats Web 入口：改造现有 `/api/packs/:id/stats` 转发 vs 新建与 App 对称的命名——实现时选一并统一调用点即可。
+- 官方推荐 Pack：首期「拉公开列表再按 `NEXT_OFFICIAL_PACKS_CREATOR` 过滤」是否足够，或是否要在 API 增加按 `userId` 列表接口（不阻塞适配，只影响推荐完整性）。

@@ -12,9 +12,10 @@
 
 ## 3. Pack stats / track
 
-- [x] 3.1 Change `pages/api/packs/[id]/stats.js` to proxy `POST /analytics/track` with `{ event, targetType: "pack", targetId, sessionId }` and AuthKey/Secret (mirror `pages/api/apps/[id]/stats.js`); stop local `$inc` when flag is on (or always proxy once App pattern is sole path)
+- [x] 3.1 (superseded by 3.4) Local `pages/api/packs/[id]/stats.js` may still `$inc` when flag is off; it MUST NOT be the flag-on track path
 - [x] 3.2 Add `trackPackStats` (or extend shared helper) using `getSessionId()`; update pack detail (and any download track sites) to send `sessionId` and fail soft
 - [x] 3.3 Where UI needs lifetime counts, read `GET /api/winstall/packs/:id/stats` (or server-side equivalent); do not rely on embedded `pack.stats`
+- [x] 3.4 When flag is on, `trackPackStats` POSTs `/api/winstall/analytics/track` with `{ event, targetType: "pack", targetId, sessionId }`; do not call `/api/packs/:id/stats`. Strip the analytics-proxy branch from the local stats handler so it is rollback-only (`$inc`).
 
 ## 4. SSR, sitemap, account deletion
 
@@ -24,6 +25,6 @@
 
 ## 5. Local routes and verification
 
-- [x] 5.1 Keep `pages/api/packs/*`, `packService`, and `dbModel/Pack*` in place; optionally log deprecation when local handlers are hit while flag is on
-- [ ] 5.2 Manual / smoke check with flag on: create, edit, delete, copy, my list, public list+search, owner private detail, view track, homepage recommendations, sitemap sample, account delete leaves no API orphans
+- [x] 5.1 Keep `pages/api/packs/*`, `packService`, and `dbModel/Pack*` in place; log deprecation if local handlers are hit while flag is on (should be zero after 3.4)
+- [ ] 5.2 Manual / smoke check with flag on: create, edit, delete, copy, my list, public list+search, owner private detail, view track via BFF analytics (no `/api/packs` requests), homepage recommendations, sitemap sample, account delete leaves no API orphans
 - [x] 5.3 Confirm flag off restores local `/api/packs` behavior for rollback
