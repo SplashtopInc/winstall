@@ -17,7 +17,7 @@ const escapeXml = (str) => {
   });
 };
 
-function generatePacksSiteMap(urlPrefix, packs, users) {
+function generatePacksSiteMap(urlPrefix, packs) {
   return `<?xml version="1.0" encoding="UTF-8"?>
    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
      ${packs
@@ -26,15 +26,6 @@ function generatePacksSiteMap(urlPrefix, packs, users) {
        <url>
            <loc>${urlPrefix}/packs/${escapeXml(_id)}</loc>
            <lastmod>${updatedAt}</lastmod>
-       </url>
-     `;
-       })
-       .join("")}
-     ${users
-       .map((id) => {
-         return `
-       <url>
-           <loc>${urlPrefix}/users/${escapeXml(id)}</loc>
        </url>
      `;
        })
@@ -51,40 +42,20 @@ export async function getServerSideProps({ req, res }) {
   const urlPrefix = protocol + "://" + host;
 
   try {
-    const { isPackApiViaWinstall } = require("../utils/packApiConfig");
-    let allPacks = [];
-
-    if (isPackApiViaWinstall()) {
-      const { fetchAllPublicPacksFromApi } = require("../utils/packApiServer");
-      const { packs, error } = await fetchAllPublicPacksFromApi({
-        limit: 100,
-        sort: "recent",
-      });
-      if (error) {
-        throw new Error(error);
-      }
-      allPacks = (packs || []).map((pack) => ({
-        _id: pack._id,
-        userId: pack.userId,
-        updatedAt: pack.updatedAt,
-      }));
-    } else {
-      const { connectMongoose } = require("../lib/mongoose");
-      const mongoose = await connectMongoose();
-
-      require("../dbModel/Pack");
-      const Pack = mongoose.models.Pack;
-      allPacks = await Pack.find({
-        visibility: "public",
-        status: "active",
-      })
-        .sort({ createdAt: -1 })
-        .select("_id userId updatedAt")
-        .lean();
+    const { fetchAllPublicPacksFromApi } = require("../utils/packApiServer");
+    const { packs, error } = await fetchAllPublicPacksFromApi({
+      limit: 100,
+      sort: "recent",
+    });
+    if (error) {
+      throw new Error(error);
     }
 
-    const users = Array.from(new Set(allPacks.map((pack) => pack.userId)));
-    const sitemap = generatePacksSiteMap(urlPrefix, allPacks, users);
+    const allPacks = (packs || []).map((pack) => ({
+      _id: pack._id,
+      updatedAt: pack.updatedAt,
+    }));
+    const sitemap = generatePacksSiteMap(urlPrefix, allPacks);
 
     res.setHeader("Content-Type", "text/xml");
     res.write(sitemap);

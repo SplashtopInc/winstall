@@ -1,5 +1,4 @@
 import { getSessionId } from "./sessionId";
-import { isPackApiViaWinstall } from "./packApiConfig";
 
 const DOWNLOAD_DEBOUNCE_MS = 5000;
 
@@ -7,9 +6,7 @@ const DOWNLOAD_DEBOUNCE_MS = 5000;
 const downloadLastSentAt = new Map();
 
 /**
- * Fire-and-forget Pack view/download track.
- * Flag on: BFF `POST /api/winstall/analytics/track`.
- * Flag off: local `POST /api/packs/:id/stats` (`$inc` rollback).
+ * Fire-and-forget Pack view/download track via BFF analytics.
  * Failures are silent so UX is never blocked.
  *
  * @param {string} packId
@@ -34,18 +31,15 @@ export function trackPackStats(packId, type) {
     downloadLastSentAt.set(packId, now);
   }
 
-  const viaApi = isPackApiViaWinstall();
-  const url = viaApi
-    ? "/api/winstall/analytics/track"
-    : `/api/packs/${encodeURIComponent(packId)}/stats`;
-  const body = viaApi
-    ? { event: type, targetType: "pack", targetId: packId, sessionId }
-    : { type, sessionId };
-
-  fetch(url, {
+  fetch("/api/winstall/analytics/track", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "same-origin",
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      event: type,
+      targetType: "pack",
+      targetId: packId,
+      sessionId,
+    }),
   }).catch(() => {});
 }

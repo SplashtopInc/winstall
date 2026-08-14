@@ -131,57 +131,25 @@ export async function getStaticProps(){
 
   let { response: apps, error: appsError } = await fetchWinstallAPI(`/apps`);
 
-  // Query recommended packs (API when cutover flag on, else local Mongo)
   let recommendedList = [];
-  const { isPackApiViaWinstall } = require('../utils/packApiConfig');
-
-  if (isPackApiViaWinstall()) {
-    try {
-      const { fetchAllPublicPacksFromApi } = require('../utils/packApiServer');
-      const { packs, error: packsError } = await fetchAllPublicPacksFromApi({
-        limit: 100,
-        sort: 'recent',
-      });
-      if (packsError) {
-        console.warn('[getStaticProps /] API recommended packs error:', packsError);
-      }
-      recommendedList = (packs || []).filter(
-        (pack) => pack.userId === officialPacksCreator
-      );
-      console.log(
-        `[getStaticProps /] Loaded ${recommendedList.length} recommended packs from API`
-      );
-    } catch (err) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      console.warn('[getStaticProps /] API not available for recommended packs:', errMsg);
+  try {
+    const { fetchAllPublicPacksFromApi } = require('../utils/packApiServer');
+    const { packs, error: packsError } = await fetchAllPublicPacksFromApi({
+      limit: 100,
+      sort: 'recent',
+    });
+    if (packsError) {
+      console.warn('[getStaticProps /] API recommended packs error:', packsError);
     }
-  } else {
-    try {
-      const { connectMongoose } = require('../lib/mongoose');
-      const mongoose = await connectMongoose();
-
-      require('../dbModel/Pack');
-      const Pack = mongoose.models.Pack;
-
-      if (!Pack) {
-        console.warn('[getStaticProps /] Pack model not found, skipping recommended packs');
-      } else {
-        const packs = await Pack.find({
-          userId: officialPacksCreator,
-          visibility: 'public',
-          status: 'active'
-        })
-          .sort({ createdAt: -1 })
-          .lean()
-          .exec();
-
-        recommendedList = packs;
-        console.log(`[getStaticProps /] Loaded ${recommendedList.length} recommended packs from MongoDB`);
-      }
-    } catch (err) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      console.warn('[getStaticProps /] MongoDB not available for recommended packs:', errMsg);
-    }
+    recommendedList = (packs || []).filter(
+      (pack) => pack.userId === officialPacksCreator
+    );
+    console.log(
+      `[getStaticProps /] Loaded ${recommendedList.length} recommended packs from API`
+    );
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.warn('[getStaticProps /] API not available for recommended packs:', errMsg);
   }
 
   const appsTotal = typeof apps?.total === "number" ? apps.total : 0;

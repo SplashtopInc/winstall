@@ -1,5 +1,3 @@
-import { isPackApiViaWinstall } from "./packApiConfig";
-
 /**
  * @param {string} path - path relative to pack base (may start with / or ?)
  * @param {RequestInit} [givenOptions]
@@ -8,9 +6,7 @@ import { isPackApiViaWinstall } from "./packApiConfig";
  */
 const fetchPackAPI = async (path, givenOptions = {}, throwErr) => {
   const method = givenOptions.method || "GET";
-  const base = isPackApiViaWinstall()
-    ? "/api/winstall/packs"
-    : "/api/packs";
+  const base = "/api/winstall/packs";
   const rawPath = path == null ? "" : String(path);
   const url = rawPath.startsWith("?")
     ? `${base}${rawPath}`
@@ -78,10 +74,7 @@ const fetchPackAPI = async (path, givenOptions = {}, throwErr) => {
 };
 
 export async function fetchMyPacks() {
-  if (isPackApiViaWinstall()) {
-    return fetchPackAPI("/me");
-  }
-  return fetchPackAPI("");
+  return fetchPackAPI("/me");
 }
 
 export async function fetchPublicPacks({ offset, limit, sort, q } = {}) {
@@ -92,25 +85,13 @@ export async function fetchPublicPacks({ offset, limit, sort, q } = {}) {
   if (q) params.set("q", q);
 
   const query = params.toString();
-
-  if (isPackApiViaWinstall()) {
-    return fetchPackAPI(query ? `?${query}` : "");
-  }
-
-  return fetchPackAPI(query ? `/public?${query}` : "/public");
+  return fetchPackAPI(query ? `?${query}` : "");
 }
 
 export async function createPack({ name, description, visibility, apps }) {
-  const body = JSON.stringify({ name, description, visibility, apps });
-  if (isPackApiViaWinstall()) {
-    return fetchPackAPI("", {
-      method: "POST",
-      body,
-    });
-  }
-  return fetchPackAPI("/create", {
+  return fetchPackAPI("", {
     method: "POST",
-    body,
+    body: JSON.stringify({ name, description, visibility, apps }),
   });
 }
 
@@ -141,23 +122,7 @@ export async function copyPack(id) {
  * Lifetime PackStats from API (view/download/like). Prefer this over embedded pack.stats.
  */
 export async function fetchPackStats(id) {
-  if (isPackApiViaWinstall()) {
-    return fetchPackAPI(`/${id}/stats`);
-  }
-  // Local Pack documents may still embed stats; no dedicated stats GET on local API.
-  const { response, error, status } = await fetchPackById(id);
-  if (error || !response) {
-    return { response: null, error, status };
-  }
-  return {
-    response: response.stats || {
-      viewCount: 0,
-      downloadCount: 0,
-      likeCount: 0,
-    },
-    error: null,
-    status,
-  };
+  return fetchPackAPI(`/${id}/stats`);
 }
 
 export default fetchPackAPI;

@@ -13,7 +13,6 @@
     "bad-words": "^4.0.0",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^5.9.2",
-    "mongoose": "^9.7.0",
     "nanoid": "^5.1.11",
     "next": "^15.5.15",
     "next-auth": "^4.24.14",

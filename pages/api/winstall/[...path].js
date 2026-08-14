@@ -14,14 +14,8 @@ const requiresAuth = (method, path) => {
   // POST /packs (create)
   if (method === "POST" && path === "packs") return true;
 
-  // Legacy POST /packs/create
-  if (method === "POST" && path.startsWith("packs/create")) return true;
-
   // GET /packs/me
   if (method === "GET" && path === "packs/me") return true;
-
-  // Legacy GET /packs/profile/:id
-  if (method === "GET" && path.startsWith("packs/profile/")) return true;
 
   // PATCH|DELETE /packs/:id
   if (
