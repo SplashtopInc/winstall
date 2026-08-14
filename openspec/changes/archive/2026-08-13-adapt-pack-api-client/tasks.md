@@ -26,5 +26,5 @@
 ## 5. Local routes and verification
 
 - [x] 5.1 Keep `pages/api/packs/*`, `packService`, and `dbModel/Pack*` in place; log deprecation if local handlers are hit while flag is on (should be zero after 3.4)
-- [ ] 5.2 Manual / smoke check with flag on: create, edit, delete, copy, my list, public list+search, owner private detail, view track via BFF analytics (no `/api/packs` requests), homepage recommendations, sitemap sample, account delete leaves no API orphans
+- [x] 5.2 Manual / smoke check with flag on: create, edit, delete, copy, my list, public list+search, owner private detail, view track via BFF analytics (no `/api/packs` requests), homepage recommendations, sitemap sample, account delete leaves no API orphans
 - [x] 5.3 Confirm flag off restores local `/api/packs` behavior for rollback
