@@ -108,12 +108,15 @@ export default async function handler(req, res) {
   const apiPath = Array.isArray(path) ? path.join("/") : path;
 
   const apiBase = process.env.WINSTALL_API_BASE;
-  const apiKey = process.env.WINSTALL_API_KEY;
-  const apiSecret = process.env.WINSTALL_API_SECRET;
 
   if (!apiBase) {
     return res.status(500).json({ error: "API base URL not configured" });
   }
+
+  // JSON clients treat 304 as failure (`res.ok` is false, empty body).
+  res.setHeader("Cache-Control", "no-store");
+  delete req.headers["if-none-match"];
+  delete req.headers["if-modified-since"];
 
   const queryString = req.url?.split("?")[1];
   const url = `${apiBase}/${apiPath}${queryString ? `?${queryString}` : ""}`;
@@ -121,11 +124,6 @@ export default async function handler(req, res) {
   const headers = {
     "Content-Type": "application/json",
   };
-
-  if (apiKey && apiSecret) {
-    headers.AuthKey = apiKey;
-    headers.AuthSecret = apiSecret;
-  }
 
   if (requiresAuth(req.method, apiPath)) {
     const authResult = await attachUserJwtIfNeeded(req, res, headers, {
@@ -149,6 +147,7 @@ export default async function handler(req, res) {
     const response = await fetch(url, {
       method: req.method,
       headers,
+      cache: "no-store",
       body:
         req.method !== "GET" && req.method !== "HEAD"
           ? JSON.stringify(req.body)

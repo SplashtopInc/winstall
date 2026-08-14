@@ -12,7 +12,7 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
 
   // Client-side routing logic:
   // - All client requests go through proxy (/api/winstall)
-  // - Server-side: direct API access with auth headers
+  // - Server-side: direct API access (public catalog; no AuthKey)
   const isClientSide = typeof window !== 'undefined';
   const useProxy = isClientSide;
 
@@ -47,16 +47,11 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
 
     const headers = { ...headerOptions };
 
-    // Only add auth headers on server-side (client uses proxy for authenticated requests)
-    if (!isClientSide && config.apiKey && config.apiSecret) {
-      headers.AuthKey = config.apiKey;
-      headers.AuthSecret = config.apiSecret;
-    }
-
     // Use global fetch - smart proxy dispatcher handles NO_PROXY automatically
     const res = await fetch(url, {
       headers,
       ...additionalOptions,
+      cache: "no-store",
       redirect: "follow",
       signal: controller.signal,
     });

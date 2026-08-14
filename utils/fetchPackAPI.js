@@ -34,6 +34,7 @@ const fetchPackAPI = async (path, givenOptions = {}, throwErr) => {
       method,
       headers,
       credentials: "same-origin",
+      cache: "no-store",
       redirect: "follow",
       signal: controller.signal,
     });

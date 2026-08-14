@@ -22,10 +22,8 @@ export default async function handler(req, res) {
   }
 
   const apiBase = process.env.WINSTALL_API_BASE;
-  const apiKey = process.env.WINSTALL_API_KEY;
-  const apiSecret = process.env.WINSTALL_API_SECRET;
 
-  if (!apiBase || !apiKey || !apiSecret) {
+  if (!apiBase) {
     return res.status(500).json({ error: "Analytics API is not configured." });
   }
 
@@ -36,8 +34,6 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        AuthKey: apiKey,
-        AuthSecret: apiSecret,
       },
       body: JSON.stringify({
         event: type,

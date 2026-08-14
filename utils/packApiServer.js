@@ -59,10 +59,6 @@ export async function deleteUserPacksViaApi(userId) {
     Authorization: `Bearer ${token}`,
     "X-User-Id": userId,
   };
-  if (config.apiKey && config.apiSecret) {
-    headers.AuthKey = config.apiKey;
-    headers.AuthSecret = config.apiSecret;
-  }
 
   const listUrl = `${config.apiBase.replace(/\/$/, "")}/packs/me`;
   const listRes = await fetch(listUrl, { headers });
