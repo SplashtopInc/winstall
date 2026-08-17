@@ -96,10 +96,6 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
         ...headerOptions,
         ...(await authHeaders(method, pathname)),
       };
-      delete headers.AuthKey;
-      delete headers.AuthSecret;
-      delete headers["X-User-Id"];
-      delete headers["x-user-id"];
 
       if (isDebug) {
         console.log(`[fetchWinstallAPI] request ${method} ${url} (timeout ${timeoutMs}ms)`);

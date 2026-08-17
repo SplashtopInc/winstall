@@ -2,7 +2,7 @@
  * @returns {Promise<{ response: any, error: string | null }>}
  */
 export async function deleteAccount() {
-  const timeoutMs = Number(process.env.NEXT_PUBLIC_PACK_API_TIMEOUT_MS || 15000);
+  const timeoutMs = 15000;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 

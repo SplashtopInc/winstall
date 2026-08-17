@@ -219,7 +219,7 @@ export default function PackDetailPage() {
     setDefaultFilters(toDefaultInstallFilters(transformed.defaultInstallOptions));
     setLoading(false);
 
-    // Track view for public/unlisted packs (analytics when flag on)
+    // Track view for public/unlisted packs
     if (transformed.visibility === "public" || transformed.visibility === "unlisted") {
       trackPackStats(packId, "view");
     }

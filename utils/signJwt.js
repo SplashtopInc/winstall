@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 /**
  * Sign a JWT with NEXTAUTH_SECRET (or an explicit secret).
- * Default expiry is 5 minutes — suitable for BFF → API hops.
+ * Default expiry is 5 minutes — used for the session API token and server-side pack cascade.
  *
  * @param {Record<string, unknown>} payload
  * @param {{ expiresIn?: string | number, secret?: string }} [options]

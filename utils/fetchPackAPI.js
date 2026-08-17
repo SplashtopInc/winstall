@@ -70,9 +70,6 @@ export async function copyPack(id) {
   });
 }
 
-/**
- * Lifetime PackStats from API (view/download/like). Prefer this over embedded pack.stats.
- */
 export async function fetchPackStats(id) {
   return fetchPackAPI(`/${id}/stats`);
 }
