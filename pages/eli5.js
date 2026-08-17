@@ -5,6 +5,7 @@ import { FiCopy } from "react-icons/fi";
 import MetaTags from "../components/MetaTags";
 import Footer from "../components/Footer";
 import styles from "../styles/eli5.module.scss";
+import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
 
 const APP_INSTALLER_URL = "https://apps.microsoft.com/detail/9nblggh4nns1";
 
@@ -286,4 +287,8 @@ export default function Explainer() {
       <Footer />
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return getDocumentShellStaticProps();
 }

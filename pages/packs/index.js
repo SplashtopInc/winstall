@@ -18,6 +18,7 @@ import {
   OWN_PACKS_UPDATED_EVENT,
   PUBLIC_PACKS_UPDATED_EVENT,
 } from "../../utils/packHelpers";
+import { getDocumentShellStaticProps } from "../../utils/documentShellStaticProps";
 
 import styles from "../../styles/packsIndex.module.scss";
 
@@ -440,4 +441,8 @@ export default function PacksPage() {
       )}
     </PageWrapper>
   );
+}
+
+export async function getStaticProps() {
+  return getDocumentShellStaticProps();
 }

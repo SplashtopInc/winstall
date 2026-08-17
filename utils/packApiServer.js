@@ -57,7 +57,6 @@ export async function deleteUserPacksViaApi(userId) {
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
-    "X-User-Id": userId,
   };
 
   const listUrl = `${config.apiBase.replace(/\/$/, "")}/packs/me`;

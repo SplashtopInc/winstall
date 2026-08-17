@@ -2,6 +2,7 @@ import Link from "next/link";
 import MetaTags from "../components/MetaTags";
 import Footer from "../components/Footer";
 import styles from "../styles/compareDetail.module.scss";
+import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
 
 function CompareTabs({ active }) {
   const tabs = [
@@ -222,4 +223,8 @@ export default function CompareNinite() {
       <Footer />
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return getDocumentShellStaticProps();
 }

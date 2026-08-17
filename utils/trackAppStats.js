@@ -1,4 +1,5 @@
 import { getSessionId } from "./sessionId";
+import { postAnalyticsTrack } from "./postAnalyticsTrack";
 
 const DOWNLOAD_DEBOUNCE_MS = 5000;
 
@@ -6,7 +7,7 @@ const DOWNLOAD_DEBOUNCE_MS = 5000;
 const downloadLastSentAt = new Map();
 
 /**
- * Fire-and-forget App view/download track via BFF.
+ * Fire-and-forget App view/download track via API analytics.
  * Failures are silent so UX is never blocked.
  *
  * @param {string} packageId
@@ -31,9 +32,10 @@ export function trackAppStats(packageId, type) {
     downloadLastSentAt.set(packageId, now);
   }
 
-  fetch(`/api/apps/${encodeURIComponent(packageId)}/stats`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ type, sessionId }),
+  postAnalyticsTrack({
+    event: type,
+    targetType: "app",
+    targetId: packageId,
+    sessionId,
   }).catch(() => {});
 }

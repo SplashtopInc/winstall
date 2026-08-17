@@ -1,3 +1,5 @@
+import fetchWinstallAPI from "./fetchWinstallAPI";
+
 /**
  * @param {string} path - path relative to pack base (may start with / or ?)
  * @param {RequestInit} [givenOptions]
@@ -5,73 +7,22 @@
  * @returns {Promise<{ response: any, error: string | null, status: number | null }>}
  */
 const fetchPackAPI = async (path, givenOptions = {}, throwErr) => {
-  const method = givenOptions.method || "GET";
-  const base = "/api/winstall/packs";
   const rawPath = path == null ? "" : String(path);
-  const url = rawPath.startsWith("?")
-    ? `${base}${rawPath}`
-    : `${base}${rawPath.startsWith("/") ? rawPath : rawPath ? `/${rawPath}` : ""}`;
-  const timeoutMs = Number(process.env.NEXT_PUBLIC_PACK_API_TIMEOUT_MS || 15000);
+  const apiPath = rawPath.startsWith("?")
+    ? `/packs${rawPath}`
+    : `/packs${rawPath.startsWith("/") ? rawPath : rawPath ? `/${rawPath}` : ""}`;
 
-  let additionalOptions = { ...givenOptions };
-  const headerOptions = { ...additionalOptions.headers };
-  delete additionalOptions.headers;
-
-  let response = null;
-  let error = null;
-  let status = null;
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const headers = {
-      "Content-Type": "application/json",
-      ...headerOptions,
-    };
-
-    const res = await fetch(url, {
-      ...additionalOptions,
-      method,
-      headers,
-      credentials: "same-origin",
-      cache: "no-store",
-      redirect: "follow",
-      signal: controller.signal,
-    });
-
-    status = res.status;
-
-    if (!res.ok) {
-      let errorBody;
-
-      try {
-        errorBody = await res.json();
-        error = errorBody.error || errorBody.message || res.statusText;
-      } catch {
-        error = res.statusText;
-      }
-
-      if (throwErr) {
-        throw new Error(error);
-      }
-    } else {
-      response = await res.json();
-    }
-  } catch (err) {
-    const errName = err?.name || "Error";
-    error =
-      errName === "AbortError"
-        ? `Request timed out after ${timeoutMs}ms`
-        : err.message;
-
-    if (throwErr) {
-      throw new Error(error);
-    }
-  } finally {
-    clearTimeout(timeoutId);
-  }
-
-  return { response, error, status };
+  return fetchWinstallAPI(
+    apiPath,
+    {
+      ...givenOptions,
+      headers: {
+        "Content-Type": "application/json",
+        ...givenOptions.headers,
+      },
+    },
+    throwErr
+  );
 };
 
 export async function fetchMyPacks() {

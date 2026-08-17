@@ -9,6 +9,33 @@ import AzureADProvider from "next-auth/providers/azure-ad";
 import tunnel from "tunnel";
 import clientPromise from "../../../lib/mongodb";
 import { createAuthAdapter } from "../../../lib/authAdapter";
+import { signJwt } from "../../../utils/signJwt";
+import jwt from "jsonwebtoken";
+
+const API_TOKEN_REFRESH_SKEW_SEC = 30;
+
+function attachApiToken(token) {
+  if (!token?.id) {
+    return token;
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  const expires = Number(token.apiTokenExpires) || 0;
+  if (token.apiToken && expires - now > API_TOKEN_REFRESH_SKEW_SEC) {
+    return token;
+  }
+
+  const apiToken = signJwt({ userId: token.id });
+  if (!apiToken) {
+    return token;
+  }
+
+  token.apiToken = apiToken;
+  const decoded = jwt.decode(apiToken);
+  token.apiTokenExpires =
+    decoded && typeof decoded.exp === "number" ? decoded.exp : now + 5 * 60;
+  return token;
+}
 
 const proxyUrl = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
 
@@ -167,6 +194,11 @@ export const authOptions = {
         if (token.picture) session.user.image = token.picture;
       }
 
+      if (token?.apiToken) {
+        session.apiToken = token.apiToken;
+        session.apiTokenExpires = token.apiTokenExpires;
+      }
+
       // Development mode: log session structure for testing/comparison
       // if (process.env.NODE_ENV === 'development') {
       //   console.log('\n[NextAuth Session Debug]');
@@ -232,6 +264,8 @@ export const authOptions = {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
       }
+
+      attachApiToken(token);
 
       return token;
     },

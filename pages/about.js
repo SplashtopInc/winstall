@@ -3,6 +3,7 @@ import { FiArrowRight, FiGithub } from "react-icons/fi";
 import MetaTags from "../components/MetaTags";
 import Footer from "../components/Footer";
 import styles from "../styles/about.module.scss";
+import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
 
 const GITHUB_REPO = "https://github.com/SplashtopInc/winstall";
 const GITHUB_ISSUES = "https://github.com/SplashtopInc/winstall/issues/new";
@@ -137,4 +138,8 @@ export default function About() {
       <Footer />
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return getDocumentShellStaticProps();
 }

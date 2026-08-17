@@ -3,6 +3,7 @@ import MetaTags from "../components/MetaTags";
 import Footer from "../components/Footer";
 import styles from "../styles/compare.module.scss";
 import { FiChevronRight } from "react-icons/fi";
+import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
 
 function CheckBadge() {
   return (
@@ -129,4 +130,8 @@ export default function Compare() {
       <Footer />
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return getDocumentShellStaticProps();
 }

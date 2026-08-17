@@ -1,6 +1,7 @@
 import Link from "next/link";
 import MetaTags from "../components/MetaTags";
 import Footer from "../components/Footer";
+import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
 
 export default function Privacy() {
   return (
@@ -34,4 +35,8 @@ export default function Privacy() {
       <Footer/>
     </div>
   );
+}
+
+export async function getStaticProps() {
+  return getDocumentShellStaticProps();
 }

@@ -1,4 +1,5 @@
 let _iconBase = null;
+let _apiBase = null;
 
 export const getIconBase = () => {
   if (typeof window !== 'undefined') {
@@ -10,10 +11,18 @@ export const getIconBase = () => {
   return process.env.WINSTALL_ICON_BASE || '';
 };
 
+const readApiBase = () => {
+  if (typeof window !== 'undefined') {
+    if (_apiBase === null) {
+      _apiBase = document.querySelector('meta[name="winstall-api-base"]')?.getAttribute('content') || '';
+    }
+    return _apiBase;
+  }
+  return process.env.WINSTALL_API_BASE || '';
+};
+
 export const getRuntimeConfig = async () => {
-  // Server-side (SSR/ISR): apiBase for direct API access
-  // Client-side: empty (process.env.WINSTALL_API_* are undefined); fetchWinstallAPI uses the proxy
   return {
-    apiBase: process.env.WINSTALL_API_BASE || '',
+    apiBase: readApiBase(),
   };
 };

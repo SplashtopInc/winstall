@@ -18,6 +18,7 @@ import {
   ensureAppsBasics,
   isAppBasicsIncomplete,
 } from "../utils/ensureAppBasics";
+import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
 
 function Generate() {
     const {
@@ -212,3 +213,7 @@ function Generate() {
 }
 
 export default Generate;
+
+export async function getStaticProps() {
+  return getDocumentShellStaticProps();
+}

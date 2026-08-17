@@ -1,10 +1,4 @@
-# api-client-credentials Specification
-
-## Purpose
-
-Defines how the winstall web app authenticates calls to winstall-api: no AuthKey/Secret on any hop, public reads and analytics track with only the API origin, and user operations via a short API JWT delivered on the NextAuth session.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Web never sends AuthKey or AuthSecret
 
@@ -25,6 +19,16 @@ The web app MUST NOT attach `AuthKey` or `AuthSecret` headers on any request it 
 #### Scenario: App track does not require API keys
 - **WHEN** `WINSTALL_API_BASE` is set and `WINSTALL_API_KEY` / `WINSTALL_API_SECRET` are unset
 - **THEN** a Pack or App view/download track MUST still reach `POST /analytics/track` on the API origin and MUST NOT fail solely because those keys are missing
+
+## REMOVED Requirements
+
+### Requirement: User operations still use session and BFF JWT
+
+**Reason**: The same-origin BFF is removed. The browser now holds a short API JWT delivered on the existing session and calls winstall-api directly.
+
+**Migration**: Signed-in Pack writes, “my packs”, copy, and owner reads of private packs send `Authorization: Bearer` with the session-issued API JWT. Unauthenticated writes are rejected by the API (no BFF gate).
+
+## ADDED Requirements
 
 ### Requirement: Browser reads API origin from runtime meta
 
