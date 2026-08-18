@@ -17,7 +17,7 @@ let handleDownload = ( fileContent, fileExtension, downloadId ) => {
     dl.click();
 }
 
-const GenericExport = ({ fileContent, displayedCommand, fileExtension, prioritiseDownload=false, tip }) => {
+const GenericExport = ({ fileContent, displayedCommand, fileExtension, prioritiseDownload=false, tip, onExportDownload }) => {
     const [copyText, setCopyText] = useState("Copy to clipboard");
     const [textboxContent, setTextboxContent] = useState();
     const [downloadId, setDownloadId] = useState(Math.floor(1000 + Math.random() * 9000));
@@ -48,7 +48,10 @@ const GenericExport = ({ fileContent, displayedCommand, fileExtension, prioritis
 
             <div className={`box`}>
                 { !prioritiseDownload && (
-                    <button className={`button accent`} onClick={() => handleCopy(textboxContent, setCopyText)}>
+                    <button className={`button accent`} onClick={() => {
+                        handleCopy(textboxContent, setCopyText);
+                        if (typeof onExportDownload === "function") onExportDownload();
+                    }}>
                         <FiCopy />
                         {copyText}
                     </button>
@@ -60,6 +63,8 @@ const GenericExport = ({ fileContent, displayedCommand, fileExtension, prioritis
                     if(prioritiseDownload){
                         handleCopy(textboxContent);
                     }
+
+                    if (typeof onExportDownload === "function") onExportDownload();
                 }}>
                     <FiDownload />
                     Download {fileExtension} {prioritiseDownload ? " + Copy to clipboard" : ""}

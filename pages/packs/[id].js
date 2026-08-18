@@ -23,7 +23,10 @@ import AppSettingsDrawer from "../../components/AppSettingsDrawer";
 import AddAppsDialog from "../../components/AddAppsDialog";
 import Toast from "../../components/Toast";
 import PackShareCard from "../../components/PackShareCard";
+import LikeButton from "../../components/LikeButton";
 import useRequireAuth from "../../hooks/useRequireAuth";
+import useResourceEngagement from "../../hooks/useResourceEngagement";
+import { formatCount } from "../../utils/engagementStats";
 import { copyPack, deletePack, fetchPackById, updatePack } from "../../utils/fetchPackAPI";
 import {
   formatAppsForPatch,
@@ -156,6 +159,12 @@ export default function PackDetailPage() {
   const shareCardRef = useRef(null);
   const persistAppsTimerRef = useRef(null);
   const persistDefaultsTimerRef = useRef(null);
+  const packId = typeof id === "string" ? id : "";
+  const { stats, pending: likePending, onLikeClick, reloadStats } = useResourceEngagement({
+    targetType: "pack",
+    targetId: packId,
+    callbackUrl: router.asPath,
+  });
 
   const isOwner = Boolean(user && pack && user.id === pack.userId);
 
@@ -649,6 +658,12 @@ export default function PackDetailPage() {
                 Created {formatCreatedDate(pack.createdAt)}
               </span>
             </div>
+            {stats && (
+              <p className={styles.counts}>
+                {formatCount(stats.views)} views · {formatCount(stats.downloads)}{" "}
+                installs
+              </p>
+            )}
           </div>
 
           <div className={styles.actions}>
@@ -661,6 +676,14 @@ export default function PackDetailPage() {
               <FiDownload aria-hidden="true" />
               Install
             </button>
+
+            <LikeButton
+              liked={Boolean(stats?.liked)}
+              likeCount={stats?.likeCount ?? 0}
+              pending={likePending}
+              onClick={onLikeClick}
+              className={`${styles.likeBtn} ${stats?.liked ? styles.likeBtnOn : ""}`}
+            />
 
             {isOwner ? (
               <>
@@ -765,6 +788,7 @@ export default function PackDetailPage() {
             : "These options apply while exporting this pack."
         }
         packId={pack._id}
+        onPackDownload={reloadStats}
       />
 
       {user && (

@@ -10,6 +10,7 @@ export default function InstallDrawer({
   onDefaultFiltersChange,
   persistHint,
   packId,
+  onPackDownload,
 }) {
   return (
     <>
@@ -48,6 +49,7 @@ export default function InstallDrawer({
             onDefaultFiltersChange={onDefaultFiltersChange}
             persistHint={persistHint}
             packId={packId}
+            onPackDownload={onPackDownload}
           />
         </div>
       </div>

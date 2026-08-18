@@ -11,6 +11,9 @@ import AppIcon from "./AppIcon";
 import DonateCard from "./DonateCard";
 import Toast from "./Toast";
 import { buildSiteUrl, compareVersion, timeAgo } from "../utils/helpers";
+import LikeButton from "./LikeButton";
+import useResourceEngagement from "../hooks/useResourceEngagement";
+import { formatCount } from "../utils/engagementStats";
 import { trackAppStats } from "../utils/trackAppStats";
 
 export default function AppDetailView({ app }) {
@@ -33,6 +36,11 @@ export default function AppDetailView({ app }) {
   const [tagsExpanded, setTagsExpanded] = useState(false);
   const shareRef = useRef(null);
   const viewTrackedRef = useRef(false);
+  const { stats, pending: likePending, onLikeClick } = useResourceEngagement({
+    targetType: "app",
+    targetId: app._id,
+    callbackUrl: `/apps/${app._id}`,
+  });
 
   const TAG_PREVIEW_COUNT = 8;
   const allTags = Array.isArray(app.tags) ? app.tags : [];
@@ -224,6 +232,13 @@ export default function AppDetailView({ app }) {
         </div>
       </section>
 
+      {stats && (
+        <p className={styles.counts}>
+          {formatCount(stats.views)} views · {formatCount(stats.downloads)}{" "}
+          installs
+        </p>
+      )}
+
       <div className={styles.inst}>
         <div className={styles.instHead}>
           <p className={styles.instLabel}>Install {app.name} with winget</p>
@@ -284,6 +299,14 @@ export default function AppDetailView({ app }) {
           <FiPlus className={styles.btnIcon} />
           {selected ? "Remove" : "Add to list"}
         </button>
+
+        <LikeButton
+          liked={Boolean(stats?.liked)}
+          likeCount={stats?.likeCount ?? 0}
+          pending={likePending}
+          onClick={onLikeClick}
+          className={`${styles.likeBtn} ${stats?.liked ? styles.likeBtnOn : ""}`}
+        />
 
         <div className={styles.shareWrap} ref={shareRef}>
           <button

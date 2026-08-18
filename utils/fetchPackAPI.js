@@ -1,3 +1,4 @@
+import { fetchPackStats as fetchPackStatsFromApi } from "./engagementApi";
 import fetchWinstallAPI from "./fetchWinstallAPI";
 
 /**
@@ -71,7 +72,7 @@ export async function copyPack(id) {
 }
 
 export async function fetchPackStats(id) {
-  return fetchPackAPI(`/${id}/stats`);
+  return fetchPackStatsFromApi(id);
 }
 
 export default fetchPackAPI;

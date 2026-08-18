@@ -5,9 +5,8 @@ import styles from "../../styles/exportApps.module.scss";
 import {
     installOptionsToWingetFlags,
 } from "../../utils/installOptions";
-import { trackPackStats } from "../../utils/trackPackStats";
 
-const InstallerExport = ({ apps, filters = {}, packId }) => {
+const InstallerExport = ({ apps, filters = {}, onExportDownload }) => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [countdown, setCountdown] = useState(10);
     const countdownTimerRef = useRef(null);
@@ -151,9 +150,7 @@ const InstallerExport = ({ apps, filters = {}, packId }) => {
                 downloadFile(url, filename);
                 window.URL.revokeObjectURL(url);
 
-                if (packId) {
-                    trackPackStats(packId, "download");
-                }
+                if (typeof onExportDownload === "function") onExportDownload();
             }
             // Async mode: poll for status
             else if (response.status === 202) {
@@ -163,9 +160,7 @@ const InstallerExport = ({ apps, filters = {}, packId }) => {
                 await pollStatus(data.statusUrl);
                 console.log('Installer downloaded successfully (async mode)');
 
-                if (packId) {
-                    trackPackStats(packId, "download");
-                }
+                if (typeof onExportDownload === "function") onExportDownload();
             }
             // Error handling
             else {

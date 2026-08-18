@@ -15,24 +15,24 @@ const downloadLastSentAt = new Map();
  */
 export function trackAppStats(packageId, type) {
   if (!packageId || (type !== "view" && type !== "download")) {
-    return;
+    return Promise.resolve();
   }
 
   const sessionId = getSessionId();
   if (!sessionId) {
-    return;
+    return Promise.resolve();
   }
 
   if (type === "download") {
     const now = Date.now();
     const last = downloadLastSentAt.get(packageId) || 0;
     if (now - last < DOWNLOAD_DEBOUNCE_MS) {
-      return;
+      return Promise.resolve();
     }
     downloadLastSentAt.set(packageId, now);
   }
 
-  postAnalyticsTrack({
+  return postAnalyticsTrack({
     event: type,
     targetType: "app",
     targetId: packageId,

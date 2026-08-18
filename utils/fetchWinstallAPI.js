@@ -1,3 +1,4 @@
+import { isLikePath, isStatsPath } from "./engagementPaths";
 import { getRuntimeConfig } from "./runtimeConfig";
 
 const PACK_RESOURCE = /^\/packs\/[^/]+$/;
@@ -18,11 +19,19 @@ function requiresUserJwt(method, pathname) {
     return true;
   }
   if (method === "POST" && PACK_COPY.test(pathname)) return true;
+  if (
+    (method === "POST" || method === "DELETE" || method === "GET") &&
+    isLikePath(pathname)
+  ) {
+    return true;
+  }
   return false;
 }
 
 function prefersOptionalUserJwt(method, pathname) {
-  return method === "GET" && PACK_RESOURCE.test(pathname);
+  if (method === "GET" && PACK_RESOURCE.test(pathname)) return true;
+  if (method === "GET" && isStatsPath(pathname)) return true;
+  return false;
 }
 
 function isApiTokenFresh(session) {

@@ -6,6 +6,7 @@ import { DEFAULT_INSTALL_FILTERS } from "../../utils/defaultInstallOptions";
 import GenericExport from "./GenericExport";
 import InstallerExport from "./InstallerExport";
 import AdvancedConfig from "./AdvancedConfig";
+import { reportExportDownload } from "../../utils/trackExportDownload";
 
 const ExportApps = ({
     apps,
@@ -15,6 +16,7 @@ const ExportApps = ({
     onDefaultFiltersChange,
     persistHint,
     packId,
+    onPackDownload,
 }) => {
     const [ batScript, setBatScript ] = useState("");
     const [ psScript, setPsScript ] = useState("");
@@ -25,6 +27,14 @@ const ExportApps = ({
     }));
     const [ wingetImportCommand, setWingetImportCommand ] = useState("");
     const [ active, setActive ] = useState(".installer");
+
+    const handleExportDownload = useCallback(() => {
+        reportExportDownload({
+            packId,
+            apps,
+            onDone: onPackDownload,
+        });
+    }, [packId, apps, onPackDownload]);
 
     const resolvedInitialFilters = useMemo(
         () => ({
@@ -39,17 +49,17 @@ const ExportApps = ({
             {
                 title: "Download Installer",
                 key: ".installer",
-                element: <InstallerExport apps={apps} filters={filters} packId={packId} />
+                element: <InstallerExport apps={apps} filters={filters} onExportDownload={handleExportDownload} />
             },
             {
                 title: "Batch",
                 key: ".bat",
-                element: <GenericExport fileContent={batScript} fileExtension=".bat"/>
+                element: <GenericExport fileContent={batScript} fileExtension=".bat" onExportDownload={handleExportDownload}/>
             },
             {
                 title: "PowerShell",
                 key: ".ps1",
-                element: <GenericExport fileContent={psScript} fileExtension=".ps1"/>
+                element: <GenericExport fileContent={psScript} fileExtension=".ps1" onExportDownload={handleExportDownload}/>
             },
             {
                 title: "Winget Import",
@@ -60,10 +70,11 @@ const ExportApps = ({
                             fileExtension=".json"
                             prioritiseDownload={true}
                             tip="To install your apps, press the button below. Then, open a terminal window in the same folder as the downloaded .json file, paste the command into the terminal window and hit enter."
+                            onExportDownload={handleExportDownload}
                         />
             }
         ]
-    }, [ batScript, psScript, wingetScript, wingetImportCommand, apps, filters, packId ])
+    }, [ batScript, psScript, wingetScript, wingetImportCommand, apps, filters, handleExportDownload ])
 
     const handleScriptChange = useCallback(async () => {
         if (!apps) return;
