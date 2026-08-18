@@ -1,3 +1,8 @@
+.getScript{
+    margin-top: 8px;
+    max-width: 900px;
+}
+
 .generate{
     h1{
         max-width: 600px;
@@ -36,6 +41,55 @@
     }
 }
 
+.exportBlock{
+    display: block;
+}
+
+.commandBox{
+    background: var(--detail-brand-soft, #f3eaff);
+    border-radius: 10px;
+    min-height: 56px;
+    padding: 14px 20px;
+    font-family: "SF Mono", Consolas, ui-monospace, monospace;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--textColor);
+    overflow-x: auto;
+    user-select: all;
+    box-sizing: border-box;
+}
+
+.commandLine{
+    display: block;
+}
+
+.commandId{
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.commandFlag{
+    word-break: break-word;
+}
+
+.commandOp{
+    color: #8e8e9f;
+    font-weight: 700;
+}
+
+.exportActions{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+
+    :global(.button){
+        margin-top: 0;
+        margin-right: 0;
+        white-space: nowrap;
+    }
+}
+
 .tipContainer{
     display: flex;
     flex-direction: row;
@@ -69,20 +123,42 @@
     list-style-type: none;
     padding: 0px;
     display: flex;
-    flex-flow: wrap;
-    margin-bottom: 0px;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 0 20px;
 
     li{
-        margin-right: 10px;
-        border: 2px solid var(--card-bg);
-        border-radius: 20px;
-        padding: 5px 15px;
-        cursor: pointer;
-        margin-bottom: 10px;
+        margin: 0;
+        padding: 0;
+        border: 0;
     }
 
-    li.active{
+    button{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 15px;
+        border-radius: 20px;
+        border: 2px solid rgba(0, 0, 0, 0.12);
+        background: transparent;
+        color: var(--textColor);
+        opacity: 0.55;
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        cursor: pointer;
+        transition: 0.2s all ease-in-out;
+
+        &:hover{
+            opacity: 0.75;
+        }
+    }
+
+    li.active button{
         border-color: var(--accent);
+        color: #9b2eff;
+        opacity: 1;
     }
 }
 
@@ -101,7 +177,7 @@
 }
 
 .expandBlock{
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 
     .center{
         display: flex;
@@ -316,5 +392,19 @@
 
     .box{
         display: grid;
+    }
+}
+
+:global(.dark){
+    .commandBox{
+        --detail-brand-soft: rgba(155, 46, 255, 0.22);
+    }
+
+    .commandOp{
+        color: rgba(255, 255, 255, 0.55);
+    }
+
+    .tabHeader button{
+        border-color: rgba(255, 255, 255, 0.12);
     }
 }

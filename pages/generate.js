@@ -3,20 +3,21 @@ import Link from "next/link";
 
 import styles from "../styles/home.module.scss";
 
-import ListPackages from "../components/ListPackages";
-import SingleApp from "../components/SingleApp";
+import PackDetailAppCard from "../components/PackDetailAppCard";
 import SelectedContext from "../ctx/SelectedContext";
 import AppSettingsDrawer from "../components/AppSettingsDrawer";
 import { DEFAULT_INSTALL_FILTERS } from "../utils/defaultInstallOptions";
+import packStyles from "../styles/packDetail.module.scss";
 
 import Footer from "../components/Footer";
 
-import { FiHome } from "react-icons/fi";
 import MetaTags from "../components/MetaTags";
 import ExportApps from "../components/AppExport/ExportApps";
 import {
   ensureAppsBasics,
+  ensureAppsWithVersions,
   isAppBasicsIncomplete,
+  isAppVersionsMissing,
 } from "../utils/ensureAppBasics";
 import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
 
@@ -50,18 +51,20 @@ function Generate() {
       let cancelled = false;
 
       const syncApps = async () => {
-        const needsEnrich = selectedApps.some(isAppBasicsIncomplete);
-        const nextSelected = needsEnrich
-          ? await ensureAppsBasics(selectedApps)
-          : selectedApps;
+        const needsVersions = selectedApps.some(isAppVersionsMissing);
+        const needsBasics = selectedApps.some(isAppBasicsIncomplete);
+
+        let nextSelected = selectedApps;
+        if (needsVersions) {
+          nextSelected = await ensureAppsWithVersions(selectedApps);
+        } else if (needsBasics) {
+          nextSelected = await ensureAppsBasics(selectedApps);
+        }
 
         if (cancelled) return;
 
-        if (needsEnrich) {
-          const changed = nextSelected.some((app, i) => app !== selectedApps[i]);
-          if (changed) {
-            setSelectedApps(nextSelected);
-          }
+        if (nextSelected.some((app, i) => app !== selectedApps[i])) {
+          setSelectedApps(nextSelected);
         }
 
         setApps((prevApps) => {
@@ -73,6 +76,9 @@ function Generate() {
             return {
               ...app,
               installOptions: existingApp.installOptions,
+              versions: app.versions?.length ? app.versions : existingApp.versions,
+              selectedVersion: app.selectedVersion || existingApp.selectedVersion,
+              latestVersion: app.latestVersion || existingApp.latestVersion,
             };
           });
         });
@@ -89,6 +95,28 @@ function Generate() {
       const appFromState = apps.find((a) => a._id === app._id) || app;
       setSelectedAppForSettings(appFromState);
       setDrawerOpen(true);
+    };
+
+    const handleDeleteApp = (appId) => {
+      setSelectedApps((prev) => prev.filter((a) => a._id !== appId));
+      setApps((prev) => prev.filter((a) => a._id !== appId));
+      setSelectedAppForSettings((prevApp) => {
+        if (!prevApp || prevApp._id !== appId) return prevApp;
+        setDrawerOpen(false);
+        return null;
+      });
+    };
+
+    const handleVersionChange = (app, nextVersion) => {
+      if (!nextVersion) return;
+      const apply = (list) =>
+        list.map((item) =>
+          item._id === app._id
+            ? { ...item, selectedVersion: nextVersion, appVersion: nextVersion }
+            : item
+        );
+      setApps(apply);
+      setSelectedApps(apply);
     };
 
     const handleCloseDrawer = () => {
@@ -140,26 +168,16 @@ function Generate() {
       return (
         <div className="generate-container">
           <MetaTags title="Generate a WinGet Install Script | winstall" path="/generate" desc="Turn your selected apps into a WinGet install script or PowerShell command for faster Windows app deployment." />
-          <div className="illu-box">
-            <div className={styles.generate}>
-              <h1>Your don't have any apps selected.</h1>
-              <h3>
-                Make sure you select some apps first to be able to generate a
-                script :)
-              </h3>
-              <Link href="/" className="button">
-                <FiHome />
-                Go home
-              </Link>
-            </div>
-            <div className="art">
-              <img
-                src="/assets/dl.svg"
-                draggable={false}
-                alt="download icon"
-              />
-            </div>
+          <div className={styles.generateHero}>
+            <h1>No apps selected</h1>
+            <p className={styles.lead}>
+              Pick apps first, then come back to generate a winget command or installer.
+            </p>
+            <Link href="/" className="button accent">
+              Browse apps
+            </Link>
           </div>
+          <Footer />
         </div>
       );
     }
@@ -167,36 +185,37 @@ function Generate() {
     return (
       <div className="generate-container">
         <MetaTags title="Generate a WinGet Install Script | winstall" path="/generate" desc="Turn your selected apps into a WinGet install script or PowerShell command for faster Windows app deployment." />
-        <div className="illu-box">
-          <div className={styles.generate}>
-            <h1>Your apps are ready to be installed.</h1>
-            <h3>Make sure you have Windows Package Manager installed :)</h3>
+        <div className={styles.generateHero}>
+          <h1>Your apps are ready</h1>
+          <p className={styles.lead}>Make sure you have Windows Package Manager installed :)</p>
 
-            <ExportApps
-              apps={apps}
-              initialFilters={filters}
-              onDefaultFiltersChange={setDefaultInstallOptions}
-            />
-          </div>
-          <div className="art">
-            <img src="/assets/dl.svg" draggable={false} alt="download icon" />
-          </div>
+          <ExportApps
+            apps={apps}
+            initialFilters={filters}
+            onDefaultFiltersChange={setDefaultInstallOptions}
+          />
         </div>
 
         <div className={styles.selectedApps}>
-          <h2>Apps you are downloading ({apps.length})</h2>
-          <ListPackages showImg={true}>
+          <div className={styles.selectedHead}>
+            <h2 className={styles.selectedTitle}>Selected apps ({apps.length})</h2>
+            <Link href="/" className={styles.selectedMore}>
+              Add more
+            </Link>
+          </div>
+          <ul className={packStyles.appGrid}>
             {apps.map((app) => (
-              <SingleApp
-                app={app}
-                key={app._id}
-                onVersionChange={() => setApps((prevApps) => [...prevApps])}
-                showSettingsIcon={true}
-                onSettingsClick={handleSettingsClick}
-                disableSelectedStyle={true}
-              />
+              <li key={app._id}>
+                <PackDetailAppCard
+                  app={app}
+                  showActions
+                  onConfig={handleSettingsClick}
+                  onDelete={handleDeleteApp}
+                  onVersionChange={handleVersionChange}
+                />
+              </li>
             ))}
-          </ListPackages>
+          </ul>
         </div>
 
         <AppSettingsDrawer

@@ -216,9 +216,10 @@ const InstallerExport = ({ apps, filters = {}, onExportDownload }) => {
                 <p>Download the instant installer and run!</p>
             </div>
 
-            <div className={`box`}>
+            <div className={styles.exportActions}>
                 <button
-                    className={`button dl accent`}
+                    type="button"
+                    className="button dl accent"
                     onClick={handleInstall}
                     disabled={isProcessing}
                 >

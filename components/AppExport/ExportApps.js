@@ -47,7 +47,7 @@ const ExportApps = ({
     const tabs = useMemo(() => {
         return [
             {
-                title: "Download Installer",
+                title: "Download installer",
                 key: ".installer",
                 element: <InstallerExport apps={apps} filters={filters} onExportDownload={handleExportDownload} />
             },
@@ -156,9 +156,21 @@ return (
 
         { subtitle && <p>{subtitle}</p> }
 
-        <ul className={styles.tabHeader}>
-            { tabs.map((tab, index) => {
-                return <li key={index} className={ tab.key === active ? styles.active : ''} onClick={() => changeTab(tab.key)}>{tab.title}</li>;
+        <ul className={styles.tabHeader} role="tablist">
+            { tabs.map((tab) => {
+                const isActive = tab.key === active;
+                return (
+                    <li key={tab.key} className={isActive ? styles.active : ""} role="presentation">
+                        <button
+                            type="button"
+                            role="tab"
+                            aria-selected={isActive}
+                            onClick={() => changeTab(tab.key)}
+                        >
+                            {tab.title}
+                        </button>
+                    </li>
+                );
             }) }
         </ul>
 

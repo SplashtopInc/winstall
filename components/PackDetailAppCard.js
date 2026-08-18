@@ -25,6 +25,7 @@ function formatLikeCount(count) {
 export default function PackDetailAppCard({
   app,
   isOwner = false,
+  showActions,
   deleting = false,
   onConfig,
   onDelete,
@@ -50,8 +51,9 @@ export default function PackDetailAppCard({
 
   const displayVersion =
     app.selectedVersion || app.appVersion || app.latestVersion;
+  const canManage = showActions ?? isOwner;
   const canSelectVersion =
-    isOwner && !unavailable && versions.length > 1 && onVersionChange;
+    canManage && !unavailable && versions.length > 1 && onVersionChange;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -193,7 +195,7 @@ export default function PackDetailAppCard({
           </Link>
         )}
 
-        {isOwner && (
+        {canManage && (
           <div className={styles.appMenuWrapper} ref={menuRef}>
             <button
               type="button"
