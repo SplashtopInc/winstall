@@ -10,19 +10,11 @@ import TrySearching from "../components/TrySearching";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { useSearchDialog } from "../ctx/SearchDialogContext";
 import { getIconBase } from "../utils/runtimeConfig";
-
-function suggestionQueryFromSearch(input) {
-  const q = String(input || "").trim();
-  if (!q) return "";
-
-  const publisherMatch = q.match(/^publisher:\s*(.+)$/i);
-  if (publisherMatch) return publisherMatch[1].trim();
-
-  const prefixMatch = q.match(/^(name|tags|desc):\s*(.+)$/i);
-  if (prefixMatch) return prefixMatch[2].trim();
-
-  return q;
-}
+import {
+  parseAppsListQuery,
+  appsListPath,
+  suggestionQueryFromListQuery,
+} from "../utils/parsePublisherQuery";
 
 function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView, alreadySelected=[], limit=-1, hideInput=false, onEmptyChange, asGlobalTrigger=false}) {
   const router = useRouter();
@@ -140,6 +132,14 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
     if (onSearch) onSearch(query);
     if (onEmptyChange) onEmptyChange(false);
 
+    // /apps?q= results are owned by the page list + pagination
+    if (hideInput) {
+      setResults([]);
+      setHasSearchResponse(false);
+      setIsLoading(false);
+      return;
+    }
+
     const requestId = activeRequestIdRef.current + 1;
     activeRequestIdRef.current = requestId;
 
@@ -147,26 +147,10 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
     setHasSearchResponse(false);
     setIsLoading(true);
 
-    // Parse field-specific search prefixes
-    const publisherMatch = query.match(/^publisher:\s*(.+)$/i);
-    let searchUrl;
-
-    if (publisherMatch) {
-      // Use dedicated publisher endpoint
-      const publisherName = publisherMatch[1].trim();
-      searchUrl = `/publishers/${encodeURIComponent(publisherName)}?limit=${resultLimit}`;
-    } else {
-      // Check for other field prefixes (name:, tags:, desc:)
-      const prefixMatch = query.match(/^(name|tags|desc):\s*(.+)$/i);
-
-      if (prefixMatch) {
-        const field = prefixMatch[1].toLowerCase();
-        const value = prefixMatch[2].trim();
-        searchUrl = `/apps/search?q=${encodeURIComponent(value)}&${field}=${encodeURIComponent(value)}&limit=${resultLimit}`;
-      } else {
-        searchUrl = `/apps/search?q=${encodeURIComponent(query)}&limit=${resultLimit}`;
-      }
-    }
+    const searchUrl = appsListPath(parseAppsListQuery(query), {
+      offset: 0,
+      limit: resultLimit,
+    });
 
     const { response, error } = await fetchWinstallAPI(searchUrl);
 
@@ -269,7 +253,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
         <p className={styles.searchingLabelStandalone}>Searching...</p>
       )}
 
-      {searchInput && !isLoading && hasSearchResponse && results.length !== 0 ? (
+      {hideInput ? null : searchInput && !isLoading && hasSearchResponse && results.length !== 0 ? (
         <ListPackages>
             {results.map((app, i) =>
             <SingleApp
@@ -310,7 +294,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
                   <p className={styles.noresults}>Could not find any apps.</p>
                 )}
                 <TrySearching
-                  query={suggestionQueryFromSearch(searchInput)}
+                  query={suggestionQueryFromListQuery(searchInput)}
                   className={styles.suggestions}
                 />
               </div>

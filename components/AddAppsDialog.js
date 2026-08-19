@@ -10,10 +10,14 @@ import {
 } from "react-icons/fi";
 
 import AddAppPickerCard from "./AddAppPickerCard";
-import { ListSort, applySort } from "./ListSort";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { addAppsToPack } from "../utils/packHelpers";
 import { getIconBase } from "../utils/runtimeConfig";
+import {
+  parseAppsListQuery,
+  appsListPath,
+  listScopeKey,
+} from "../utils/parsePublisherQuery";
 import dialogStyles from "../styles/addAppsDialog.module.scss";
 import searchStyles from "../styles/search.module.scss";
 
@@ -92,51 +96,59 @@ export default function AddAppsDialog({
 }) {
   const [apps, setApps] = useState([]);
   const [searchInput, setSearchInput] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [hasSearchResponse, setHasSearchResponse] = useState(false);
+  const [committedSearch, setCommittedSearch] = useState("");
   const [showSearching, setShowSearching] = useState(false);
-  const [sort, setSort] = useState("update-desc");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [totalKnown, setTotalKnown] = useState(false);
   const [currentOffset, setCurrentOffset] = useState(0);
   const [loadedPage, setLoadedPage] = useState(null);
+  const [loadedScope, setLoadedScope] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [clientError, setClientError] = useState("");
   const [selectedApps, setSelectedApps] = useState([]);
   const [adding, setAdding] = useState(false);
   const contentRef = useRef(null);
-  const activeSearchRequestRef = useRef(0);
   const hideSearchingTimerRef = useRef(null);
 
-  const isSearching = Boolean(searchInput && searchInput.length >= 3);
+  const parsedInput = parseAppsListQuery(searchInput);
+  const isPublisherMode = parsedInput.kind === "publisher";
+  const isKeywordSearch =
+    parsedInput.kind === "search" && searchInput.trim().length >= 3;
+  const listQuery = isPublisherMode
+    ? parsedInput
+    : isKeywordSearch && committedSearch
+    ? parseAppsListQuery(committedSearch)
+    : { kind: "list" };
+  const currentScope = listScopeKey(listQuery);
+  const searchPending =
+    isKeywordSearch && committedSearch !== searchInput.trim();
   const totalPages = totalKnown ? Math.ceil(total / APPS_PER_PAGE) : 0;
   const packAppIds = new Set(packApps.map(getAppId).filter(Boolean));
   const hasSelection = selectedApps.length > 0;
-  const displayApps = isSearching ? searchResults : apps;
-  const listLoading = isSearching ? searchLoading : isLoading;
+  const displayApps =
+    searchPending || loadedScope !== currentScope ? [] : apps;
+  const listLoading = searchPending || isLoading;
+  const showPagination = listLoading || displayApps.length > 0;
 
   const resetState = useCallback(() => {
     setSearchInput("");
-    setSearchResults([]);
-    setSearchLoading(false);
-    setHasSearchResponse(false);
+    setCommittedSearch("");
     setShowSearching(false);
-    setSort("update-desc");
     setPage(1);
     setSelectedApps([]);
     setClientError("");
     setLoadedPage(null);
+    setLoadedScope("");
   }, []);
 
-  const loadPage = useCallback(async (targetPage, sortOrder = "update-desc") => {
+  const loadPage = useCallback(async (targetPage, parsed = { kind: "list" }) => {
     const offset = (targetPage - 1) * APPS_PER_PAGE;
     setIsLoading(true);
     setClientError("");
 
     const { response, error: fetchError } = await fetchWinstallAPI(
-      `/apps?offset=${offset}&limit=${APPS_PER_PAGE}`
+      appsListPath(parsed, { offset, limit: APPS_PER_PAGE })
     );
 
     setIsLoading(false);
@@ -149,7 +161,6 @@ export default function AddAppsDialog({
     const normalized = normalizeAppsPayload(response);
     const items = [...normalized.items];
     if (items.length) {
-      applySort(items, sortOrder);
       transformAppIcons(items);
     }
 
@@ -158,20 +169,48 @@ export default function AddAppsDialog({
     setTotalKnown(normalized.totalKnown);
     setCurrentOffset(normalized.offset);
     setLoadedPage(targetPage);
+    setLoadedScope(listScopeKey(parsed));
   }, []);
 
   useEffect(() => {
     if (!isOpen) return;
 
     resetState();
-    loadPage(1, "update-desc");
+    loadPage(1, { kind: "list" });
   }, [isOpen, resetState, loadPage]);
 
   useEffect(() => {
-    if (!isOpen || isSearching) return;
-    if (loadedPage === page) return;
-    loadPage(page, sort);
-  }, [isOpen, isSearching, page, loadedPage, loadPage, sort]);
+    if (!isOpen) return;
+    if (!isKeywordSearch) {
+      setCommittedSearch("");
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCommittedSearch(searchInput.trim());
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [isOpen, isKeywordSearch, searchInput]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setPage(1);
+  }, [currentScope, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || searchPending) return;
+    if (loadedPage === page && loadedScope === currentScope) return;
+    loadPage(page, listQuery);
+  }, [
+    isOpen,
+    searchPending,
+    page,
+    currentScope,
+    loadedPage,
+    loadedScope,
+    loadPage,
+  ]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -185,26 +224,7 @@ export default function AddAppsDialog({
   }, [isOpen]);
 
   useEffect(() => {
-    if (!isOpen) return;
-
-    if (!searchInput) {
-      setSearchResults([]);
-      setHasSearchResponse(false);
-      setSearchLoading(false);
-      setShowSearching(false);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      runSearch(searchInput);
-    }, 300);
-
-    return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchInput, isOpen]);
-
-  useEffect(() => {
-    const canSearch = isSearching;
+    const canSearch = isKeywordSearch;
 
     if (!canSearch) {
       if (hideSearchingTimerRef.current) {
@@ -215,7 +235,7 @@ export default function AddAppsDialog({
       return;
     }
 
-    if (searchLoading) {
+    if (searchPending || isLoading) {
       if (hideSearchingTimerRef.current) {
         clearTimeout(hideSearchingTimerRef.current);
         hideSearchingTimerRef.current = null;
@@ -235,54 +255,11 @@ export default function AddAppsDialog({
         hideSearchingTimerRef.current = null;
       }
     };
-  }, [searchLoading, isSearching]);
-
-  const runSearch = async (inputVal) => {
-    if (!inputVal || inputVal.length < 3) {
-      setSearchResults([]);
-      setHasSearchResponse(false);
-      setSearchLoading(false);
-      return;
-    }
-
-    const query = inputVal.trim();
-    const requestId = activeSearchRequestRef.current + 1;
-    activeSearchRequestRef.current = requestId;
-
-    setSearchResults([]);
-    setHasSearchResponse(false);
-    setSearchLoading(true);
-
-    const { response, error } = await fetchWinstallAPI(
-      `/apps/search?q=${encodeURIComponent(query)}&limit=${APPS_PER_PAGE}`
-    );
-
-    if (requestId !== activeSearchRequestRef.current) return;
-
-    setSearchLoading(false);
-    setHasSearchResponse(true);
-
-    if (error) {
-      setSearchResults([]);
-      return;
-    }
-
-    const normalized = normalizeAppsPayload(response);
-    const items = [...normalized.items];
-    transformAppIcons(items);
-    setSearchResults(items.slice(0, APPS_PER_PAGE));
-  };
+  }, [isLoading, isKeywordSearch, searchPending]);
 
   const handleClose = () => {
     if (adding) return;
     onClose?.();
-  };
-
-  const handleSort = (sortOrder) => {
-    setSort(sortOrder);
-    const sorted = [...apps];
-    applySort(sorted, sortOrder);
-    setApps(sorted);
   };
 
   const handleNext = () => {
@@ -296,7 +273,7 @@ export default function AddAppsDialog({
   };
 
   useEffect(() => {
-    if (!isOpen || isSearching) return;
+    if (!isOpen || searchPending || !showPagination) return;
 
     const canGoPrevious = page > 1;
     const canGoNext = totalKnown
@@ -331,7 +308,8 @@ export default function AddAppsDialog({
     return () => document.removeEventListener("keydown", handlePagination);
   }, [
     isOpen,
-    isSearching,
+    searchPending,
+    showPagination,
     isLoading,
     page,
     totalKnown,
@@ -478,23 +456,24 @@ export default function AddAppsDialog({
               )}
             </div>
           </div>
-          {!isSearching && <Pagination small />}
+          {showPagination && <Pagination small />}
         </div>
 
-        {!isSearching && (
-          <div className={dialogStyles.controls}>
+        <div className={dialogStyles.controls}>
             <p>
-              {isLoading
-                ? "Loading apps..."
-                : apps.length === 0
-                ? "No apps to show"
+              {listLoading
+                ? isKeywordSearch
+                  ? "Searching..."
+                  : "Loading apps..."
+                : displayApps.length === 0
+                ? isKeywordSearch
+                  ? "Could not find any apps."
+                  : "No apps to show"
                 : totalKnown
                 ? `Showing ${currentOffset + 1}-${currentOffset + apps.length} of ${total.toLocaleString()} apps (page ${page} of ${totalPages}).`
                 : `Showing ${currentOffset + 1}-${currentOffset + apps.length} apps (page ${page}).`}
             </p>
-            <ListSort apps={apps} defaultSort={sort} onSort={handleSort} />
-          </div>
-        )}
+        </div>
 
         <div
           ref={contentRef}
@@ -504,15 +483,14 @@ export default function AddAppsDialog({
 
           {!clientError && listLoading && displayApps.length === 0 && (
             <p className={dialogStyles.loading}>
-              {isSearching ? "Searching..." : "Loading apps..."}
+              {isKeywordSearch ? "Searching..." : "Loading apps..."}
             </p>
           )}
 
           {!clientError &&
-            isSearching &&
-            !searchLoading &&
-            hasSearchResponse &&
-            searchResults.length === 0 && (
+            !listLoading &&
+            isKeywordSearch &&
+            displayApps.length === 0 && (
               <p className={dialogStyles.empty}>Could not find any apps.</p>
             )}
 
@@ -532,14 +510,14 @@ export default function AddAppsDialog({
           )}
 
           {!clientError &&
-            !isSearching &&
-            !isLoading &&
+            !isKeywordSearch &&
+            !listLoading &&
             displayApps.length === 0 && (
               <p className={dialogStyles.empty}>No apps to show.</p>
             )}
         </div>
 
-        {!isSearching && (
+        {showPagination && (
           <div className={dialogStyles.pagination}>
             <Pagination />
             <em>

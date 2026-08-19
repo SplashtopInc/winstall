@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import styles from "../styles/apps.module.scss";
+import searchStyles from "../styles/search.module.scss";
 
 import SingleApp from "../components/SingleApp";
 import Footer from "../components/Footer";
-import { ListSort, applySort } from "../components/ListSort";
 import MetaTags from "../components/MetaTags";
 import Search from "../components/Search";
 
@@ -18,25 +18,41 @@ import { useRouter } from "next/router";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { getRevalidateTime } from "../utils/revalidateCache";
 import { getIconBase } from "../utils/runtimeConfig";
+import {
+  parseAppsListQuery,
+  appsListPath,
+  listScopeKey,
+  suggestionQueryFromListQuery,
+} from "../utils/parsePublisherQuery";
 import Error from "../components/Error";
 import DonateCard from "../components/DonateCard";
+import TrySearching from "../components/TrySearching";
 
 function Store({ data, error, buildTime }) {
   const router = useRouter();
   const [apps, setApps] = useState([]);
   const [searchInput, setSearchInput] = useState();
-  const [sort, setSort] = useState();
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [totalKnown, setTotalKnown] = useState(false);
   const [currentOffset, setCurrentOffset] = useState(0);
   const [clientError, setClientError] = useState("");
   const [loadedPage, setLoadedPage] = useState(null);
+  const [loadedScope, setLoadedScope] = useState(null);
   const [isLoading, setIsLoading] = useState(buildTime || (!data && !error));
 
   const appsPerPage = 60;
+  const queryText = searchInput || router.query?.q || "";
+  const listQuery = parseAppsListQuery(queryText);
+  const isSearchMode = listQuery.kind === "search";
+  const currentScope = listScopeKey(listQuery);
+  const showPagedList = true;
   const totalPages = totalKnown ? Math.ceil(total / appsPerPage) : 0;
-  const isSearchMode = Boolean(searchInput || router.query?.q);
+  const listReady =
+    currentScope === "list"
+      ? loadedScope === null || loadedScope === "list"
+      : loadedScope === currentScope;
+  const showPagination = showPagedList && !(listReady && apps.length === 0);
 
   const normalizeAppsPayload = (payload) => {
     if (!payload) return { items: [], total: 0, totalKnown: false, offset: 0, limit: 0 };
@@ -78,12 +94,14 @@ function Store({ data, error, buildTime }) {
     return { items: [], total: 0, totalKnown: false, offset: 0, limit: 0 };
   };
 
-  const loadPage = async (targetPage, shouldThrow = false) => {
+  const loadPage = async (targetPage, parsed = { kind: "list" }, shouldThrow = false) => {
     const offset = (targetPage - 1) * appsPerPage;
+    const listQueryArg =
+      parsed && parsed.kind ? parsed : parseAppsListQuery(parsed);
     setClientError("");
 
     const { response, error: fetchError } = await fetchWinstallAPI(
-      `/apps?offset=${offset}&limit=${appsPerPage}`,
+      appsListPath(listQueryArg, { offset, limit: appsPerPage }),
       {},
       shouldThrow
     );
@@ -95,8 +113,6 @@ function Store({ data, error, buildTime }) {
 
     const normalized = normalizeAppsPayload(response);
     if (normalized.items.length) {
-      applySort(normalized.items, router.query.sort || "update-desc");
-
       // Transform icons to full URLs for client-side pagination
       normalized.items.forEach(app => {
         if (app.icon && !app.icon.startsWith('http') && !app.iconUrl) {
@@ -111,25 +127,25 @@ function Store({ data, error, buildTime }) {
     setTotalKnown(normalized.totalKnown);
     setCurrentOffset(normalized.offset);
     setLoadedPage(targetPage);
+    setLoadedScope(listScopeKey(listQueryArg));
   };
 
   useEffect(() => {
-    // Default to showing most recently updated first to entice Google to index
-    // them, and to demonstrate to users that the site is being kept up-to-date.
-    let sortOrder = router.query.sort || "update-desc";
-    setSort(sortOrder);
-
     const initialPage = parseInt(router.query.page) || 1;
     setPage(initialPage);
 
+    const initialQuery = parseAppsListQuery(router.query.q);
     const normalized = normalizeAppsPayload(data);
-    if (normalized.items.length) {
-      applySort(normalized.items, sortOrder);
+    if (initialQuery.kind !== "list") {
+      setIsLoading(true);
+      loadPage(initialPage, initialQuery).then(() => setIsLoading(false));
+    } else if (normalized.items.length) {
       setApps(normalized.items);
       setTotal(normalized.total);
       setTotalKnown(normalized.totalKnown);
       setCurrentOffset(normalized.offset);
       setLoadedPage(1);
+      setLoadedScope("list");
       setIsLoading(false);
     } else if (buildTime || (!data && !error)) {
       setIsLoading(true);
@@ -170,10 +186,10 @@ function Store({ data, error, buildTime }) {
   }, []);
 
   useEffect(() => {
-    if (loadedPage === page) return;
-    loadPage(page);
+    if (loadedPage === page && loadedScope === currentScope) return;
+    loadPage(page, listQuery);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, currentScope]);
 
   useEffect(() => {
     const urlPage = parseInt(router.query.page) || 1;
@@ -181,7 +197,12 @@ function Store({ data, error, buildTime }) {
       setPage(urlPage);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.query.page]);
+  }, [router.query.page, router.query.q]);
+
+  const appsListQuery = (targetPage) => ({
+    ...(queryText ? { q: queryText } : {}),
+    page: targetPage,
+  });
 
   let handleNext = () => {
     window.scrollTo(0, 0);
@@ -190,9 +211,7 @@ function Store({ data, error, buildTime }) {
 
     router.replace({
       pathname: "/apps",
-      query: {
-        page: nextPage,
-      },
+      query: appsListQuery(nextPage),
     });
   };
 
@@ -203,9 +222,7 @@ function Store({ data, error, buildTime }) {
 
     router.replace({
       pathname: "/apps",
-      query: {
-        page: previousPage,
-      },
+      query: appsListQuery(previousPage),
     });
   };
 
@@ -290,7 +307,7 @@ function Store({ data, error, buildTime }) {
       <div className={styles.controls}>
         <Title />
 
-        {!isSearchMode && <Pagination small />}
+        {showPagination && <Pagination small />}
       </div>
 
       <Search
@@ -304,31 +321,27 @@ function Store({ data, error, buildTime }) {
       />
 
       <div className={styles.controls}>
-        {!isSearchMode && (
-          <>
-            <p>
-              {apps.length === 0
-                ? "No apps to show"
-                : totalKnown
-                ? `Showing ${currentOffset + 1}-${currentOffset + apps.length} of ${total.toLocaleString()} apps (page ${page} of ${totalPages}).`
-                : `Showing ${currentOffset + 1}-${currentOffset + apps.length} apps (page ${page}).`}
-            </p>
-            <ListSort
-              apps={apps}
-              defaultSort={sort}
-              onSort={(sort) => setSort(sort)}
-            />
-          </>
+        {showPagedList && (
+          <p>
+            {!listReady
+              ? "Loading apps..."
+              : apps.length === 0
+              ? isSearchMode
+                ? `No apps found for "${queryText}"`
+                : "No apps to show"
+              : totalKnown
+              ? `Showing ${currentOffset + 1}-${currentOffset + apps.length} of ${total.toLocaleString()} apps (page ${page} of ${totalPages}).`
+              : `Showing ${currentOffset + 1}-${currentOffset + apps.length} apps (page ${page}).`}
+          </p>
         )}
       </div>
 
-      {!isSearchMode && (
+      {showPagedList && listReady && (
         <ul className={`${styles.all} ${styles.storeList}`}>
           {apps.map((app, index) => (
             <React.Fragment key={app._id}>
               <SingleApp
                 app={app}
-                showTime={sort.includes("update-") ? true : false}
                 showSelectCheckbox
               />
 
@@ -340,9 +353,16 @@ function Store({ data, error, buildTime }) {
         </ul>
       )}
 
-      {!isSearchMode && (
+      {showPagedList && listReady && isSearchMode && apps.length === 0 && (
+        <TrySearching
+          query={suggestionQueryFromListQuery(queryText)}
+          className={searchStyles.suggestions}
+        />
+      )}
+
+      {showPagination && (
         <div className={styles.pagination}>
-          <Pagination disable={searchInput ? true : false} />
+          <Pagination />
           <em>
             Hit the <FiArrowLeftCircle /> and <FiArrowRightCircle /> keys on your
             keyboard to navigate between pages quickly.

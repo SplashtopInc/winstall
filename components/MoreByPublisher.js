@@ -4,6 +4,7 @@ import styles from "../styles/appDetail.module.scss";
 import RelatedAppCard from "./RelatedAppCard";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { getIconBase } from "../utils/runtimeConfig";
+import { publishersListPath } from "../utils/parsePublisherQuery";
 
 const MAX_PUBLISHER_APPS = 4;
 
@@ -23,7 +24,7 @@ const MoreByPublisher = ({ publisher, currentAppId }) => {
       try {
         setLoading(true);
         const { response, error: fetchError } = await fetchWinstallAPI(
-          `/publishers/${encodeURIComponent(publisher)}`
+          publishersListPath(publisher, { offset: 0, limit: MAX_PUBLISHER_APPS + 1 })
         );
 
         if (fetchError) {
@@ -31,19 +32,12 @@ const MoreByPublisher = ({ publisher, currentAppId }) => {
           return;
         }
 
-        let items = [];
-        if (Array.isArray(response)) {
-          items = response;
-        } else if (response && Array.isArray(response.items)) {
-          items = response.items;
-        } else if (response && Array.isArray(response.apps)) {
-          items = response.apps;
-        } else if (response && Array.isArray(response.data)) {
-          items = response.data;
-        }
+        const items = Array.isArray(response?.data) ? response.data : [];
+        const total =
+          typeof response?.total === "number" ? response.total : items.length;
 
         const filtered = items.filter((app) => app._id !== currentAppId);
-        setTotalCount(filtered.length);
+        setTotalCount(total);
 
         const limited = filtered.slice(0, MAX_PUBLISHER_APPS);
 
@@ -89,7 +83,7 @@ const MoreByPublisher = ({ publisher, currentAppId }) => {
     <section className={styles.related} aria-label={`More by ${publisher}`}>
       <div className={styles.relatedHead}>
         <h2 className={styles.relatedTitle}>More by {publisher}</h2>
-        {totalCount > MAX_PUBLISHER_APPS && (
+        {totalCount > apps.length && (
           <Link
             href={`/apps?q=publisher: ${publisher}`}
             className={styles.relatedMore}

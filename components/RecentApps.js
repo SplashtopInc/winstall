@@ -10,7 +10,7 @@ let RecentApps = ({ apps }) => {
     <div className="homeBlock">
       <div className="box">
         <h2 className="blockHeader">Recent Updates</h2>
-        <Link href="/apps?sort=update-desc" className="button small">
+        <Link href="/apps" className="button small">
           <FiPackage />
           View All
         </Link>
