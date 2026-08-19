@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
-import { FiPlus, FiShare2, FiExternalLink, FiCode } from "react-icons/fi";
+import { FiPlus, FiShare2, FiExternalLink, FiCode, FiDownload, FiInfo } from "react-icons/fi";
 import { FaFacebook, FaLinkedin } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { IoIosLink } from "react-icons/io";
@@ -15,6 +15,8 @@ import LikeButton from "./LikeButton";
 import useResourceEngagement from "../hooks/useResourceEngagement";
 import { formatCount } from "../utils/engagementStats";
 import { trackAppStats } from "../utils/trackAppStats";
+import { DEFAULT_INSTALL_FILTERS } from "../utils/defaultInstallOptions";
+import { downloadInstantInstaller } from "../utils/downloadInstantInstaller";
 
 export default function AppDetailView({ app }) {
   const { selectedApps, setSelectedApps } = useContext(SelectedContext);
@@ -36,6 +38,9 @@ export default function AppDetailView({ app }) {
   const [tagsExpanded, setTagsExpanded] = useState(false);
   const shareRef = useRef(null);
   const viewTrackedRef = useRef(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadCountdown, setDownloadCountdown] = useState(10);
+  const downloadTimerRef = useRef(null);
   const { stats, pending: likePending, onLikeClick } = useResourceEngagement({
     targetType: "app",
     targetId: app._id,
@@ -113,6 +118,14 @@ export default function AppDetailView({ app }) {
     return () => document.removeEventListener("click", onClick);
   }, [shareOpen]);
 
+  useEffect(() => {
+    return () => {
+      if (downloadTimerRef.current) {
+        clearInterval(downloadTimerRef.current);
+      }
+    };
+  }, []);
+
   const handleVersionChange = (next) => {
     setVersion(next);
 
@@ -139,6 +152,43 @@ export default function AppDetailView({ app }) {
       ]);
       setSelected(true);
       setToast(`Added ${app.name}`);
+    }
+  };
+
+  const handleDownloadInstaller = async () => {
+    if (isDownloading) return;
+
+    setIsDownloading(true);
+    setDownloadCountdown(10);
+    downloadTimerRef.current = setInterval(() => {
+      setDownloadCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    try {
+      await downloadInstantInstaller(
+        [
+          {
+            ...app,
+            selectedVersion: version,
+            latestVersion,
+          },
+        ],
+        DEFAULT_INSTALL_FILTERS
+      );
+      trackAppStats(app._id, "download");
+    } catch (error) {
+      if (error.message === "timeout") {
+        setToast("Download timeout");
+      } else {
+        setToast(error.message || "Download failed");
+      }
+    } finally {
+      if (downloadTimerRef.current) {
+        clearInterval(downloadTimerRef.current);
+        downloadTimerRef.current = null;
+      }
+      setIsDownloading(false);
+      setDownloadCountdown(10);
     }
   };
 
@@ -288,11 +338,28 @@ export default function AppDetailView({ app }) {
         </div>
       </div>
 
+      <p className={styles.installerTip}>
+        <FiInfo aria-hidden="true" />
+        Download the instant installer and run!
+      </p>
+
       <div className={styles.actions}>
         <button
           type="button"
-          className={`${styles.btn} ${styles.btnPrimary} ${
-            selected ? styles.btnPrimaryOn : ""
+          className={`${styles.btn} ${styles.btnPrimary}`}
+          onClick={handleDownloadInstaller}
+          disabled={isDownloading}
+        >
+          <FiDownload className={styles.btnIcon} />
+          {isDownloading
+            ? `Processing (${downloadCountdown})...`
+            : "Download installer"}
+        </button>
+
+        <button
+          type="button"
+          className={`${styles.btn} ${styles.btnSecondary} ${
+            selected ? styles.btnSecondaryOn : ""
           }`}
           onClick={handleSelect}
         >

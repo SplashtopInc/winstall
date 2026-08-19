@@ -221,12 +221,29 @@
   }
 }
 
+.installerTip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 14px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--detail-muted, #5c5c70);
+
+  svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 16px;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--detail-brd, #edecf0);
 }
@@ -270,8 +287,13 @@
   min-width: 160px;
   justify-content: flex-start;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: var(--altAccent);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 }
 
@@ -281,6 +303,31 @@
 
   &:hover {
     background: #be123c;
+  }
+
+  .btnIcon {
+    transform: rotate(45deg);
+  }
+}
+
+.btnSecondary {
+  background: var(--main-bg);
+  color: var(--textColor);
+  border: 1px solid var(--detail-brd-strong, #e5e4e8);
+  min-width: 160px;
+  justify-content: flex-start;
+
+  &:hover {
+    background: var(--nav-hover-bg, #f7f6f9);
+  }
+}
+
+.btnSecondaryOn {
+  border-color: #e11d48;
+  color: #e11d48;
+
+  &:hover {
+    background: #fff1f2;
   }
 
   .btnIcon {
@@ -716,7 +763,8 @@
 :global(.dark) {
   .publisher,
   .aboutText,
-  .relPub {
+  .relPub,
+  .installerTip {
     --detail-muted: rgba(255, 255, 255, 0.7);
   }
 
@@ -743,10 +791,15 @@
     --detail-brd: #333438;
   }
 
-  .btnGhost {
+  .btnGhost,
+  .btnSecondary {
     --detail-brd-strong: #333438;
     --detail-muted: rgba(255, 255, 255, 0.7);
     --nav-hover-bg: #2a2a2e;
+  }
+
+  .btnSecondaryOn:hover {
+    background: rgba(225, 17, 72, 0.16);
   }
 
   .relatedLoading {
