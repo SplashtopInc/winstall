@@ -14,11 +14,11 @@
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^5.9.2",
     "nanoid": "^5.1.11",
-    "next": "^15.5.15",
+    "next": "^16.3.0",
     "next-auth": "^4.24.14",
     "nprogress": "^0.2.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "react-hook-form": "^7.71.2",
     "react-icons": "^5.6.0",
     "react-loading-skeleton": "^3.5.0",
@@ -31,30 +31,30 @@
   "overrides": {
     "serialize-javascript": "^7.0.3",
     "uuid": "^11.1.0",
-    "next": {
-      "react": "^18.3.1",
-      "react-dom": "^18.3.1"
+    "next-auth": {
+      "next": "$next"
     }
   },
   "scripts": {
     "dev": "npm run clean:sw && next dev --turbopack",
-    "build": "next build",
-    "build:docker": "STANDALONE_BUILD=true next build",
+    "build": "next build --webpack",
+    "build:docker": "STANDALONE_BUILD=true next build --webpack",
     "start": "next start",
     "start:standalone": "node .next/standalone/server.js",
     "test": "node --test",
-    "lint": "next lint",
+    "lint": "node -e \"console.log('lint skipped: no ESLint config (Next 16 removed the built-in lint command)')\"",
     "clean:sw": "rm -f public/sw.js public/sw.js.map public/swe-worker-*.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "@types/node": "^25.5.0",
-    "@types/react": "^18.3.18",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
     "sass": "^1.80.0",
     "typescript": "6.0.2"
   },
   "engines": {
-    "node": ">=18.18.0",
+    "node": ">=20.9.0",
     "npm": ">=9.0.0"
   }
 }
