@@ -142,23 +142,17 @@
         border: 2px solid rgba(0, 0, 0, 0.12);
         background: transparent;
         color: var(--textColor);
-        opacity: 0.55;
         font-family: inherit;
         font-size: inherit;
         font-weight: inherit;
         line-height: inherit;
         cursor: pointer;
         transition: 0.2s all ease-in-out;
-
-        &:hover{
-            opacity: 0.75;
-        }
     }
 
     li.active button{
         border-color: var(--accent);
         color: #9b2eff;
-        opacity: 1;
     }
 }
 

@@ -19,22 +19,16 @@
   border: 2px solid rgba(0, 0, 0, 0.12);
   background: transparent;
   color: var(--textColor);
-  opacity: 0.55;
   font-family: inherit;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   transition: 0.2s all ease-in-out;
-
-  &:hover {
-    opacity: 0.75;
-  }
 }
 
 .tabActive {
   border-color: var(--accent);
   color: rgba(155, 46, 255, 1);
-  opacity: 1;
 }
 
 .grid {
