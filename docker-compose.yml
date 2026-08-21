@@ -1,13 +1,11 @@
 services:
-  winstall:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
     image: ${WINSTALL_APP_TAG:-winstall/app-latest}
     container_name: winstall-app
     restart: unless-stopped
-    ports:
-      - "127.0.0.1:3000:3000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     env_file:
@@ -19,19 +17,18 @@ services:
       - USE_HOST_INTERNAL=${USE_HOST_INTERNAL:-true}
 
   mongo2:
-      image: mongo:8
-      container_name: winstall-mongo2
-      restart: unless-stopped
-      environment:
-        MONGO_INITDB_DATABASE: winstall
-      volumes:
-        - mongo2-data:/data/db
-      #ports:
-      #  - "127.0.0.1:27017:27017"
-      healthcheck:
-        test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-        interval: 10s
-        timeout: 5s
-        retries: 5
+    image: mongo:8
+    container_name: winstall-mongo2
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: winstall
+    volumes:
+      - mongo2-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   mongo2-data:
