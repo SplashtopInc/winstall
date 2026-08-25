@@ -18,6 +18,14 @@ When the generate page has one or more selected apps, it MUST show install-type 
 - **WHEN** a user has four apps selected on the generate page
 - **THEN** the selected-apps heading MUST include `(4)` and the page title and lead MUST NOT include a selected-app count
 
+### Requirement: Generate Add more opens the apps list
+
+When the generate page has one or more selected apps, the selected-apps heading MUST include an Add more action. Activating Add more MUST open the apps list page at `/apps`. It MUST NOT send the user to the home page.
+
+#### Scenario: Add more goes to the apps list
+- **WHEN** a user with at least one selected app activates Add more on the generate page
+- **THEN** the system MUST open `/apps`
+
 ### Requirement: One app and many apps share the generate layout
 
 The generate page MUST use the same information structure and command dialect for one selected app and for many selected apps. It MUST NOT switch to an App-detail identity header or a different install-command format when only one app is selected.

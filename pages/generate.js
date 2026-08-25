@@ -199,7 +199,7 @@ function Generate() {
         <div className={styles.selectedApps}>
           <div className={styles.selectedHead}>
             <h2 className={styles.selectedTitle}>Selected apps ({apps.length})</h2>
-            <Link href="/" className={styles.selectedMore}>
+            <Link href="/apps" className={styles.selectedMore}>
               Add more
             </Link>
           </div>
