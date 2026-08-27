@@ -202,40 +202,57 @@ export default function PackDetailPage() {
     setError(null);
     setNotFound(false);
 
-    const {
-      response,
-      error: fetchError,
-      status: fetchStatus,
-    } = await fetchPackById(packId);
+    let transformed = null;
 
-    if (fetchError) {
-      const isMissing =
-        fetchStatus === 404 ||
-        /could not find pack|pack not found/i.test(String(fetchError));
+    try {
+      const {
+        response,
+        error: fetchError,
+        status: fetchStatus,
+      } = await fetchPackById(packId);
 
-      setNotFound(isMissing);
-      setError(isMissing ? null : fetchError);
+      if (fetchError || !response) {
+        const isMissing =
+          fetchStatus === 404 ||
+          /could not find pack|pack not found/i.test(String(fetchError));
+
+        setNotFound(isMissing);
+        setError(isMissing ? null : fetchError || "This pack couldn't be loaded");
+        setPack(null);
+        setApps([]);
+        setDefaultFilters(DEFAULT_INSTALL_FILTERS);
+        return;
+      }
+
+      const apiBase = getIconBase();
+      transformed = transformPackIcons(response, apiBase);
+      setPack(transformed);
+      setApps(transformed.apps || []);
+      setDefaultFilters(toDefaultInstallFilters(transformed.defaultInstallOptions));
+    } catch (err) {
+      setNotFound(false);
+      setError(err?.message || "This pack couldn't be loaded");
       setPack(null);
       setApps([]);
       setDefaultFilters(DEFAULT_INSTALL_FILTERS);
-      setLoading(false);
       return;
+    } finally {
+      setLoading(false);
     }
 
-    const apiBase = getIconBase();
-    const transformed = transformPackIcons(response, apiBase);
-    setPack(transformed);
-    setApps(transformed.apps || []);
-    setDefaultFilters(toDefaultInstallFilters(transformed.defaultInstallOptions));
-    setLoading(false);
+    if (!transformed) return;
 
     // Track view for public/unlisted packs
     if (transformed.visibility === "public" || transformed.visibility === "unlisted") {
       trackPackStats(packId, "view");
     }
 
-    const enriched = await enrichApps(transformed.apps || []);
-    setApps(enriched);
+    try {
+      const enriched = await enrichApps(transformed.apps || []);
+      setApps(enriched);
+    } catch (err) {
+      console.error("Failed to enrich pack apps", err);
+    }
   }, []);
 
   useEffect(() => {
@@ -825,4 +842,9 @@ export default function PackDetailPage() {
       />
     </PageWrapper>
   );
+}
+
+// On-demand SSR so `_document` injects runtime WINSTALL_API_BASE into meta.
+export async function getServerSideProps() {
+  return { props: {} };
 }
