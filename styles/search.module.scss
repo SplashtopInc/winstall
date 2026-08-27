@@ -205,9 +205,11 @@
 .emptyTitle{
     font-size: 20px;
     font-weight: 800;
-    margin: 0 0 4px;
+    margin: 0 0 8px;
     color: var(--textColor);
     line-height: 1.4;
+    overflow-wrap: anywhere;
+    max-width: 720px;
 }
 
 .emptyQuery{

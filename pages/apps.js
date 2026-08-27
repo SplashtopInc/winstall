@@ -26,6 +26,7 @@ import {
 } from "../utils/parsePublisherQuery";
 import Error from "../components/Error";
 import DonateCard from "../components/DonateCard";
+import SearchEmptyState from "../components/SearchEmptyState";
 import TrySearching from "../components/TrySearching";
 
 function Store({ data, error, buildTime }) {
@@ -320,23 +321,23 @@ function Store({ data, error, buildTime }) {
         asGlobalTrigger={!router.query.q}
       />
 
-      <div className={styles.controls}>
-        {showPagedList && (
-          <p>
-            {!listReady
-              ? "Loading apps..."
-              : apps.length === 0
-              ? isSearchMode
-                ? `No apps found for "${queryText}"`
-                : "No apps to show"
-              : totalKnown
-              ? `Showing ${currentOffset + 1}-${currentOffset + apps.length} of ${total.toLocaleString()} apps (page ${page} of ${totalPages}).`
-              : `Showing ${currentOffset + 1}-${currentOffset + apps.length} apps (page ${page}).`}
-          </p>
-        )}
-      </div>
+      {!(listReady && isSearchMode && apps.length === 0) && (
+        <div className={styles.controls}>
+          {showPagedList && (
+            <p>
+              {!listReady
+                ? "Loading apps..."
+                : apps.length === 0
+                ? "No apps to show"
+                : totalKnown
+                ? `Showing ${currentOffset + 1}-${currentOffset + apps.length} of ${total.toLocaleString()} apps (page ${page} of ${totalPages}).`
+                : `Showing ${currentOffset + 1}-${currentOffset + apps.length} apps (page ${page}).`}
+            </p>
+          )}
+        </div>
+      )}
 
-      {showPagedList && listReady && (
+      {showPagedList && listReady && apps.length > 0 && (
         <ul className={`${styles.all} ${styles.storeList}`}>
           {apps.map((app, index) => (
             <React.Fragment key={app._id}>
@@ -354,10 +355,13 @@ function Store({ data, error, buildTime }) {
       )}
 
       {showPagedList && listReady && isSearchMode && apps.length === 0 && (
-        <TrySearching
-          query={suggestionQueryFromListQuery(queryText)}
-          className={searchStyles.suggestions}
-        />
+        <div className={searchStyles.emptyWrap}>
+          <SearchEmptyState query={queryText} />
+          <TrySearching
+            query={suggestionQueryFromListQuery(queryText)}
+            className={searchStyles.suggestions}
+          />
+        </div>
       )}
 
       {showPagination && (
