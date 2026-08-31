@@ -1,0 +1,233 @@
+.carousel {
+  position: relative;
+  margin: 8px 0 4px;
+  overflow: hidden;
+  border-radius: 22px;
+  box-shadow: 0 18px 40px rgba(17, 17, 24, 0.12);
+}
+
+.track {
+  display: flex;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.slide {
+  position: relative;
+  display: flex;
+  min-height: 300px;
+  padding: 28px 28px 52px;
+  box-sizing: border-box;
+  flex: 0 0 100%;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: #fff;
+
+  h2 {
+    max-width: 18ch;
+    margin: 0;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  > p:not(.eyebrow) {
+    max-width: 48ch;
+    margin: 12px 0 22px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.45;
+    opacity: 0.88;
+  }
+}
+
+.appSlide {
+  background: linear-gradient(160deg, #5b2cff 0%, #9b2eff 48%, #ff6b9d 100%);
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.appDock {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(16px);
+}
+
+.appIcon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 12px;
+  background: #fff;
+
+  img,
+  picture {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.appCopy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+
+  strong,
+  small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    margin-top: 3px;
+    opacity: 0.75;
+  }
+}
+
+.getButton {
+  display: inline-flex;
+  height: 36px;
+  padding: 0 16px;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.getButtonSelected {
+  background: var(--accent);
+  color: #fff;
+}
+
+.adSlide {
+  background: linear-gradient(135deg, #2979ff, #1565c0);
+
+  > a {
+    display: inline-flex;
+    width: fit-content;
+    padding: 8px 20px;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    background: #e040a0;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+}
+
+.adBadge {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  cursor: pointer;
+  transform: translateY(-50%);
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.previous {
+  left: 14px;
+}
+
+.next {
+  right: 14px;
+}
+
+.dots {
+  position: absolute;
+  right: 0;
+  bottom: 16px;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+
+  button {
+    width: 7px;
+    height: 7px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+  }
+
+  button.dotActive {
+    width: 18px;
+    background: #fff;
+  }
+}
+
+@media (max-width: 590px) {
+  .slide {
+    min-height: 280px;
+    padding: 24px 20px 48px;
+
+    h2 {
+      font-size: 26px;
+    }
+  }
+
+  .appDock {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .getButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    transition: none;
+  }
+}
