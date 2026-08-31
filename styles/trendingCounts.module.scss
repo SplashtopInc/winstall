@@ -1,0 +1,76 @@
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stat {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--textColor);
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.65;
+  white-space: nowrap;
+
+  svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+  }
+}
+
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.inline {
+  margin: 0;
+  gap: 0;
+  color: var(--textColor);
+
+  .stat {
+    opacity: 0.55;
+  }
+
+  .stat + .stat::before {
+    content: "·";
+    margin: 0 8px 0 6px;
+    opacity: 0.7;
+    font-weight: 800;
+  }
+
+  .stat svg {
+    opacity: 0.85;
+  }
+}
+
+.onHead {
+  margin: 10px 0 0;
+  gap: 12px;
+
+  .stat {
+    color: #fff;
+    font-size: 13px;
+    opacity: 0.88;
+
+    svg {
+      width: 14px;
+      height: 14px;
+    }
+  }
+}

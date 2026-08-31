@@ -1,5 +1,6 @@
 import { isLikePath, isStatsPath } from "./engagementPaths";
 import { getRuntimeConfig } from "./runtimeConfig";
+import { isTrendingPath } from "./trendingData";
 
 const PACK_RESOURCE = /^\/packs\/[^/]+$/;
 const PACK_COPY = /^\/packs\/[^/]+\/copy$/;
@@ -29,7 +30,13 @@ function requiresUserJwt(method, pathname) {
 }
 
 function prefersOptionalUserJwt(method, pathname) {
-  if (method === "GET" && PACK_RESOURCE.test(pathname)) return true;
+  if (
+    method === "GET" &&
+    PACK_RESOURCE.test(pathname) &&
+    !isTrendingPath(pathname)
+  ) {
+    return true;
+  }
   if (method === "GET" && isStatsPath(pathname)) return true;
   return false;
 }

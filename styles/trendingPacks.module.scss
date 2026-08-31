@@ -1,0 +1,131 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+  margin-top: 18px;
+}
+
+.pack {
+  display: block;
+  background: var(--card-bg);
+  border-radius: 10px;
+  overflow: hidden;
+  color: var(--textColor);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.packHead {
+  padding: 28px 20px 16px;
+  color: #fff;
+}
+
+.packRank {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.packIcon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin-bottom: 8px;
+}
+
+.packHead h3 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.packHead p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  opacity: 0.85;
+  color: #fff;
+}
+
+.packApps {
+  padding: 18px 20px 20px;
+}
+
+.packApp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--textColor);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.appMark {
+  display: grid;
+  width: 25px;
+  height: 25px;
+  flex-shrink: 0;
+  place-items: center;
+  border-radius: 6px;
+  background: var(--main-bg);
+  overflow: hidden;
+
+  img,
+  picture,
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.gHome {
+  background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+}
+
+.gGlobe {
+  background-image: linear-gradient(
+    12deg,
+    rgb(110, 27, 220),
+    rgb(241, 56, 167) 100%
+  );
+}
+
+.gStar {
+  background-image: linear-gradient(to top, #aa39df 0%, #9b2fff 100%);
+}
+
+.gMusic {
+  background-image: linear-gradient(to top, #ff0844 0%, #ebaf35 100%);
+}
+
+.gGame {
+  background-image: linear-gradient(to top, #a8e063, #56ab2f);
+}
+
+.gCode {
+  background-image: linear-gradient(160deg, #111 0%, #007acc 100%);
+}
+
+.gSocial {
+  background-image: linear-gradient(160deg, #e4405f 0%, #8e2de2 100%);
+}
+
+.gSchool {
+  background-image: linear-gradient(160deg, #0b5cab 0%, #2d8cff 100%);
+}
+
+@media (max-width: 590px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

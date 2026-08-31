@@ -1,44 +1,61 @@
 import styles from "../styles/home.module.scss";
 
-import PopularApps from "../components/PopularApps";
 import MetaTags from "../components/MetaTags";
-import Recommendations from "../components/Recommendations";
+import HomeCarousel from "../components/homeCarousel";
+import TrendingApps from "../components/trendingApps";
+import TrendingPacks from "../components/trendingPacks";
 
 import Footer from "../components/Footer";
-import { shuffleArray } from "../utils/helpers";
-import popularAppsList from "../data/popularApps.json";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
+import {
+  fetchAppTrending,
+  fetchPackTrending,
+} from "../utils/trendingApi";
 import Error from "../components/Error";
-import DonateCard from "../components/DonateCard";
 import { useState, useEffect } from "react";
 import { getRevalidateTime } from "../utils/revalidateCache";
 
-function Home({ popular, appsTotal, recommended, error, buildTime }) {
-  const [data, setData] = useState({ popular: popular || [], appsTotal: appsTotal || 0, recommended: recommended || [] });
-  const [isLoading, setIsLoading] = useState(buildTime || (!popular && !error));
+function Home({
+  appsTotal,
+  trendingApps = [],
+  trendingPacks = [],
+  error,
+  buildTime,
+}) {
+  const [data, setData] = useState({
+    appsTotal: appsTotal || 0,
+    trendingApps,
+    trendingPacks,
+  });
+  const [isLoading, setIsLoading] = useState(Boolean(buildTime) && !error);
   const [clientError, setClientError] = useState(null);
 
   useEffect(() => {
-    if (buildTime || (!popular && !error)) {
-      setIsLoading(true);
+    if (!buildTime) return;
 
-      fetchWinstallAPI(`/apps`)
-        .then(({ response }) => {
-          const total = typeof response?.total === "number" ? response.total : 0;
+    setIsLoading(true);
 
-          setData({
-            popular: popular || [],
-            appsTotal: total,
-            recommended: recommended || []
-          });
-          setIsLoading(false);
-        })
-        .catch(err => {
-          setClientError(err.message || "Failed to load data");
-          setIsLoading(false);
+    Promise.all([
+      fetchWinstallAPI("/apps"),
+      fetchAppTrending(),
+      fetchPackTrending(),
+    ])
+      .then(([appsResult, appTrendingResult, packTrendingResult]) => {
+        const response = appsResult.response;
+        const total = typeof response?.total === "number" ? response.total : 0;
+
+        setData({
+          appsTotal: total,
+          trendingApps: appTrendingResult.items,
+          trendingPacks: packTrendingResult.items,
         });
-    }
-  }, [buildTime, popular, error, recommended]);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        setClientError(err.message || "Failed to load data");
+        setIsLoading(false);
+      });
+  }, [buildTime]);
 
   if (isLoading) {
     return (
@@ -93,14 +110,10 @@ function Home({ popular, appsTotal, recommended, error, buildTime }) {
         </div>
       </div>
 
-      <DonateCard placement="home" />
+      <HomeCarousel topApp={data.trendingApps[0]} />
 
-
-      <PopularApps apps={data.popular} />
-
-      {data.recommended && data.recommended.length > 0 && (
-        <Recommendations packs={data.recommended} />
-      )}
+      <TrendingApps apps={data.trendingApps} />
+      <TrendingPacks packs={data.trendingPacks} />
 
       <Footer />
     </div>
@@ -111,46 +124,32 @@ export async function getStaticProps(){
   const { getRuntimeConfig } = require('../utils/runtimeConfig');
   const config = await getRuntimeConfig();
 
-  const officialPacksCreator = process.env.NEXT_OFFICIAL_PACKS_CREATOR || '1301830924120788997';
-
   // No API at build time: return empty to trigger ISR on first request
   if (!config.apiBase) {
     console.warn('[getStaticProps /] Build-time: no API configured, will trigger ISR on first request');
     return {
       props: {
-        popular: shuffleArray(Object.values(popularAppsList)).slice(0, 16),
         appsTotal: 0,
-        recommended: [],
+        trendingApps: [],
+        trendingPacks: [],
         buildTime: true
       },
       revalidate: 1
     };
   }
 
-  let popular = shuffleArray(Object.values(popularAppsList));
-
-  let { response: apps, error: appsError } = await fetchWinstallAPI(`/apps`);
-
-  let recommendedList = [];
-  try {
-    const { fetchAllPublicPacksFromApi } = require('../utils/packApiServer');
-    const { packs, error: packsError } = await fetchAllPublicPacksFromApi({
-      limit: 100,
-      sort: 'recent',
-    });
-    if (packsError) {
-      console.warn('[getStaticProps /] API recommended packs error:', packsError);
-    }
-    recommendedList = (packs || []).filter(
-      (pack) => pack.userId === officialPacksCreator
-    );
-    console.log(
-      `[getStaticProps /] Loaded ${recommendedList.length} recommended packs from API`
-    );
-  } catch (err) {
-    const errMsg = err instanceof Error ? err.message : String(err);
-    console.warn('[getStaticProps /] API not available for recommended packs:', errMsg);
-  }
+  const [appsResult, appTrendingResult, packTrendingResult] = await Promise.all([
+    fetchWinstallAPI("/apps"),
+    fetchAppTrending(),
+    fetchPackTrending(),
+  ]);
+  const { response: apps, error: appsError } = appsResult;
+  const trendingApps = appTrendingResult.error
+    ? []
+    : appTrendingResult.items;
+  const trendingPacks = packTrendingResult.error
+    ? []
+    : packTrendingResult.items;
 
   const appsTotal = typeof apps?.total === "number" ? apps.total : 0;
   const hasData = appsTotal > 0;
@@ -164,89 +163,25 @@ export async function getStaticProps(){
 
     return {
       props: {
-        popular: popular.slice(0, 16),
         appsTotal: 0,
-        recommended: [],
+        trendingApps,
+        trendingPacks,
         error: errorMsg
       },
       revalidate
     };
   }
 
-  const popularResults = await Promise.all(
-    popular.slice(0, 16).map(async (entry) => {
-      const { response: appData } = await fetchWinstallAPI(`/apps/${entry._id}?exclude=versions`);
-
-      if (!appData) {
-        return entry;
-      }
-
-      return {
-        ...appData,
-        _id: entry._id,
-        img: entry.img,
-      };
-    })
-  );
-
-  popular = popularResults.filter(Boolean);
-
-  // Enrich pack apps with API data
-  const getPackData = recommendedList.map(async (pack) => {
-    return new Promise(async(resolve) => {
-      const appsList = pack.apps || [];
-
-      const getIndividualApps = appsList.map(async (app, index) => {
-        return new Promise(async (resolve) => {
-          const appId = app.appId || app._id;
-          if (!appId) {
-            appsList[index] = null;
-            resolve();
-            return;
-          }
-
-          let { response: appData, error } = await fetchWinstallAPI(`/apps/${appId}`);
-
-          if(error) {
-            appData = null;
-          } else {
-            // Merge pack app data with API data
-            appData = {
-              ...appData,
-              _id: appId,
-              name: app.appName || app.name || appData.name,
-              icon: app.icon || appData.icon,
-              iconUrl: app.iconUrl,
-              iconPng: app.iconPng,
-              publisher: app.publisher || appData.publisher
-            };
-          }
-
-          appsList[index] = appData;
-          resolve();
-        })
-      })
-
-      await Promise.all(getIndividualApps).then(() => {
-        pack.apps = appsList.filter(app => app != null);
-        // Add compatibility fields for Recommendations component
-        pack.title = pack.name;
-        pack.desc = pack.description;
-        resolve();
-      })
-    })
-  })
-
-  await Promise.all(getPackData);
-
   const revalidate = getRevalidateTime('index', true);
-  console.log(`[getStaticProps /] Success: ${appsTotal} apps, ${recommendedList.length} packs, revalidate in ${revalidate}s`);
+  console.log(
+    `[getStaticProps /] Success: ${appsTotal} apps, ${trendingApps.length} trending apps, ${trendingPacks.length} trending packs, revalidate in ${revalidate}s`
+  );
 
   return {
     props: {
-      popular,
       appsTotal,
-      recommended: recommendedList
+      trendingApps,
+      trendingPacks,
     },
     revalidate
   };
