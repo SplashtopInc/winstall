@@ -15,6 +15,8 @@ services:
       - PORT=3000
       - MONGODB_URI=${MONGODB_URI:-mongodb://mongo2:27017/winstall}
       - USE_HOST_INTERNAL=${USE_HOST_INTERNAL:-true}
+    networks:
+      - backend
 
   mongo2:
     image: mongo:8
@@ -22,6 +24,8 @@ services:
     restart: unless-stopped
     environment:
       MONGO_INITDB_DATABASE: winstall
+    networks:
+      - backend
     volumes:
       - mongo2-data:/data/db
     healthcheck:
@@ -32,3 +36,8 @@ services:
 
 volumes:
   mongo2-data:
+
+networks:
+  backend:
+    name: ${DOCKER_NETWORK:-winstall-network}
+    external: true
