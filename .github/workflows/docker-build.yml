@@ -30,6 +30,8 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: ${{ vars.DOCKERHUB_USERNAME }}/winstall
+          flavor: |
+            latest=false
           tags: |
             type=raw,value=app-latest
             type=semver,pattern=app-{{version}}

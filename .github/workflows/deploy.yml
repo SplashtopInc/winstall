@@ -3,12 +3,13 @@ name: Deploy
 on:
   push:
     branches: ["main", "master"]
-    tags: ["v*.*.*"]
+    tags: ["v*"]
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
       - name: Deploy to Staging Server via SSH
         uses: appleboy/ssh-action@v1
