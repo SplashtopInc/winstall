@@ -80,3 +80,16 @@ test("normalizeTrendingPack maps API names for PackPreview", async () => {
     }
   );
 });
+
+test("getTopTrendingPack returns lowest rank pack", async () => {
+  const { getTopTrendingPack } = await import("../utils/trendingData.js");
+
+  assert.equal(getTopTrendingPack([]), null);
+  assert.equal(
+    getTopTrendingPack([
+      { _id: "pack-b", rank: 2, name: "B" },
+      { _id: "pack-a", rank: 1, name: "A" },
+    ])._id,
+    "pack-a"
+  );
+});

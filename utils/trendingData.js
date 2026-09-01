@@ -33,3 +33,13 @@ export function normalizeTrendingPack(pack) {
       : [],
   };
 }
+
+export function getTopTrendingPack(packs) {
+  if (!Array.isArray(packs) || packs.length === 0) return null;
+
+  const sorted = [...packs].sort(
+    (first, second) => Number(first.rank) - Number(second.rank)
+  );
+
+  return normalizeTrendingPack(sorted[0]);
+}

@@ -110,7 +110,10 @@ function Home({
         </div>
       </div>
 
-      <HomeCarousel topApp={data.trendingApps[0]} />
+      <HomeCarousel
+        topApp={data.trendingApps[0]}
+        trendingPacks={data.trendingPacks}
+      />
 
       <TrendingApps apps={data.trendingApps} />
       <TrendingPacks packs={data.trendingPacks} />
