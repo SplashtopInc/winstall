@@ -1,5 +1,8 @@
 repos:
-  - repo: https://github.com/betterleaks/betterleaks
-    rev: v1.8.1
+  - repo: local
     hooks:
       - id: betterleaks
+        name: betterleaks
+        entry: betterleaks protect --staged --verbose
+        language: system
+        files: ''
