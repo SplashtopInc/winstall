@@ -695,71 +695,15 @@ export default function PackDetailPage() {
               Install
             </button>
 
-            <LikeButton
-              liked={Boolean(stats?.liked)}
-              likeCount={stats?.likeCount ?? 0}
-              pending={likePending}
-              onClick={onLikeClick}
-              className={`${styles.likeBtn} ${stats?.liked ? styles.likeBtnOn : ""}`}
-            />
-
             {isOwner ? (
-              <>
-                <button
-                  type="button"
-                  className={styles.actionButton}
-                  onClick={() => setAddAppsDialogOpen(true)}
-                >
-                  <FiPlus aria-hidden="true" />
-                  Add App
-                </button>
-                <div className={styles.packMenuWrapper} ref={menuRef}>
-                  <button
-                    type="button"
-                    className={styles.packMenu}
-                    aria-label="Pack options"
-                    aria-expanded={menuOpen}
-                    onClick={() => setMenuOpen((open) => !open)}
-                  >
-                    <FiMoreVertical aria-hidden="true" />
-                  </button>
-                  {menuOpen && (
-                    <div className={styles.packMenuDropdown}>
-                      <button
-                        type="button"
-                        className={styles.packMenuItem}
-                        onClick={handleEditClick}
-                      >
-                        <FiEdit aria-hidden="true" /> Edit
-                      </button>
-                      <button
-                        type="button"
-                        className={styles.packMenuItem}
-                        disabled={deletingPack}
-                        onClick={handleDeleteClick}
-                      >
-                        <FiTrash2 aria-hidden="true" />{" "}
-                        {deletingPack ? "Deleting..." : "Delete"}
-                      </button>
-                      <button
-                        type="button"
-                        className={styles.packMenuItem}
-                        onClick={handleShareClick}
-                      >
-                        <FiShare2 aria-hidden="true" /> Share
-                      </button>
-                    </div>
-                  )}
-                  {showShareCard && (
-                    <PackShareCard
-                      pack={pack}
-                      shareCardRef={shareCardRef}
-                      user={user}
-                      onMadePublic={handlePackMadePublic}
-                    />
-                  )}
-                </div>
-              </>
+              <button
+                type="button"
+                className={styles.actionButton}
+                onClick={() => setAddAppsDialogOpen(true)}
+              >
+                <FiPlus aria-hidden="true" />
+                Add App
+              </button>
             ) : (
               <button
                 type="button"
@@ -770,6 +714,63 @@ export default function PackDetailPage() {
                 <FiPlus aria-hidden="true" />
                 {copying ? "Adding..." : "Add to my packs"}
               </button>
+            )}
+
+            <LikeButton
+              liked={Boolean(stats?.liked)}
+              likeCount={stats?.likeCount ?? 0}
+              pending={likePending}
+              onClick={onLikeClick}
+              className={`${styles.likeBtn} ${stats?.liked ? styles.likeBtnOn : ""}`}
+            />
+
+            {isOwner && (
+              <div className={styles.packMenuWrapper} ref={menuRef}>
+                <button
+                  type="button"
+                  className={styles.packMenu}
+                  aria-label="Pack options"
+                  aria-expanded={menuOpen}
+                  onClick={() => setMenuOpen((open) => !open)}
+                >
+                  <FiMoreVertical aria-hidden="true" />
+                </button>
+                {menuOpen && (
+                  <div className={styles.packMenuDropdown}>
+                    <button
+                      type="button"
+                      className={styles.packMenuItem}
+                      onClick={handleEditClick}
+                    >
+                      <FiEdit aria-hidden="true" /> Edit
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.packMenuItem}
+                      disabled={deletingPack}
+                      onClick={handleDeleteClick}
+                    >
+                      <FiTrash2 aria-hidden="true" />{" "}
+                      {deletingPack ? "Deleting..." : "Delete"}
+                    </button>
+                    <button
+                      type="button"
+                      className={styles.packMenuItem}
+                      onClick={handleShareClick}
+                    >
+                      <FiShare2 aria-hidden="true" /> Share
+                    </button>
+                  </div>
+                )}
+                {showShareCard && (
+                  <PackShareCard
+                    pack={pack}
+                    shareCardRef={shareCardRef}
+                    user={user}
+                    onMadePublic={handlePackMadePublic}
+                  />
+                )}
+              </div>
             )}
           </div>
         </header>

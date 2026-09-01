@@ -86,9 +86,9 @@
 }
 
 .likeBtnOn {
-  border-color: #f43f5e;
-  color: #e11d48;
-  background: #fff1f2;
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
 
   svg {
     fill: currentColor;
@@ -792,10 +792,15 @@
   }
 
   .btnGhost,
-  .btnSecondary {
+  .btnSecondary,
+  .likeBtn {
     --detail-brd-strong: #333438;
     --detail-muted: rgba(255, 255, 255, 0.7);
     --nav-hover-bg: #2a2a2e;
+  }
+
+  .likeBtnOn {
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
   }
 
   .btnSecondaryOn:hover {

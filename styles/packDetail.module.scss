@@ -96,9 +96,9 @@
 }
 
 .likeBtnOn {
-  border-color: #f43f5e;
-  color: #e11d48;
-  background: #fff1f2;
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
 
   svg {
     fill: currentColor;
@@ -146,21 +146,22 @@
   align-items: center;
   gap: 8px;
   height: 48px;
-  padding: 0 24px;
+  padding: 0 16px;
   box-sizing: border-box;
   border-radius: 50px;
-  border: 0;
+  border: 1px solid var(--detail-brd-strong, #e5e4e8);
   cursor: pointer;
   font-family: inherit;
   font-weight: 700;
   font-size: 16px;
-  color: var(--textColor);
-  background-color: var(--card-bg);
+  color: var(--detail-muted, #5c5c70);
+  background-color: var(--main-bg);
   box-shadow: none;
-  transition: 0.3s all ease-in-out;
+  transition: all 0.15s ease;
 
   &:hover:not(:disabled) {
-    opacity: 0.75;
+    background: var(--nav-hover-bg, #f7f6f9);
+    color: var(--textColor);
   }
 
   &:disabled {
@@ -181,16 +182,18 @@
   width: 48px;
   height: 48px;
   flex-shrink: 0;
+  box-sizing: border-box;
   border-radius: 50%;
-  border: 0;
-  background-color: var(--card-bg);
+  border: 1px solid var(--detail-brd-strong, #e5e4e8);
+  background-color: var(--main-bg);
   box-shadow: none;
   cursor: pointer;
-  color: var(--textColor);
-  transition: 0.3s all ease-in-out;
+  color: var(--detail-muted, #5c5c70);
+  transition: all 0.15s ease;
 
   &:hover {
-    opacity: 0.75;
+    background: var(--nav-hover-bg, #f7f6f9);
+    color: var(--textColor);
   }
 }
 
@@ -725,6 +728,18 @@
 
   .appMenu:hover {
     background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .actionButton,
+  .packMenu,
+  .likeBtn {
+    --detail-brd-strong: #3a3b3e;
+    --detail-muted: rgba(255, 255, 255, 0.7);
+    --nav-hover-bg: #2d2e30;
+  }
+
+  .likeBtnOn {
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
   }
 }
 
