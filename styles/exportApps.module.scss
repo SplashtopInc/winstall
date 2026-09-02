@@ -88,6 +88,10 @@
         margin-right: 0;
         white-space: nowrap;
     }
+
+    :global(.button.accent){
+        margin-right: 0;
+    }
 }
 
 .tipContainer{
