@@ -61,18 +61,22 @@
 .empty {
   padding: 12px 20px;
   margin: 0;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--textColor);
   opacity: 0.65;
 }
 
 .error {
   padding: 8px 20px 12px;
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.4;
   color: var(--error);
 }
 
-// Override .bottomBar .inner button pill styles
+// Override .bottomBar .inner button / p styles that leak into this menu
 :global(.bottomBar .inner) {
   .menu {
     .createItem,
@@ -113,6 +117,25 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .loading,
+    .empty {
+      padding: 12px 20px;
+      margin: 0;
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.4;
+      color: var(--textColor);
+      opacity: 0.65;
+    }
+
+    .error {
+      padding: 8px 20px 12px;
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--error);
     }
   }
 }
