@@ -45,7 +45,8 @@ function Store({ data, error, buildTime }) {
   const appsPerPage = 60;
   const queryText = searchInput || router.query?.q || "";
   const listQuery = parseAppsListQuery(queryText);
-  const isSearchMode = listQuery.kind === "search";
+  // Includes keyword search and publisher: / tags: / name: / desc: filters
+  const hasActiveQuery = listQuery.kind !== "list";
   const currentScope = listScopeKey(listQuery);
   const showPagedList = true;
   const totalPages = totalKnown ? Math.ceil(total / appsPerPage) : 0;
@@ -321,7 +322,7 @@ function Store({ data, error, buildTime }) {
         asGlobalTrigger={!router.query.q}
       />
 
-      {!(listReady && isSearchMode && apps.length === 0) && (
+      {!(listReady && hasActiveQuery && apps.length === 0) && (
         <div className={styles.controls}>
           {showPagedList && (
             <p>
@@ -354,7 +355,7 @@ function Store({ data, error, buildTime }) {
         </ul>
       )}
 
-      {showPagedList && listReady && isSearchMode && apps.length === 0 && (
+      {showPagedList && listReady && hasActiveQuery && apps.length === 0 && (
         <div className={searchStyles.emptyWrap}>
           <SearchEmptyState query={queryText} />
           <TrySearching
