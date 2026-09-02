@@ -4,7 +4,7 @@ import styles from "../styles/appDetail.module.scss";
 import RelatedAppCard from "./RelatedAppCard";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { getIconBase } from "../utils/runtimeConfig";
-import { publishersListPath } from "../utils/parsePublisherQuery";
+import { publishersListPath, publisherAppsPagePath } from "../utils/parsePublisherQuery";
 
 const MAX_PUBLISHER_APPS = 4;
 
@@ -85,7 +85,7 @@ const MoreByPublisher = ({ publisher, currentAppId }) => {
         <h2 className={styles.relatedTitle}>More by {publisher}</h2>
         {totalCount > apps.length && (
           <Link
-            href={`/apps?q=publisher: ${publisher}`}
+            href={publisherAppsPagePath(publisher)}
             className={styles.relatedMore}
           >
             View All &gt;

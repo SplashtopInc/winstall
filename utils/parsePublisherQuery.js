@@ -44,6 +44,22 @@ export function publishersListPath(name, { offset = 0, limit = 60 } = {}) {
   return `/publishers/${encodeURIComponent(name)}?offset=${offset}&limit=${limit}`;
 }
 
+/** Browser URL for /apps with optional ?q= and ?page= (encodes + and other specials). */
+export function appsPagePath(query, { page } = {}) {
+  const q = String(query ?? "").trim();
+  const params = new URLSearchParams();
+  if (q) params.set("q", q);
+  if (page != null && page > 1) params.set("page", String(page));
+  const search = params.toString();
+  return search ? `/apps?${search}` : "/apps";
+}
+
+export function publisherAppsPagePath(publisher) {
+  const name = String(publisher ?? "").trim();
+  if (!name) return "/apps";
+  return appsPagePath(`publisher: ${name}`);
+}
+
 export function appsListPath(query, { offset = 0, limit = 60 } = {}) {
   const parsed =
     query && typeof query === "object" && query.kind

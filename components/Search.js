@@ -13,6 +13,7 @@ import { getIconBase } from "../utils/runtimeConfig";
 import {
   parseAppsListQuery,
   appsListPath,
+  appsPagePath,
   suggestionQueryFromListQuery,
 } from "../utils/parsePublisherQuery";
 
@@ -241,7 +242,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
                 Showing {results.length} result
                 {results.length > 1 && "s"}
                 . {results.length == limit &&
-                  <a href={`/apps?q=${searchInput}`}>More</a>
+                  <a href={appsPagePath(searchInput)}>More</a>
                 }
               </p>
             }

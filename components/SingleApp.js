@@ -30,6 +30,7 @@ import { IoIosLink } from "react-icons/io";
 
 import AppIcon from "./AppIcon";
 import { buildSiteUrl, compareVersion, timeAgo } from "../utils/helpers";
+import { publisherAppsPagePath } from "../utils/parsePublisherQuery";
 
 
 let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false, pack = false, displaySelect = false, showSelectCheckbox = false, preventGlobalSelect, hideBorder=false, preSelected=false, showSettingsIcon=false, onSettingsClick, disableSelectedStyle=false}) => {
@@ -263,7 +264,7 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
         )}
 
         <li>
-          <Link href={`/apps?q=${`publisher: ${app.publisher}`}`}>
+          <Link href={publisherAppsPagePath(app.publisher)}>
             <FiUser />
             {app.publisher}
           </Link>

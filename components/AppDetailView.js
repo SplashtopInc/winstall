@@ -18,6 +18,7 @@ import { isShowViewsInstalls } from "../utils/runtimeConfig";
 import { trackAppStats } from "../utils/trackAppStats";
 import { DEFAULT_INSTALL_FILTERS } from "../utils/defaultInstallOptions";
 import { downloadInstantInstaller } from "../utils/downloadInstantInstaller";
+import { publisherAppsPagePath } from "../utils/parsePublisherQuery";
 
 export default function AppDetailView({ app }) {
   const { selectedApps, setSelectedApps } = useContext(SelectedContext);
@@ -275,7 +276,7 @@ export default function AppDetailView({ app }) {
           {app.publisher && (
             <p className={styles.publisher}>
               by{" "}
-              <Link href={`/apps?q=${`publisher: ${app.publisher}`}`}>
+              <Link href={publisherAppsPagePath(app.publisher)}>
                 {app.publisher}
               </Link>
             </p>
@@ -475,7 +476,7 @@ export default function AppDetailView({ app }) {
             <div className={styles.infoItem}>
               <span className={styles.infoKey}>Publisher</span>
               <Link
-                href={`/apps?q=${`publisher: ${app.publisher}`}`}
+                href={publisherAppsPagePath(app.publisher)}
                 className={styles.infoValueLink}
               >
                 {app.publisher}

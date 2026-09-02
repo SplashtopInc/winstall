@@ -10,6 +10,7 @@ import {
   getRecentSearches,
 } from "../utils/recentSearches";
 import styles from "../styles/searchDialog.module.scss";
+import { appsPagePath } from "../utils/parsePublisherQuery";
 
 const DEBOUNCE_MS = 250;
 
@@ -129,7 +130,7 @@ function SearchDialog({ isOpen, onClose }) {
 
     setRecentItems(addRecentQuery(trimmed));
     resetAndClose();
-    router.push(`/apps?q=${encodeURIComponent(trimmed)}`);
+    router.push(appsPagePath(trimmed));
   };
 
   const goToApp = (item) => {

@@ -59,3 +59,24 @@ test("appsListPath builds paginated catalog, search, and publisher URLs", async 
     publishersListPath("Mozilla", { offset: 60, limit: 60 })
   );
 });
+
+test("appsPagePath encodes special characters in query strings", async () => {
+  const { appsPagePath, publisherAppsPagePath } = await import(
+    "../utils/parsePublisherQuery.js"
+  );
+
+  assert.equal(appsPagePath(""), "/apps");
+  assert.equal(appsPagePath("firefox"), "/apps?q=firefox");
+  assert.equal(
+    appsPagePath("publisher: Notepad++ Team"),
+    "/apps?q=publisher%3A+Notepad%2B%2B+Team"
+  );
+  assert.equal(appsPagePath("tags: c++", { page: 2 }), "/apps?q=tags%3A+c%2B%2B&page=2");
+  assert.equal(
+    publisherAppsPagePath("Notepad++ Team"),
+    "/apps?q=publisher%3A+Notepad%2B%2B+Team"
+  );
+
+  const url = new URL(`http://localhost${publisherAppsPagePath("Notepad++ Team")}`);
+  assert.equal(url.searchParams.get("q"), "publisher: Notepad++ Team");
+});
