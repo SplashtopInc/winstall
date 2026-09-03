@@ -116,6 +116,14 @@ function Nav() {
             Discover App
           </Link>
           <Link
+            href="/category"
+            className={`${styles.mainLink} ${
+              pathname === "/category" ? styles.selected : ""
+            }`}
+          >
+            Apps
+          </Link>
+          <Link
             href="/express"
             className={`${styles.mainLink} ${
               pathname === "/express" ? styles.selected : ""
