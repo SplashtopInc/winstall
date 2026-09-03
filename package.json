@@ -31,6 +31,7 @@
   "overrides": {
     "serialize-javascript": "^7.0.3",
     "uuid": "^11.1.0",
+    "browserslist": "^4.28.7",
     "next-auth": {
       "next": "$next"
     }
