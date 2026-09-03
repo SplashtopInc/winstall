@@ -1,6 +1,6 @@
 {
   "name": "winstall",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "private": true,
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1046.0",
