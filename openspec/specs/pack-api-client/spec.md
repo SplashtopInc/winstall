@@ -62,11 +62,11 @@ Pack view and download increments MUST be recorded via winstall-api analytics (`
 
 ### Requirement: Server-rendered Pack reads use the API
 
-Homepage recommended or official packs, the packs sitemap, and any other SSR or build-time Pack reads MUST obtain Pack data from winstall-api. They MUST NOT query a local Pack collection as authority. Those server-side requests MUST NOT attach `AuthKey` or `AuthSecret`; public Pack list and detail reads MUST succeed without those headers.
+The packs sitemap and any other remaining SSR or build-time Pack reads MUST obtain Pack data from winstall-api. They MUST NOT query a local Pack collection as authority. Those server-side requests MUST NOT attach `AuthKey` or `AuthSecret`; public Pack list and detail reads MUST succeed without those headers. The homepage MUST NOT fetch or render recommended or official Featured Packs.
 
 #### Scenario: Homepage recommended packs from API
 - **WHEN** the homepage is generated or revalidated
-- **THEN** recommended pack data MUST come from the API Pack surface
+- **THEN** the page MUST NOT load or display a Featured Packs section sourced from an official-creator pack list, and MUST NOT fetch recommended packs for that section
 
 #### Scenario: Pack sitemap from API
 - **WHEN** the packs sitemap is generated

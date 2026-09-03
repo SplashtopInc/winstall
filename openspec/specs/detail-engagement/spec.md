@@ -64,7 +64,7 @@ An App's lifetime download count MUST include downloads of that app by itself (c
 
 ### Requirement: Trending is absent
 
-The web app MUST NOT show a Trending badge, rail, or sort as part of this capability.
+This capability MUST NOT add a Trending badge, rail, or sort on App or Pack detail pages. Homepage weekly trending boards are specified by `home-trending` and are outside this capability.
 
 #### Scenario: Detail has no trending mark
 - **WHEN** a user opens an App or Pack detail page
