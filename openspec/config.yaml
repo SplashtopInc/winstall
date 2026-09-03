@@ -1,32 +1,30 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  Follow AGENTS.md. Do not invent conventions if a listed spec or design file cannot be read.
+  Requirements live in openspec/specs/**/spec.md (change deltas under openspec/changes/<name>/specs/).
+  Architecture lives in openspec/specs/**/design.md after archive; during a change, design.md in the change root is the working architecture and MUST stay coherent with that destination.
+  Identifiers: files, variables, and functions use lowerCamelCase; constants use UPPER_SNAKE_CASE.
+  API routes use kebab-case, lowercase, plural resource segments (e.g. /apps/trending, /packs/trending).
+  This web app has no Mongo collections; table-name rules in AGENTS.md apply only if this repo adds persistence.
+  Manuals and guides use kebab-case filenames. OpenSpec artifact names required by the schema (proposal.md, design.md, tasks.md, spec.md) stay as the schema defines them.
+  Capability directories use kebab-case (home-trending).
+  Planning prose (proposal, design, tasks, new spec requirements) is Chinese. MODIFIED requirement titles MUST remain byte-for-byte matches of the existing English titles in openspec/specs/.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
-
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+rules:
+  proposal:
+    - Write Why / What Changes / Impact in Chinese
+    - "Capability paths kebab-case; list new files with lowerCamelCase names when mentioning implementation"
+  specs:
+    - "New capabilities: Purpose, requirements, and scenarios in Chinese"
+    - "MODIFIED / REMOVED / RENAMED: keep existing requirement and scenario titles unchanged"
+    - API paths in scenarios MUST be kebab-case lowercase plural
+  design:
+    - Write in Chinese
+    - Name new modules, helpers, and component files in lowerCamelCase
+    - Name constants in UPPER_SNAKE_CASE
+    - After archive, architecture content belongs at openspec/specs/<capability>/design.md
+  tasks:
+    - Write task text in Chinese
+    - Refer to new files with lowerCamelCase paths (e.g. components/trendingApps.js)
+    - Do not introduce PascalCase filenames for new work in this repo's change
