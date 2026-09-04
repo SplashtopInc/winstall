@@ -64,12 +64,12 @@
 
 ### 7. 导航选中
 
-**选择：** `components/Nav.js`：主链 Apps 的 `href="/category"`，`pathname === "/category"` 时 selected。侧栏仍 `href="/apps"`。不把 Nav 重命名为 `nav.js`。
+**选择：** `components/Nav.js`：主链 Apps 的 `href="/category"`，`pathname === "/category"` 时 selected。搜索框后不放置侧栏 Apps。不把 Nav 重命名为 `nav.js`。
 
 ## Risks / Trade-offs
 
 - **[Risk] 库内标签是 `Developer Tools` 而 Web 传 `development` → 空列表。** 缓解：抽检 `GET /apps/categories/browser`；若生产是展示名，只在 helper 内做 slug→label 映射，URL slug 不变。
-- **[Risk] 两处「Apps」文案。** 接受；侧栏改名不在本能力范围。
+- **[Risk] `/apps` 不再有主导航直达入口。** 接受；搜索仍进入目录。
 - **[Risk] 接口截断 limit。** 用响应 `limit`/`offset` 算下一页，不用写死的页大小去加 offset。
 - **[新增 lowerCamelCase 与旧 PascalCase 并存]** 仅约束本能力新文件。
 

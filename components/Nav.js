@@ -8,7 +8,6 @@ import styles from "../styles/nav.module.scss";
 import {
   FiMoon,
   FiSun,
-  FiPackage,
   FiChevronDown,
   FiX,
   FiUser,
@@ -113,7 +112,7 @@ function Nav() {
               pathname === "/" || pathname === "" ? styles.selected : ""
             }`}
           >
-            Discover App
+            Discover
           </Link>
           <Link
             href="/category"
@@ -129,7 +128,7 @@ function Nav() {
               pathname === "/express" ? styles.selected : ""
             }`}
           >
-            Express Setup
+            Essentials
             <span className={styles.badge}>New</span>
           </Link>
           <Link
@@ -138,7 +137,7 @@ function Nav() {
               pathname.startsWith("/packs") ? styles.selected : ""
             }`}
           >
-            App Packs
+            Packs
             <span className={styles.badge}>New</span>
           </Link>
         </div>
@@ -153,10 +152,6 @@ function Nav() {
             <FiSearch size={15} strokeWidth={2.5} />
             <span className={styles.searchTriggerText}>Search apps...</span>
           </button>
-          <Link href="/apps" className={styles.navBtn}>
-            <FiPackage size={16} />
-            <span>Apps</span>
-          </Link>
           <span
             onClick={switchTheme}
             className={`${styles.navBtn} ${styles.navBtnIcon}`}

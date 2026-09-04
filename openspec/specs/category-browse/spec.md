@@ -8,15 +8,15 @@
 
 ### Requirement: 主导航 Apps 打开分类浏览
 
-系统 MUST 在主导航 Discover App 之后放置文案为 Apps 的主链接。激活该链接 MUST 导航到 `/category`。既有侧栏 Apps 控件 MUST 仍导航到 `/apps`。当前路径为 `/category` 时，主导航该项 MUST 为选中态。
+系统 MUST 在主导航 Discover 之后放置文案为 Apps 的主链接。激活该链接 MUST 导航到 `/category`。当前路径为 `/category` 时，主导航该项 MUST 为选中态。MUST NOT 在搜索框后放置侧栏 Apps 控件。`/apps` 目录仍可通过搜索进入。
 
 #### Scenario: 第二项 Apps 指向 /category
 - **WHEN** 用户查看站点主导航
 - **THEN** 第二项文案为 Apps，且目标为 `/category` 而非 `/apps`
 
-#### Scenario: 侧栏 Apps 仍打开目录
-- **WHEN** 用户激活侧栏 Apps 控件
-- **THEN** 系统 MUST 导航到 `/apps`
+#### Scenario: 搜索框后无 Apps 控件
+- **WHEN** 用户查看站点主导航
+- **THEN** 搜索框后 MUST NOT 展示导航到 `/apps` 的 Apps 控件
 
 ### Requirement: 分类页一次只展示一个分类
 
