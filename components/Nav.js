@@ -129,7 +129,6 @@ function Nav() {
             }`}
           >
             Essentials
-            <span className={styles.badge}>New</span>
           </Link>
           <Link
             href="/packs"
@@ -138,7 +137,6 @@ function Nav() {
             }`}
           >
             Packs
-            <span className={styles.badge}>New</span>
           </Link>
         </div>
 

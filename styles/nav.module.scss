@@ -112,18 +112,6 @@
   }
 }
 
-.badge {
-  font-size: 9px;
-  font-weight: 800;
-  background: var(--accent);
-  color: #fff;
-  padding: 2px 6px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  line-height: 1.4;
-}
-
 .profile {
   margin-left: auto;
   display: flex;
@@ -139,7 +127,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  min-width: 220px;
+  min-width: 440px;
   height: 40px;
   padding: 0 16px;
   margin-right: 4px;
