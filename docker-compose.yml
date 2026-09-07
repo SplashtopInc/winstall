@@ -12,11 +12,18 @@ services:
       - .env
     environment:
       - NODE_ENV=production
+      - HOSTNAME=0.0.0.0
       - PORT=3000
       - MONGODB_URI=${MONGODB_URI:-mongodb://mongo2:27017/winstall}
       - USE_HOST_INTERNAL=${USE_HOST_INTERNAL:-true}
     networks:
       - backend
+    healthcheck:
+      test: ["CMD", "node", "-e", "http=require('http'); req=http.get('http://localhost:3000/api/health', r => process.exit(r.statusCode===200?0:1)); req.on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   mongo2:
     image: mongo:8
