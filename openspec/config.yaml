@@ -28,3 +28,5 @@ rules:
     - Write task text in Chinese
     - Refer to new files with lowerCamelCase paths (e.g. components/trendingApps.js)
     - Do not introduce PascalCase filenames for new work in this repo's change
+githubCopilot:
+  cloudAgent: false
