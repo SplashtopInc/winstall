@@ -13,6 +13,7 @@ import styles from "../styles/categoryPage.module.scss";
 export const PAGE_SIZE = 56;
 
 export const CATEGORY_SLUGS = Object.freeze([
+  "all",
   "browser",
   "communication",
   "productivity",
@@ -30,6 +31,7 @@ export const CATEGORY_SLUGS = Object.freeze([
 ]);
 
 export const CATEGORY_LABELS = Object.freeze({
+  all: "All",
   browser: "Web Browsers",
   communication: "Communication",
   productivity: "Productivity",
@@ -46,7 +48,7 @@ export const CATEGORY_LABELS = Object.freeze({
   runtimes: "Runtimes",
 });
 
-const DEFAULT_CATEGORY = "browser";
+const DEFAULT_CATEGORY = "all";
 
 const CATEGORIES = CATEGORY_SLUGS.map((slug) => ({
   slug,

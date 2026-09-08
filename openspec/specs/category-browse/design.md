@@ -9,7 +9,7 @@
 **Goals:**
 
 - 新增标识符符合 lowerCamelCase / `UPPER_SNAKE_CASE`；请求路径为 `/apps/categories/:id`。
-- `/category` 用 14 个 slug 打分类信封，tabs + Load more + 目录 `SingleApp`。
+- `/category` 用 `all` 加 14 个分类 slug；`all` 打全量 `GET /apps`，其余打分类信封；tabs + Load more + 目录 `SingleApp`。
 - 主导航 Apps 指向该页，不改 `/apps`。
 
 **Non-Goals:**
@@ -22,7 +22,7 @@
 
 ### 1. 新页 `pages/category.js`，不改 `pages/apps.js`
 
-**选择：** Next 页 `pages/category.js` → `/category`。深链 `?category=<slug>`。无效或缺失 slug 浅路由纠正为 `browser`。
+**选择：** Next 页 `pages/category.js` → `/category`。深链 `?category=<slug>`。无效或缺失 slug 浅路由纠正为 `all`。
 
 **理由：** 产品指定用 `category.js` 而不是 `apps.js`。搜索、发行商、OpenSearch 留在 `/apps`。主导航文案 Apps 与路径解耦。
 
@@ -30,7 +30,7 @@
 
 ### 2. 固定 slug 与展示名
 
-**选择：** 写死 14 个 slug。展示名复用 Express 文案（如 `development` → Developer Tools，`browser` → Web Browsers）。请求 `GET /apps/categories/${encodeURIComponent(slug)}`。常量 `CATEGORY_SLUGS`、`CATEGORY_LABELS`。
+**选择：** 写死 `all` 加 14 个分类 slug。展示名复用 Express 文案（如 `all` → All，`development` → Developer Tools，`browser` → Web Browsers）。`all` 请求 `GET /apps`；其余请求 `GET /apps/categories/${encodeURIComponent(slug)}`。常量 `CATEGORY_SLUGS`、`CATEGORY_LABELS`。
 
 **理由：** 接口对 `categories` 数组精确匹配；文档样例为 `browser` 这类 slug。不拉分类器词表。
 

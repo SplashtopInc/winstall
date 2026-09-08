@@ -64,8 +64,10 @@ function applyIconBase(apps) {
  * @param {{ slug: string, offset?: number, limit?: number }} params
  */
 export async function fetchCategoryApps({ slug, offset = 0, limit = 56 }) {
-  const categoryId = encodeURIComponent(resolveCategoryId(slug));
-  const path = `/apps/categories/${categoryId}?offset=${offset}&limit=${limit}`;
+  const path =
+    slug === "all"
+      ? `/apps?offset=${offset}&limit=${limit}`
+      : `/apps/categories/${encodeURIComponent(resolveCategoryId(slug))}?offset=${offset}&limit=${limit}`;
   const { response, error, status } = await fetchWinstallAPI(path);
 
   if (error) {

@@ -14,7 +14,7 @@
   position: relative;
   box-sizing: border-box;
   flex: 0 0 100%;
-  min-height: 360px;
+  min-height: 320px;
   padding: 28px 28px 56px;
   overflow: hidden;
 }
@@ -564,7 +564,7 @@
 
 @media (max-width: 590px) {
   .slide {
-    min-height: 280px;
+    min-height: 240px;
     padding: 24px 20px 56px;
   }
 
