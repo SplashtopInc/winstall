@@ -9,6 +9,8 @@ import { readTrendingCounts } from "../utils/trendingData";
 import styles from "../styles/trendingApps.module.scss";
 import countStyles from "../styles/trendingCounts.module.scss";
 
+const TRENDING_APPS_LIMIT = 16;
+
 export default function TrendingApps({ apps = [] }) {
   const { selectedApps, setSelectedApps } = useContext(SelectedContext);
 
@@ -16,7 +18,7 @@ export default function TrendingApps({ apps = [] }) {
 
   const rankedApps = [...apps]
     .sort((first, second) => Number(first.rank) - Number(second.rank))
-    .slice(0, 20);
+    .slice(0, TRENDING_APPS_LIMIT);
 
   const toggleApp = (app) => {
     const isSelected = selectedApps.some((item) => item._id === app._id);

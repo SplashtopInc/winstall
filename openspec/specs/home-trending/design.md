@@ -39,8 +39,8 @@
 
 ### 3. 卡片映射到现有 UI，新文件 lowerCamelCase
 
-- **Apps：** 不用 `PrettyApp`（依赖精选 `img`）。组件 `components/trendingApps.js`：对齐 `.demo/discover.html` 扁平卡——4 列网格（最多 20）、hover 显示勾选（同 PrettyApp）、`#N` 名次、图标 + 名称/发布者、窗口计数中点分隔。`AppIcon` hydrate；加入/移除走选择上下文；身份链到详情。样式 `styles/trendingApps.module.scss`。计数用窗口 `likes` / `downloads` / `views`（`components/trendingCounts.js`），不用终身 `likeCount` / `downloadCount`。
-- **Packs：** 组件 `components/trendingPackCard.js`（由 `trendingPacks.js` 渲染），对齐 `.demo/discover.html`：渐变头（`#N this week`、标题、描述、窗口计数）、内含 App 行；整卡链接到 Pack 详情（无单独 View Pack）。`name` / `description` 映射为标题与描述。渐变按 `rank` 轮换固定色板，不依赖 API 主题字段。缺图标时用 `FiPackage` / `AppIcon` 占位。不做 Featured 那种逐个 `/apps/:id` 补全。
+- **Apps：** 不用 `PrettyApp`（依赖精选 `img`）。组件 `components/trendingApps.js`：对齐 `.demo/discover.html` 扁平卡——4 列网格（最多 16）、hover 显示勾选（同 PrettyApp）、`#N` 名次、图标 + 名称/发布者、窗口计数中点分隔。`AppIcon` hydrate；加入/移除走选择上下文；身份链到详情。样式 `styles/trendingApps.module.scss`。计数用窗口 `likes` / `downloads` / `views`（`components/trendingCounts.js`），不用终身 `likeCount` / `downloadCount`。
+- **Packs：** 组件 `components/trendingPackCard.js`（由 `trendingPacks.js` 渲染），对齐 `.demo/discover.html`：渐变头（`#N this week`、标题、描述、窗口计数）、内含 App 行；整卡链接到 Pack 详情（无单独 View Pack）。首页最多展示 8 条。`name` / `description` 映射为标题与描述。渐变按 `rank` 轮换固定色板，不依赖 API 主题字段。缺图标时用 `FiPackage` / `AppIcon` 占位。不做 Featured 那种逐个 `/apps/:id` 补全。
 
 **备选：** 复用现有 `PackPreview` / 横滑名次行。否决：与 discover demo 卡片一致。
 

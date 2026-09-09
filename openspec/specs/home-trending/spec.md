@@ -44,11 +44,15 @@
 
 ### Requirement: Trending Apps 为可勾选的扁平卡
 
-Trending Apps MUST 按 API 的 `rank` 顺序展示，最多 20 条，桌面为每行 4 卡的网格。每张卡 MUST 展示名次、名称和目录图标（MUST NOT 使用精选 Popular Apps 的 `img` 资源）。选中控件 MUST 默认隐藏，在卡片 hover（或触控设备上始终）可见，风格与现有 PrettyApp 勾选一致；激活 MUST 把该 App 加入或移出首页现有安装脚本选择集。激活应用身份 MUST 进入该 App 详情页。首页 MUST NOT 渲染 Popular Apps 板块。
+Trending Apps MUST 按 API 的 `rank` 顺序展示，最多 16 条，桌面为每行 4 卡的网格。每张卡 MUST 展示名次、名称和目录图标（MUST NOT 使用精选 Popular Apps 的 `img` 资源）。选中控件 MUST 默认隐藏，在卡片 hover（或触控设备上始终）可见，风格与现有 PrettyApp 勾选一致；激活 MUST 把该 App 加入或移出首页现有安装脚本选择集。激活应用身份 MUST 进入该 App 详情页。首页 MUST NOT 渲染 Popular Apps 板块。
 
 #### Scenario: 按接口名次展示卡
 - **WHEN** App trending 的 `data` 含多条
 - **THEN** 该板块 MUST 按 `rank` 顺序展示，且名次与名称可见
+
+#### Scenario: App 板块最多展示 16 条
+- **WHEN** App trending 的 `data` 超过 16 条
+- **THEN** 该板块 MUST 只按 `rank` 展示前 16 条
 
 #### Scenario: 用户可将周榜 App 加入安装选择
 - **WHEN** 用户激活某张周榜 App 的勾选控件
@@ -60,7 +64,7 @@ Trending Apps MUST 按 API 的 `rank` 顺序展示，最多 20 条，桌面为�
 
 ### Requirement: Trending Packs 使用 demo 式卡片
 
-Trending Packs MUST 用与 `.demo/discover.html` 一致的卡片渲染每条：渐变头（名次、标题、描述、窗口计数）、内含应用列表。整张卡 MUST 可激活并进入 Pack 详情，MUST NOT 再单独展示 View Pack 文案。卡片 MUST 使用当前 Pack 的 `name` / `description`，MUST NOT 写死 pack id 列表。渐变色可按名次轮换，MUST NOT 依赖 API 返回主题字段。
+Trending Packs MUST 用与 `.demo/discover.html` 一致的卡片渲染每条：渐变头（名次、标题、描述、窗口计数）、内含应用列表。板块 MUST 按 API 的 `rank` 顺序展示，最多 8 条。整张卡 MUST 可激活并进入 Pack 详情，MUST NOT 再单独展示 View Pack 文案。卡片 MUST 使用当前 Pack 的 `name` / `description`，MUST NOT 写死 pack id 列表。渐变色可按名次轮换，MUST NOT 依赖 API 返回主题字段。
 
 #### Scenario: Pack 卡打开详情
 - **WHEN** 用户激活一张周榜 pack 卡
@@ -73,6 +77,10 @@ Trending Packs MUST 用与 `.demo/discover.html` 一致的卡片渲染每条：�
 #### Scenario: Pack 卡呈现 demo 结构
 - **WHEN** 用户看到已渲染的 Trending Packs
 - **THEN** 每张卡 MUST 含渐变头、`#N this week` 名次、标题，且 MUST NOT 展示 View Pack 文案
+
+#### Scenario: Pack 板块最多展示 8 条
+- **WHEN** Pack trending 的 `data` 超过 8 条
+- **THEN** 该板块 MUST 只按 `rank` 展示前 8 条
 
 ### Requirement: 首页轮播组合第 1 名与广告
 
