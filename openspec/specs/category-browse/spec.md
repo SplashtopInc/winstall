@@ -20,7 +20,7 @@
 
 ### Requirement: 分类页一次只展示一个分类
 
-在 `/category` 上，系统 MUST 展示固定分类标签，以及仅当前分类的应用网格。标签 slug 与顺序 MUST 为：`all`、`browser`、`development`、`documents`、`communication`、`utilities`、`security`、`productivity`、`cloud_storage`、`collaboration`、`entertainment`、`photo`、`game`、`screenshots`、`runtimes`。MUST NOT 包含 `social_media` 或 `others`。URL 中无有效分类时，默认激活分类 MUST 为 `all`。`all` MUST 不做分类过滤，展示全量目录。应用卡片 MUST 使用与 `/apps` 目录相同的列表卡片（既有 `SingleApp` 可选中）。页面 MUST NOT 展示分类标题、应用总数或页内搜索框。
+在 `/category` 上，系统 MUST 展示固定分类标签（文案左侧为对应 Feather 图标），以及仅当前分类的应用网格。标签 slug 与顺序 MUST 为：`all`、`browser`、`development`、`documents`、`communication`、`utilities`、`security`、`productivity`、`cloud_storage`、`collaboration`、`entertainment`、`photo`、`game`、`screenshots`、`runtimes`。MUST NOT 包含 `social_media` 或 `others`。URL 中无有效分类时，默认激活分类 MUST 为 `all`。`all` MUST 不做分类过滤，展示全量目录。应用卡片 MUST 使用与 `/apps` 目录相同的列表卡片（既有 `SingleApp` 可选中）。页面 MUST NOT 展示分类标题、应用总数或页内搜索框。
 
 #### Scenario: 默认分类为 all
 - **WHEN** 用户打开无分类查询的 `/category`
@@ -32,7 +32,7 @@
 
 ### Requirement: 分类标签先收起再展开
 
-系统 MUST 先展示前六个分类标签及 More。激活 More MUST 展开其余标签并允许换行。激活 Less MUST 收回到前六个加 More。若当前分类在收起后会隐藏，系统 MUST 保持展开，直到用户选中仍可见的分类；若用户激活 Less 且当前分类会被隐藏，系统 MUST 将激活分类改为 `all`。
+系统 MUST 在收起态按一行能放下的数量展示分类标签；一行放不下时 MUST 在该行末尾展示 More。激活 More MUST 展开其余标签并允许换行。激活 Less MUST 收回到单行加 More。若全部标签能在一行放下，MUST NOT 展示 More。若当前分类在收起后会隐藏，系统 MUST 保持展开，直到用户选中仍可见的分类；若用户激活 Less 且当前分类会被隐藏，系统 MUST 将激活分类改为 `all`。
 
 #### Scenario: More 展开其余分类
 - **WHEN** 用户激活 More

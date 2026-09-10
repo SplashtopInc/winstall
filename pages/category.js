@@ -5,7 +5,7 @@ import PageWrapper from "../components/PageWrapper";
 import MetaTags from "../components/MetaTags";
 import SingleApp from "../components/SingleApp";
 import Error from "../components/Error";
-import CategoryTabs, { VISIBLE_TAB_COUNT } from "../components/categoryTabs";
+import CategoryTabs from "../components/categoryTabs";
 import { fetchCategoryApps } from "../utils/fetchCategoryApps";
 import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
 import { CATEGORY_LABELS, CATEGORY_SLUGS } from "../utils/categoryMeta";
@@ -30,6 +30,7 @@ function CategoryPage() {
   const router = useRouter();
   const [activeSlug, setActiveSlug] = useState(DEFAULT_CATEGORY);
   const [expanded, setExpanded] = useState(false);
+  const [visibleTabCount, setVisibleTabCount] = useState(CATEGORY_SLUGS.length);
   const [apps, setApps] = useState([]);
   const [total, setTotal] = useState(0);
   const [nextOffset, setNextOffset] = useState(0);
@@ -110,22 +111,23 @@ function CategoryPage() {
     };
   }, [activeSlug, router.isReady]);
 
+  useEffect(() => {
+    const index = CATEGORY_SLUGS.indexOf(activeSlug);
+    if (index >= visibleTabCount) {
+      setExpanded(true);
+    }
+  }, [activeSlug, visibleTabCount]);
+
   const handleSelect = (slug) => {
     if (slug === activeSlug) return;
     setActiveSlug(slug);
     syncCategoryToUrl(slug);
-
-    if (!expanded) return;
-    const index = CATEGORY_SLUGS.indexOf(slug);
-    if (index >= 0 && index < VISIBLE_TAB_COUNT) {
-      // Keep expanded until user collapses; no auto-collapse on select.
-    }
   };
 
   const handleToggleExpanded = () => {
     if (expanded) {
       const index = CATEGORY_SLUGS.indexOf(activeSlug);
-      if (index >= VISIBLE_TAB_COUNT) {
+      if (index >= visibleTabCount) {
         setActiveSlug(DEFAULT_CATEGORY);
         syncCategoryToUrl(DEFAULT_CATEGORY);
       }
@@ -173,6 +175,7 @@ function CategoryPage() {
           expanded={expanded}
           onSelect={handleSelect}
           onToggleExpanded={handleToggleExpanded}
+          onVisibleCountChange={setVisibleTabCount}
         />
 
         {error ? (

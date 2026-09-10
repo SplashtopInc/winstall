@@ -58,7 +58,7 @@
 
 ### 6. 标签组件
 
-**选择：** `components/categoryTabs.js` + 同名 scss：前 `VISIBLE_TAB_COUNT = 6` + More/Less，换行规则见 spec。
+**选择：** `components/categoryTabs.js` + 同名 scss：收起态按容器宽度铺满一行，溢出才出现 More/Less；标签左侧用 `CATEGORY_ICONS` 的 Feather 描边图标，与首页 Top Categories 共用。
 
 **理由：** 与页面数据获取分离；文件名 lowerCamelCase。
 

@@ -1,3 +1,21 @@
+import {
+  FiCheckSquare,
+  FiCloud,
+  FiCode,
+  FiCpu,
+  FiCrop,
+  FiFileText,
+  FiFilm,
+  FiGlobe,
+  FiGrid,
+  FiImage,
+  FiMessageCircle,
+  FiShield,
+  FiTarget,
+  FiTool,
+  FiUsers,
+} from "react-icons/fi";
+
 export const CATEGORY_SLUGS = Object.freeze([
   "all",
   "browser",
@@ -32,6 +50,24 @@ export const CATEGORY_LABELS = Object.freeze({
   game: "Games",
   screenshots: "Screenshots",
   runtimes: "Runtimes",
+});
+
+export const CATEGORY_ICONS = Object.freeze({
+  all: FiGrid,
+  browser: FiGlobe,
+  development: FiCode,
+  documents: FiFileText,
+  communication: FiMessageCircle,
+  utilities: FiTool,
+  security: FiShield,
+  productivity: FiCheckSquare,
+  cloud_storage: FiCloud,
+  collaboration: FiUsers,
+  entertainment: FiFilm,
+  photo: FiImage,
+  game: FiTarget,
+  screenshots: FiCrop,
+  runtimes: FiCpu,
 });
 
 export const TOP_CATEGORY_SLUGS = Object.freeze([
