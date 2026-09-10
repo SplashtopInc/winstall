@@ -20,7 +20,7 @@
 
 ### Requirement: 分类页一次只展示一个分类
 
-在 `/category` 上，系统 MUST 展示固定分类标签，以及仅当前分类的应用网格。标签 slug 与顺序 MUST 为：`all`、`browser`、`communication`、`productivity`、`documents`、`collaboration`、`cloud_storage`、`development`、`entertainment`、`utilities`、`security`、`game`、`photo`、`screenshots`、`runtimes`。MUST NOT 包含 `social_media` 或 `others`。URL 中无有效分类时，默认激活分类 MUST 为 `all`。`all` MUST 不做分类过滤，展示全量目录。应用卡片 MUST 使用与 `/apps` 目录相同的列表卡片（既有 `SingleApp` 可选中）。页面 MUST NOT 展示分类标题、应用总数或页内搜索框。
+在 `/category` 上，系统 MUST 展示固定分类标签，以及仅当前分类的应用网格。标签 slug 与顺序 MUST 为：`all`、`browser`、`development`、`documents`、`communication`、`utilities`、`security`、`productivity`、`cloud_storage`、`collaboration`、`entertainment`、`photo`、`game`、`screenshots`、`runtimes`。MUST NOT 包含 `social_media` 或 `others`。URL 中无有效分类时，默认激活分类 MUST 为 `all`。`all` MUST 不做分类过滤，展示全量目录。应用卡片 MUST 使用与 `/apps` 目录相同的列表卡片（既有 `SingleApp` 可选中）。页面 MUST NOT 展示分类标题、应用总数或页内搜索框。
 
 #### Scenario: 默认分类为 all
 - **WHEN** 用户打开无分类查询的 `/category`
