@@ -1,68 +1,92 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
   margin-top: 18px;
 }
 
 .pack {
   display: block;
-  background: var(--card-bg);
-  border-radius: 10px;
-  overflow: hidden;
+  min-width: 0;
+  height: 100%;
   color: var(--textColor);
   text-decoration: none;
   cursor: pointer;
+  border-radius: 10px;
+  box-shadow: 0 0 0 0 transparent;
+  transition: box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.packInner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--card-bg);
 }
 
 .packHead {
-  padding: 28px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 20px 20px 16px;
   color: #fff;
 }
 
-.packRank {
-  display: inline-block;
-  margin-bottom: 8px;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  opacity: 0.8;
-}
-
-.packIcon {
-  display: block;
-  width: 22px;
-  height: 22px;
-  margin-bottom: 8px;
-}
-
-.packHead h3 {
-  margin: 0 0 4px;
+.packTitle {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin: 0 0 6px;
+  min-height: 2.5em;
   font-size: 20px;
   font-weight: 800;
+  line-height: 1.25;
   color: #fff;
+  overflow-wrap: anywhere;
 }
 
-.packHead p {
+.packDesc {
   margin: 0;
+  min-height: 1.4em;
   font-size: 14px;
   line-height: 1.4;
   opacity: 0.85;
   color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .packApps {
-  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  padding: 16px 20px 18px;
 }
 
 .packApp {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10px;
-  font-size: 15px;
-  font-weight: 800;
+  min-width: 0;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--textColor);
 
   &:last-child {
@@ -86,6 +110,22 @@
     width: 16px;
     height: 16px;
   }
+}
+
+.appName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.packMore {
+  margin-top: 4px;
+  padding-left: 35px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--textColor);
+  opacity: 0.5;
 }
 
 .gHome {
@@ -122,6 +162,18 @@
 
 .gSchool {
   background-image: linear-gradient(160deg, #0b5cab 0%, #2d8cff 100%);
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 590px) {

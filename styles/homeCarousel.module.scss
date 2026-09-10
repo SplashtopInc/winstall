@@ -14,6 +14,7 @@
   position: relative;
   box-sizing: border-box;
   flex: 0 0 100%;
+  height: 320px;
   min-height: 320px;
   padding: 28px 28px 56px;
   overflow: hidden;
@@ -184,6 +185,11 @@
   max-width: 40ch;
   margin: 0;
   color: rgba(27, 27, 34, 0.72);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
   font-size: 15px;
   font-weight: 600;
   line-height: 1.5;
@@ -345,6 +351,11 @@
   max-width: 46ch;
   margin: 0;
   color: rgba(27, 27, 34, 0.72);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
   font-size: 15px;
   font-weight: 600;
   line-height: 1.5;
@@ -564,6 +575,7 @@
 
 @media (max-width: 590px) {
   .slide {
+    height: 240px;
     min-height: 240px;
     padding: 24px 20px 56px;
   }

@@ -62,9 +62,9 @@ Trending Apps MUST 按 API 的 `rank` 顺序展示，最多 16 条，桌面为�
 - **WHEN** 用户打开首页
 - **THEN** 页面 MUST NOT 渲染 Popular Apps 板块
 
-### Requirement: Trending Packs 使用 demo 式卡片
+### Requirement: Trending Packs 使用无周次名次的合集卡
 
-Trending Packs MUST 用与 `.demo/discover.html` 一致的卡片渲染每条：渐变头（名次、标题、描述、窗口计数）、内含应用列表。板块 MUST 按 API 的 `rank` 顺序展示，最多 8 条。整张卡 MUST 可激活并进入 Pack 详情，MUST NOT 再单独展示 View Pack 文案。卡片 MUST 使用当前 Pack 的 `name` / `description`，MUST NOT 写死 pack id 列表。渐变色可按名次轮换，MUST NOT 依赖 API 返回主题字段。
+Trending Packs MUST 用渐变头卡片渲染每条：标题、描述、窗口计数、内含应用列表。板块 MUST 按 API 的 `rank` 顺序展示，最多 8 条。整张卡 MUST 可激活并进入 Pack 详情，MUST NOT 再单独展示 View Pack 文案。卡片 MUST 使用当前 Pack 的 `name` / `description`，MUST NOT 写死 pack id 列表。卡片 MUST NOT 展示 `#N this week`、`this week` 或其它周次名次。渐变色可按展示顺序轮换，MUST NOT 依赖 API 返回主题字段。
 
 #### Scenario: Pack 卡打开详情
 - **WHEN** 用户激活一张周榜 pack 卡
@@ -74,9 +74,9 @@ Trending Packs MUST 用与 `.demo/discover.html` 一致的卡片渲染每条：�
 - **WHEN** Trending Packs 渲染
 - **THEN** 合集集合 MUST 来自 `GET /packs/trending` 的 `data`，MUST NOT 来自固定官方 pack id 列表
 
-#### Scenario: Pack 卡呈现 demo 结构
+#### Scenario: Pack 卡不展示周次名次
 - **WHEN** 用户看到已渲染的 Trending Packs
-- **THEN** 每张卡 MUST 含渐变头、`#N this week` 名次、标题，且 MUST NOT 展示 View Pack 文案
+- **THEN** 每张卡 MUST 含渐变头与标题，MUST NOT 展示 `#N this week` 或 `this week`，且 MUST NOT 展示 View Pack 文案
 
 #### Scenario: Pack 板块最多展示 8 条
 - **WHEN** Pack trending 的 `data` 超过 8 条

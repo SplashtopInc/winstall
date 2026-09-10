@@ -39,7 +39,7 @@ function buildPackDescription(pack) {
   if (names.length > 0) {
     return `Includes ${names.join(", ")}, and more.`;
   }
-  return "A curated collection of apps people are installing together this week.";
+  return "A curated collection of apps people are installing together.";
 }
 
 export default function HomeCarousel({ topApp, trendingPacks = [] }) {
@@ -204,7 +204,7 @@ export default function HomeCarousel({ topApp, trendingPacks = [] }) {
           >
             <span className={styles.packDecor} aria-hidden="true" />
             <span className={styles.packBody}>
-              <span className={styles.packKicker}>#1 pack this week</span>
+              <span className={styles.packKicker}>Trending pack</span>
               <h2>{normalizedPack.title}</h2>
               <p className={styles.packDesc}>
                 {buildPackDescription(normalizedPack)}

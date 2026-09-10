@@ -4,7 +4,7 @@
 
 首页 ISR 加载 `/apps` 总数以及两侧周榜。广告只能在客户端挑选：`pickAd` 依赖 `sessionStorage`，服务端返回 null。
 
-公开周榜已存在：`GET /apps/trending`、`GET /packs/trending`（匿名、物化周榜、无榜时 `data` 为空）。视觉参考 `.demo/discover.html`。首页 **不渲染 Popular Apps**，Pack 卡对齐 demo 渐变头布局，不像素复刻 3 列 rail。`data/popularApps.json` 仍供 `AppIcon` 本地精选图使用，首页不再读取或补全该列表。
+公开周榜已存在：`GET /apps/trending`、`GET /packs/trending`（匿名、物化周榜、无榜时 `data` 为空）。Pack 榜后期可用 bootscore 人工置顶，名单可能相对固定，因此 Pack 卡不展示 `#N this week`。首页 **不渲染 Popular Apps**，Pack 卡对齐 demo 渐变头布局，不像素复刻 3 列 rail。`data/popularApps.json` 仍供 `AppIcon` 本地精选图使用，首页不再读取或补全该列表。
 
 本仓现有 React 组件多为 PascalCase（如 `PackPreview.js`）。本能力新增文件按 `AGENTS.md` 使用 lowerCamelCase，不重命名旧文件。
 
@@ -40,7 +40,7 @@
 ### 3. 卡片映射到现有 UI，新文件 lowerCamelCase
 
 - **Apps：** 不用 `PrettyApp`（依赖精选 `img`）。组件 `components/trendingApps.js`：对齐 `.demo/discover.html` 扁平卡——4 列网格（最多 16）、hover 显示勾选（同 PrettyApp）、`#N` 名次、图标 + 名称/发布者、窗口计数中点分隔。`AppIcon` hydrate；加入/移除走选择上下文；身份链到详情。样式 `styles/trendingApps.module.scss`。计数用窗口 `likes` / `downloads` / `views`（`components/trendingCounts.js`），不用终身 `likeCount` / `downloadCount`。
-- **Packs：** 组件 `components/trendingPackCard.js`（由 `trendingPacks.js` 渲染），对齐 `.demo/discover.html`：渐变头（`#N this week`、标题、描述、窗口计数）、内含 App 行；整卡链接到 Pack 详情（无单独 View Pack）。首页最多展示 8 条。`name` / `description` 映射为标题与描述。渐变按 `rank` 轮换固定色板，不依赖 API 主题字段。缺图标时用 `FiPackage` / `AppIcon` 占位。不做 Featured 那种逐个 `/apps/:id` 补全。
+- **Packs：** 组件 `components/trendingPackCard.js`（由 `trendingPacks.js` 渲染），对齐 `.demo/discover.html` 渐变头卡，但不展示 `#N this week`：标题、描述、窗口计数、内含 App 行；整卡链接到 Pack 详情（无单独 View Pack）。数据仍来自 `GET /packs/trending`（后期可用 bootscore 人工置顶，名单可能相对固定）。首页最多展示 8 条。`name` / `description` 映射为标题与描述。渐变按展示顺序轮换固定色板，不依赖 API 主题字段。缺图标时用 `AppIcon` 占位。不做 Featured 那种逐个 `/apps/:id` 补全。
 
 **备选：** 复用现有 `PackPreview` / 横滑名次行。否决：与 discover demo 卡片一致。
 
@@ -61,7 +61,7 @@
 
 ### 6. 文案
 
-不要在前端用「今天往前 6 个日历日」拼窗口。副标题可用 `generatedAt` 或静态「this week」。不要写 most added。
+不要在前端用「今天往前 6 个日历日」拼窗口。App 周榜可用静态「this week」。Pack 板块 MUST NOT 使用 `this week` 或周次名次，因为榜单可能由 bootscore 长期置顶。不要写 most added。
 
 ## Risks / Trade-offs
 

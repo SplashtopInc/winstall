@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { FiPackage } from "react-icons/fi";
 
 import AppIcon from "./AppIcon";
 import TrendingCounts from "./trendingCounts";
@@ -23,14 +22,22 @@ const PACK_GRADIENTS = [
 
 const PREVIEW_APP_LIMIT = 5;
 
+function readPackAppTotal(pack) {
+  const listed = Array.isArray(pack.apps) ? pack.apps.length : 0;
+  const reported = [pack.appCount, pack.appsCount, pack.totalApps]
+    .map((value) => Number(value))
+    .find((value) => Number.isFinite(value) && value > listed);
+
+  return reported || listed;
+}
+
 export default function TrendingPackCard({ pack, index = 0 }) {
   const normalized = normalizeTrendingPack(pack);
-  const rank = Number(normalized.rank) || index + 1;
   const gradientClass =
-    PACK_GRADIENTS[(rank - 1) % PACK_GRADIENTS.length] || styles.gHome;
-  const previewApps = Array.isArray(normalized.apps)
-    ? normalized.apps.slice(0, PREVIEW_APP_LIMIT)
-    : [];
+    PACK_GRADIENTS[index % PACK_GRADIENTS.length] || styles.gHome;
+  const apps = Array.isArray(normalized.apps) ? normalized.apps : [];
+  const previewApps = apps.slice(0, PREVIEW_APP_LIMIT);
+  const overflowCount = Math.max(0, readPackAppTotal(normalized) - previewApps.length);
 
   return (
     <Link
@@ -39,32 +46,41 @@ export default function TrendingPackCard({ pack, index = 0 }) {
       className={styles.pack}
       aria-label={`View pack ${normalized.title}`}
     >
-      <div className={`${styles.packHead} ${gradientClass}`}>
-        <span className={styles.packRank}>#{rank} this week</span>
-        <FiPackage aria-hidden="true" className={styles.packIcon} />
-        <h3>{normalized.title}</h3>
-        {normalized.desc && <p>{normalized.desc}</p>}
-        <TrendingCounts
-          counts={readTrendingCounts(normalized)}
-          className={countStyles.onHead}
-        />
-      </div>
+      <div className={styles.packInner}>
+        <div className={`${styles.packHead} ${gradientClass}`}>
+          <h3 className={styles.packTitle} title={normalized.title}>
+            {normalized.title}
+          </h3>
+          <p className={styles.packDesc} title={normalized.desc || undefined}>
+            {normalized.desc || "\u00a0"}
+          </p>
+          <TrendingCounts
+            counts={readTrendingCounts(normalized)}
+            className={countStyles.onHead}
+          />
+        </div>
 
-      <div className={styles.packApps}>
-        {previewApps.map((app) => (
-          <div className={styles.packApp} key={app._id || app.name}>
-            <span className={styles.appMark}>
-              <AppIcon
-                id={app._id}
-                name={app.name}
-                icon={app.icon}
-                iconUrl={app.iconUrl}
-                iconPng={app.iconPng}
-              />
-            </span>
-            <span>{app.name}</span>
-          </div>
-        ))}
+        <div className={styles.packApps}>
+          {previewApps.map((app) => (
+            <div className={styles.packApp} key={app._id || app.name}>
+              <span className={styles.appMark}>
+                <AppIcon
+                  id={app._id}
+                  name={app.name}
+                  icon={app.icon}
+                  iconUrl={app.iconUrl}
+                  iconPng={app.iconPng}
+                />
+              </span>
+              <span className={styles.appName} title={app.name}>
+                {app.name}
+              </span>
+            </div>
+          ))}
+          {overflowCount > 0 && (
+            <div className={styles.packMore}>+{overflowCount} more</div>
+          )}
+        </div>
       </div>
     </Link>
   );
