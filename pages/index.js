@@ -2,6 +2,7 @@ import styles from "../styles/home.module.scss";
 
 import MetaTags from "../components/MetaTags";
 import HomeCarousel from "../components/homeCarousel";
+import TopCategories from "../components/topCategories";
 import TrendingApps from "../components/trendingApps";
 import TrendingPacks from "../components/trendingPacks";
 
@@ -114,6 +115,8 @@ function Home({
         topApp={data.trendingApps[0]}
         trendingPacks={data.trendingPacks}
       />
+
+      <TopCategories />
 
       <TrendingApps apps={data.trendingApps} />
       <TrendingPacks packs={data.trendingPacks} />

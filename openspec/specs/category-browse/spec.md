@@ -53,3 +53,15 @@
 #### Scenario: 空分类
 - **WHEN** 当前 slug 的接口返回 `total` 为 0 且 `data` 为空
 - **THEN** 网格为空且不展示 Load more
+
+### Requirement: 首页展示五个常用分类入口
+
+首页 MUST 在轮播与 Trending Apps 之间展示标题为 Top Categories 的五个固定分类卡片，slug 与顺序 MUST 为：`browser`、`development`、`documents`、`communication`、`utilities`。展示名 MUST 与分类页 `CATEGORY_LABELS` 一致。MUST NOT 包含 `all`。MUST NOT 展示该板块副标题。激活某一入口 MUST 导航到 `/category?category=<slug>`，且分类页 MUST 激活对应标签。MUST NOT 为该板块额外请求分类发现接口。
+
+#### Scenario: 首页五个入口
+- **WHEN** 用户查看首页
+- **THEN** 轮播与 Trending Apps 之间可见标题 Top Categories，以及 Browsers、Developer Tools、Office、Communication、Utilities 五张卡片，且无该板块副标题
+
+#### Scenario: 点击入口选中分类
+- **WHEN** 用户激活首页 Developer Tools 入口
+- **THEN** 系统导航到 `/category?category=development`，且 development 标签为激活态

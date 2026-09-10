@@ -8,45 +8,12 @@ import Error from "../components/Error";
 import CategoryTabs, { VISIBLE_TAB_COUNT } from "../components/categoryTabs";
 import { fetchCategoryApps } from "../utils/fetchCategoryApps";
 import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
+import { CATEGORY_LABELS, CATEGORY_SLUGS } from "../utils/categoryMeta";
 import styles from "../styles/categoryPage.module.scss";
 
 export const PAGE_SIZE = 56;
 
-export const CATEGORY_SLUGS = Object.freeze([
-  "all",
-  "browser",
-  "development",
-  "documents",
-  "communication",
-  "utilities",
-  "security",
-  "productivity",
-  "cloud_storage",
-  "collaboration",
-  "entertainment",
-  "photo",
-  "game",
-  "screenshots",
-  "runtimes",
-]);
-
-export const CATEGORY_LABELS = Object.freeze({
-  all: "All",
-  browser: "Browsers",
-  development: "Developer Tools",
-  documents: "Office",
-  communication: "Communication",
-  utilities: "Utilities",
-  security: "Security",
-  productivity: "Productivity",
-  cloud_storage: "Cloud Storage",
-  collaboration: "Collaboration",
-  entertainment: "Entertainment",
-  photo: "Photos",
-  game: "Games",
-  screenshots: "Screenshots",
-  runtimes: "Runtimes",
-});
+export { CATEGORY_LABELS, CATEGORY_SLUGS };
 
 const DEFAULT_CATEGORY = "all";
 

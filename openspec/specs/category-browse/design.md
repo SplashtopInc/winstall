@@ -66,6 +66,12 @@
 
 **选择：** `components/Nav.js`：主链 Apps 的 `href="/category"`，`pathname === "/category"` 时 selected。搜索框后不放置侧栏 Apps。不把 Nav 重命名为 `nav.js`。
 
+### 8. 首页五个常用分类
+
+**选择：** `utils/categoryMeta.js` 持有 `CATEGORY_SLUGS` / `CATEGORY_LABELS` / `TOP_CATEGORY_SLUGS`。首页 `components/topCategories.js` 在轮播与 Trending Apps 之间展示 Top Categories 五张卡片（图标与分类名同一行），链到 `/category?category=<slug>`。五个 slug 为分类页 `all` 之后的前五个，保证落地时标签在收起态可见。板块无副标题。卡片底色按分类用不同色相淡洗，避免五张同色。
+
+**理由：** 复用既有深链，不拉分类发现接口；横向一行更紧，色相区分扫读；图标仍用 Feather 描边。
+
 ## Risks / Trade-offs
 
 - **[Risk] 库内标签是 `Developer Tools` 而 Web 传 `development` → 空列表。** 缓解：抽检 `GET /apps/categories/browser`；若生产是展示名，只在 helper 内做 slug→label 映射，URL slug 不变。
