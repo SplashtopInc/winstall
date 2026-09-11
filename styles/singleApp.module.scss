@@ -376,6 +376,7 @@
 .compact {
     gap: 8px;
     padding: 16px;
+    height: 100%;
     box-sizing: border-box;
     justify-content: flex-start;
 
@@ -469,6 +470,7 @@
 
     .desc {
         margin: 0;
+        min-height: calc(1.4em * 2);
         font-size: 13px;
         font-weight: 500;
         line-height: 1.4;
@@ -486,6 +488,7 @@
 
     .compactCounts {
         padding: 0;
+        margin-top: auto;
     }
 }
 
