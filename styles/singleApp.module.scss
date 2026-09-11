@@ -373,6 +373,122 @@
     }
 }
 
+.compact {
+    gap: 8px;
+    padding: 16px;
+    box-sizing: border-box;
+    justify-content: flex-start;
+
+    .identityRow {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        min-width: 0;
+        padding-right: 36px;
+    }
+
+    .identity {
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 12px;
+        min-width: 0;
+        flex: 1;
+        color: inherit;
+        text-align: left;
+        text-decoration: none;
+
+        &:hover,
+        &:focus,
+        &:active {
+            opacity: 0.76;
+        }
+    }
+
+    .icon {
+        display: grid;
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+        place-items: center;
+        border-radius: 12px;
+        background: var(--main-bg);
+        overflow: hidden;
+
+        img,
+        picture {
+            width: 30px;
+            height: 30px;
+            margin: 0;
+            text-indent: 0;
+        }
+    }
+
+    .identityText {
+        display: flex;
+        min-width: 0;
+        flex: 1;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
+        margin: 0;
+        padding: 0;
+        text-align: left;
+        background: none;
+        border-radius: 0;
+        font-family: inherit;
+        cursor: inherit;
+
+        strong,
+        small {
+            width: 100%;
+            padding: 0;
+        }
+
+        strong {
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.25;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        small {
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.3;
+            opacity: 0.55;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .desc {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 1.4;
+        opacity: 0.62;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .info {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .compactCounts {
+        padding: 0;
+    }
+}
+
 @media(max-width: 690px){
     .single{
         padding: 10px;

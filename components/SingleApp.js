@@ -2,13 +2,11 @@ import {useState, useContext, useEffect, useRef} from "react";
 import styles from "../styles/singleApp.module.scss";
 import SelectedContext from "../ctx/SelectedContext";
 import Link from "next/link";
-import { useRouter } from "next/router";
 
 import {
   FiExternalLink,
   FiDownload,
   FiChevronDown,
-  FiChevronUp,
   FiPackage,
   FiPlus,
   FiClock,
@@ -29,8 +27,10 @@ import { FaXTwitter } from "react-icons/fa6";
 import { IoIosLink } from "react-icons/io";
 
 import AppIcon from "./AppIcon";
+import AppListCounts from "./appListCounts";
 import { buildSiteUrl, compareVersion, timeAgo } from "../utils/helpers";
 import { publisherAppsPagePath } from "../utils/parsePublisherQuery";
+import countStyles from "../styles/appListCounts.module.scss";
 
 
 let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false, pack = false, displaySelect = false, showSelectCheckbox = false, preventGlobalSelect, hideBorder=false, preSelected=false, showSettingsIcon=false, onSettingsClick, disableSelectedStyle=false}) => {
@@ -174,7 +174,7 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
     <li
       key={app._id}
       // onClick={handleAppSelect}
-      className={`${hideBorder ? styles.noBorder: "" }${large ? styles.large : ""} ${pack ? styles.pack : ""} ${styles.single} ${
+      className={`${hideBorder ? styles.noBorder: "" }${large ? styles.large : styles.compact} ${pack ? styles.pack : ""} ${styles.single} ${
         showSelectCheckbox ? styles.selectable : ""
       } ${
         selected && !disableSelectedStyle ? styles.selected : ""
@@ -193,43 +193,71 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
       )}
 
       <div className={styles.info}>
-        <h3>
-          {large ? (
-            <>
-              <AppIcon id={app._id} name={app.name} icon={app.icon} iconUrl={app.iconUrl} iconPng={app.iconPng} />
-              Install {app.name} with winget
-            </>
-          ) : (
-            <Link href="/apps/[id]" as={`/apps/${app._id}`} prefetch={false}>
-              <AppIcon id={app._id} name={app.name} icon={app.icon} iconUrl={app.iconUrl} iconPng={app.iconPng} />
-              <p>{app.name}</p>
+        {large ? (
+          <h3>
+            <AppIcon id={app._id} name={app.name} icon={app.icon} iconUrl={app.iconUrl} iconPng={app.iconPng} />
+            Install {app.name} with winget
+            {showSettingsIcon && (
+              <button
+                className={styles.settingsIcon}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSettingsClick && onSettingsClick(app);
+                }}
+                aria-label="App settings"
+              >
+                <FiSettings />
+              </button>
+            )}
+            {displaySelect && (
+              <button
+                className={styles.selectApp}
+                onClick={handleAppSelect}
+                aria-label={selected ? "Unselect app" : "Select app"}
+              >
+                <FiPlus />
+              </button>
+            )}
+          </h3>
+        ) : (
+          <div className={styles.identityRow}>
+            <Link
+              href="/apps/[id]"
+              as={`/apps/${app._id}`}
+              prefetch={false}
+              className={styles.identity}
+            >
+              <span className={styles.icon}>
+                <AppIcon id={app._id} name={app.name} icon={app.icon} iconUrl={app.iconUrl} iconPng={app.iconPng} />
+              </span>
+              <span className={styles.identityText}>
+                <strong>{app.name}</strong>
+                {app.publisher && <small>{app.publisher}</small>}
+              </span>
             </Link>
-          )}
-
-          {showSettingsIcon && (
-            <button
-              className={styles.settingsIcon}
-              onClick={(e) => {
-                e.stopPropagation();
-                onSettingsClick && onSettingsClick(app);
-              }}
-              aria-label="App settings"
-            >
-              <FiSettings />
-            </button>
-          )}
-
-          {displaySelect &&  (
-            <button
-              className={styles.selectApp}
-              onClick={handleAppSelect}
-              aria-label={selected ? "Unselect app" : "Select app"}
-            >
-              <FiPlus />
-            </button>
-          )}
-        </h3>
-
+            {showSettingsIcon && (
+              <button
+                className={styles.settingsIcon}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSettingsClick && onSettingsClick(app);
+                }}
+                aria-label="App settings"
+              >
+                <FiSettings />
+              </button>
+            )}
+            {displaySelect && (
+              <button
+                className={styles.selectApp}
+                onClick={handleAppSelect}
+                aria-label={selected ? "Unselect app" : "Select app"}
+              >
+                <FiPlus />
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {large && (
@@ -240,7 +268,13 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
           <Copy id={app._id} version={version} latestVersion={app.latestVersion} />
         </>
       )}
-      {!pack && <Description name={app.name} desc={app.desc} id={app._id} full={large} />}
+      {!large && !pack && <Description name={app.name} desc={app.desc} />}
+      {!large && (
+        <AppListCounts app={app} className={`${countStyles.inline} ${styles.compactCounts}`} />
+      )}
+      {large && !pack && <Description name={app.name} desc={app.desc} full />}
+      {large && <AppListCounts app={app} />}
+      {(large || showTime) && (
       <ul className={styles.metaData}>
 
         {(showTime || large) && (
@@ -250,10 +284,10 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
           </li>
         )}
 
-        {!pack && (
+        {!pack && large && (
           <li className={app.versions && app.versions.length > 1 ? styles.hover : ""}>
             <FiPackage />
-            {large && app.versions && app.versions.length > 1 ? (
+            {app.versions && app.versions.length > 1 ? (
               <VersionSelector />
             ) : (
               <Link href="/apps/[id]" as={`/apps/${app._id}`} prefetch={false}>
@@ -313,6 +347,7 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
 
         {large && <ExtraMetadata app={app} />}
       </ul>
+      )}
 
       {large && app.tags && app.tags.length > 1 && <Tags tags={app.tags} />}
 
@@ -340,55 +375,21 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
   );
 };
 
-const Description = ({ name, desc, id, full }) => {
-  const [descTrimmed, setDescTrimmed] = useState(desc ? desc.length > 140 : false);
-  const router = useRouter();
+const Description = ({ name, desc, full }) => {
+  if (!full) {
+    return (
+      <p className={styles.desc}>
+        {desc || "No description available for this app."}
+      </p>
+    );
+  }
 
-  let toggleDescription = (e, status) => {
-    e.stopPropagation();
-
-    if(desc && desc.length > 340){
-      router.push('/apps/[id]', `/apps/${id}`)
-      return;
-    };
-
-    setDescTrimmed(status);
-  };
-
-  if(!desc) return <p>No description available for this app.</p>
-
+  if (!desc) return <p>No description available for this app.</p>;
 
   return (
     <>
-      {full && (
-        <h4>About {name}</h4>
-      )}
-      <p>
-        {desc.length > 140
-          ? !descTrimmed || full
-            ? desc
-            : `${desc.slice(0, 140).trim()}...`
-          : desc}
-      </p>
-
-      {desc.length > 140 && !full && (
-        <button
-          onClick={(e) => toggleDescription(e, !descTrimmed)}
-          className={styles.subtle}
-        >
-          {descTrimmed ? (
-            <>
-              Full Description
-              <FiChevronDown />
-            </>
-          ) : (
-            <>
-              Hide Description
-              <FiChevronUp />
-            </>
-          )}
-        </button>
-      )}
+      <h4>About {name}</h4>
+      <p>{desc}</p>
     </>
   );
 };

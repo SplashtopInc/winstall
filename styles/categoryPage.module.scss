@@ -11,10 +11,13 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 
+  align-items: start;
+
   > li {
     display: flex;
     min-width: 0;
     min-height: 0;
+    align-items: start;
 
     > * {
       width: 100%;
