@@ -6,7 +6,7 @@
     "headline": "Switch from TeamViewer to Splashtop and save at least 50%",
     "body": "Transparent pricing, no 28 day cancellation trap, high performance and reliability, best in class customer service.",
     "cta": "Start free trial",
-    "targetUrl": "https://www.splashtop.com/products/remote-access",
+    "targetUrl": "https://www.splashtop.com/compare/teamviewer-alternative",
     "enabled": true
   },
   {
@@ -33,10 +33,10 @@
     "id": "srs-switch-tv",
     "product": "SRS",
     "angle": "Switch_TV",
-    "headline": "Switch from TeamViewer QuickSupport to Splashtop SOS and save at least 50%",
+    "headline": "Switch from TeamViewer QuickSupport to Splashtop Remote Support and save at least 50%",
     "body": "Transparent pricing, no 28 day cancellation trap, instant unattended access when installs go wrong, best in class customer service.",
     "cta": "Start free trial",
-    "targetUrl": "https://www.splashtop.com/sos",
+    "targetUrl": "https://www.splashtop.com/compare/teamviewer-alternative/remote-support-vs-teamviewer-single",
     "enabled": true
   },
   {
