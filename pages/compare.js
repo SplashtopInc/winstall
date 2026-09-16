@@ -45,7 +45,7 @@ const COMPARISON_CARDS = [
 ];
 
 const STATS = [
-  { value: "12k+", label: "Packages" },
+  { value: "14k+", label: "Packages" },
   { value: "100%", label: "Free & Open Source" },
   { value: "0", label: "Installs Required" },
 ];
