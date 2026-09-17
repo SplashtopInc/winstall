@@ -1,10 +1,4 @@
-# apps-list-pagination Specification
-
-## Purpose
-
-Lets users page through the full app catalog, keyword/tag search hits, and a publisher’s apps using the API list envelope, without client-side sort controls.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Publisher browse is paginated
 WHEN the user opens an apps list scoped to a publisher (including `publisher:` queries on `/apps` and in the Add Apps dialog), the system MUST request `GET /publishers/:id` with `offset` and `limit` and MUST render from the `{ total, offset, limit, data }` envelope so the user can reach every app counted in `total`. The system MUST NOT treat the publishers response as a bare array. Changing publisher scope MUST reset to offset 0. On `/apps`, pagination controls MUST preserve the publisher query in the URL. In the Add Apps dialog, the user MUST reach further publisher hits with Load more (append), MUST NOT use Prev/Next page controls for that list, and the dialog MUST preserve the publisher query in dialog state until the query is cleared or a category tab is activated.
@@ -35,14 +29,3 @@ WHEN the user views keyword search results on `/apps` (including `tags:`, `name:
 #### Scenario: Preview search stays one page
 - **WHEN** a Pack add-app preview search uses a small result limit
 - **THEN** the preview shows at most that many apps and does not present result pagination
-
-### Requirement: Client does not sort app lists
-The apps catalog, search results, publisher browse, and Add Apps dialog MUST NOT expose a sort control and MUST NOT reorder the current page of apps on the client. List order MUST be the order returned by the API. The system MUST NOT send a `sort` query parameter on these list requests.
-
-#### Scenario: Catalog has no sort control
-- **WHEN** the user opens `/apps` with no search query
-- **THEN** the page shows paginated apps in API order and does not offer a sort dropdown
-
-#### Scenario: Search and publisher lists have no sort control
-- **WHEN** the user views paginated search or publisher results
-- **THEN** the UI does not offer client-side sort and displays apps in API order

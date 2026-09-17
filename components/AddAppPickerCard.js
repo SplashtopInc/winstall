@@ -1,16 +1,8 @@
-import { FiCheck, FiClock, FiPackage, FiThumbsUp, FiUser } from "react-icons/fi";
+import { FiCheck } from "react-icons/fi";
 import AppIcon from "./AppIcon";
-import { timeAgo } from "../utils/helpers";
+import AppListCounts from "./appListCounts";
+import countStyles from "../styles/appListCounts.module.scss";
 import styles from "../styles/addAppsDialog.module.scss";
-
-function formatLikeCount(count) {
-  if (count == null || Number.isNaN(Number(count))) return null;
-  const value = Number(count);
-  if (value >= 1000) {
-    return `${(value / 1000).toFixed(1).replace(/\.0$/, "")}K`;
-  }
-  return String(value);
-}
 
 export default function AddAppPickerCard({
   app,
@@ -18,9 +10,6 @@ export default function AddAppPickerCard({
   alreadyAdded = false,
   onToggle,
 }) {
-  const version = app.latestVersion || app.appVersion;
-  const likeLabel = formatLikeCount(app.likeCount ?? app.likes);
-
   const handleClick = () => {
     if (alreadyAdded) return;
     onToggle?.(app);
@@ -53,45 +42,30 @@ export default function AddAppPickerCard({
           Added
         </span>
       )}
-      <div className={styles.pickerCardHeader}>
-        <AppIcon
-          id={app._id}
-          name={app.name}
-          icon={app.icon}
-          iconUrl={app.iconUrl}
-          iconPng={app.iconPng}
-        />
-        <h3 className={styles.pickerCardName}>{app.name}</h3>
+      <div className={styles.pickerIdentityRow}>
+        <div className={styles.pickerIdentity}>
+          <span className={styles.pickerIcon}>
+            <AppIcon
+              id={app._id}
+              name={app.name}
+              icon={app.icon}
+              iconUrl={app.iconUrl}
+              iconPng={app.iconPng}
+            />
+          </span>
+          <span className={styles.pickerIdentityText}>
+            <strong>{app.name}</strong>
+            {app.publisher ? <small>{app.publisher}</small> : null}
+          </span>
+        </div>
       </div>
 
-      {app.desc && <p className={styles.pickerCardDesc}>{app.desc}</p>}
+      {app.desc ? <p className={styles.pickerCardDesc}>{app.desc}</p> : null}
 
-      <ul className={styles.pickerCardMeta}>
-        {app.updatedAt && (
-          <li>
-            <FiClock aria-hidden="true" />
-            <span>Last updated {timeAgo(app.updatedAt)}</span>
-          </li>
-        )}
-        {version && (
-          <li>
-            <FiPackage aria-hidden="true" />
-            <span>v{version}</span>
-          </li>
-        )}
-        {app.publisher && (
-          <li>
-            <FiUser aria-hidden="true" />
-            <span>{app.publisher}</span>
-          </li>
-        )}
-        {likeLabel && (
-          <li>
-            <FiThumbsUp aria-hidden="true" />
-            <span>{likeLabel}</span>
-          </li>
-        )}
-      </ul>
+      <AppListCounts
+        app={app}
+        className={`${countStyles.inline} ${styles.pickerCounts}`}
+      />
     </div>
   );
 }

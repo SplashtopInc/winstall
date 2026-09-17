@@ -1,18 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import {
-  FiChevronLeft,
-  FiChevronRight,
-  FiArrowLeftCircle,
-  FiArrowRightCircle,
-  FiTrash,
-  FiPlus,
-  FiSearch,
-} from "react-icons/fi";
+import { FiTrash, FiPlus, FiSearch } from "react-icons/fi";
 
 import AddAppPickerCard from "./AddAppPickerCard";
+import CategoryFilterSelect from "./categoryFilterSelect";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
+import { fetchCategoryApps } from "../utils/fetchCategoryApps";
 import { addAppsToPack } from "../utils/packHelpers";
 import { getIconBase } from "../utils/runtimeConfig";
+import { CATEGORY_LABELS, CATEGORY_SLUGS } from "../utils/categoryMeta";
 import {
   parseAppsListQuery,
   appsListPath,
@@ -21,7 +16,13 @@ import {
 import dialogStyles from "../styles/addAppsDialog.module.scss";
 import searchStyles from "../styles/search.module.scss";
 
-const APPS_PER_PAGE = 60;
+const PAGE_SIZE = 56;
+const DEFAULT_CATEGORY = "all";
+
+const CATEGORIES = CATEGORY_SLUGS.map((slug) => ({
+  slug,
+  label: CATEGORY_LABELS[slug] || slug,
+}));
 
 function normalizeAppsPayload(payload) {
   if (!payload) {
@@ -73,18 +74,25 @@ function normalizeAppsPayload(payload) {
 
 function transformAppIcons(apps) {
   const base = getIconBase();
-  apps.forEach((app) => {
+  return apps.map((app) => {
     if (app.icon && !app.icon.startsWith("http") && !app.iconUrl) {
       const iconName = app.icon.replace(".png", "");
-      app.iconUrl = `${base}/icons/next/${iconName}.webp`;
-      app.iconPng = `${base}/icons/${iconName}.png`;
+      return {
+        ...app,
+        iconUrl: `${base}/icons/next/${iconName}.webp`,
+        iconPng: `${base}/icons/${iconName}.png`,
+      };
     }
+    return app;
   });
-  return apps;
 }
 
 function getAppId(app) {
   return app?.appId || app?._id;
+}
+
+function categoryScopeKey(slug) {
+  return `category:${slug}`;
 }
 
 export default function AddAppsDialog({
@@ -98,86 +106,154 @@ export default function AddAppsDialog({
   const [searchInput, setSearchInput] = useState("");
   const [committedSearch, setCommittedSearch] = useState("");
   const [showSearching, setShowSearching] = useState(false);
-  const [page, setPage] = useState(1);
+  const [activeSlug, setActiveSlug] = useState(DEFAULT_CATEGORY);
   const [total, setTotal] = useState(0);
   const [totalKnown, setTotalKnown] = useState(false);
-  const [currentOffset, setCurrentOffset] = useState(0);
-  const [loadedPage, setLoadedPage] = useState(null);
+  const [nextOffset, setNextOffset] = useState(0);
+  const [lastBatchFull, setLastBatchFull] = useState(false);
   const [loadedScope, setLoadedScope] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [clientError, setClientError] = useState("");
   const [selectedApps, setSelectedApps] = useState([]);
   const [adding, setAdding] = useState(false);
   const contentRef = useRef(null);
   const hideSearchingTimerRef = useRef(null);
+  const loadGenerationRef = useRef(0);
 
   const parsedInput = parseAppsListQuery(searchInput);
   const isPublisherMode = parsedInput.kind === "publisher";
   const isKeywordSearch =
     parsedInput.kind === "search" && searchInput.trim().length >= 3;
-  const listQuery = isPublisherMode
-    ? parsedInput
-    : isKeywordSearch && committedSearch
-    ? parseAppsListQuery(committedSearch)
-    : { kind: "list" };
-  const currentScope = listScopeKey(listQuery);
   const searchPending =
     isKeywordSearch && committedSearch !== searchInput.trim();
-  const totalPages = totalKnown ? Math.ceil(total / APPS_PER_PAGE) : 0;
+  const hasSearchOverlay =
+    isPublisherMode || (isKeywordSearch && Boolean(committedSearch));
+  const searchQuery = isPublisherMode
+    ? parsedInput
+    : hasSearchOverlay
+    ? parseAppsListQuery(committedSearch)
+    : null;
+  const currentScope = hasSearchOverlay
+    ? listScopeKey(searchQuery)
+    : categoryScopeKey(activeSlug);
   const packAppIds = new Set(packApps.map(getAppId).filter(Boolean));
   const hasSelection = selectedApps.length > 0;
   const displayApps =
     searchPending || loadedScope !== currentScope ? [] : apps;
   const listLoading = searchPending || isLoading;
-  const showPagination = listLoading || displayApps.length > 0;
+  const showLoadMore =
+    !clientError &&
+    !listLoading &&
+    !searchPending &&
+    displayApps.length > 0 &&
+    (totalKnown ? displayApps.length < total : lastBatchFull);
 
   const resetState = useCallback(() => {
     setSearchInput("");
     setCommittedSearch("");
     setShowSearching(false);
-    setPage(1);
+    setActiveSlug(DEFAULT_CATEGORY);
     setSelectedApps([]);
     setClientError("");
-    setLoadedPage(null);
+    setApps([]);
+    setTotal(0);
+    setTotalKnown(false);
+    setNextOffset(0);
+    setLastBatchFull(false);
     setLoadedScope("");
+    setIsLoading(false);
+    setIsLoadingMore(false);
   }, []);
 
-  const loadPage = useCallback(async (targetPage, parsed = { kind: "list" }) => {
-    const offset = (targetPage - 1) * APPS_PER_PAGE;
+  const loadCategoryFirstPage = useCallback(async (slug) => {
+    const generation = ++loadGenerationRef.current;
+    const scope = categoryScopeKey(slug);
     setIsLoading(true);
+    setIsLoadingMore(false);
     setClientError("");
+    setApps([]);
+    setTotal(0);
+    setTotalKnown(false);
+    setNextOffset(0);
+    setLastBatchFull(false);
+
+    const result = await fetchCategoryApps({
+      slug,
+      offset: 0,
+      limit: PAGE_SIZE,
+    });
+
+    if (generation !== loadGenerationRef.current) return;
+
+    if (result.error) {
+      setApps([]);
+      setTotal(0);
+      setTotalKnown(false);
+      setNextOffset(0);
+      setLastBatchFull(false);
+      setLoadedScope(scope);
+      setClientError(result.error);
+      setIsLoading(false);
+      return;
+    }
+
+    setApps(result.items);
+    setTotal(result.total);
+    setTotalKnown(true);
+    setNextOffset(result.offset + result.items.length);
+    setLastBatchFull(result.items.length === PAGE_SIZE);
+    setLoadedScope(scope);
+    setClientError("");
+    setIsLoading(false);
+  }, []);
+
+  const loadSearchFirstPage = useCallback(async (parsed) => {
+    const generation = ++loadGenerationRef.current;
+    const scope = listScopeKey(parsed);
+    setIsLoading(true);
+    setIsLoadingMore(false);
+    setClientError("");
+    setApps([]);
+    setTotal(0);
+    setTotalKnown(false);
+    setNextOffset(0);
+    setLastBatchFull(false);
 
     const { response, error: fetchError } = await fetchWinstallAPI(
-      appsListPath(parsed, { offset, limit: APPS_PER_PAGE })
+      appsListPath(parsed, { offset: 0, limit: PAGE_SIZE })
     );
+
+    if (generation !== loadGenerationRef.current) return;
 
     setIsLoading(false);
 
     if (fetchError) {
+      setApps([]);
+      setTotal(0);
+      setTotalKnown(false);
+      setNextOffset(0);
+      setLastBatchFull(false);
+      setLoadedScope(scope);
       setClientError(fetchError);
       return;
     }
 
     const normalized = normalizeAppsPayload(response);
-    const items = [...normalized.items];
-    if (items.length) {
-      transformAppIcons(items);
-    }
-
+    const items = transformAppIcons([...normalized.items]);
     setApps(items);
     setTotal(normalized.total);
     setTotalKnown(normalized.totalKnown);
-    setCurrentOffset(normalized.offset);
-    setLoadedPage(targetPage);
-    setLoadedScope(listScopeKey(parsed));
+    setNextOffset(normalized.offset + items.length);
+    setLastBatchFull(items.length === PAGE_SIZE);
+    setLoadedScope(scope);
+    setClientError("");
   }, []);
 
   useEffect(() => {
     if (!isOpen) return;
-
     resetState();
-    loadPage(1, { kind: "list" });
-  }, [isOpen, resetState, loadPage]);
+  }, [isOpen, resetState]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -194,22 +270,30 @@ export default function AddAppsDialog({
   }, [isOpen, isKeywordSearch, searchInput]);
 
   useEffect(() => {
-    if (!isOpen) return;
-    setPage(1);
-  }, [currentScope, isOpen]);
-
-  useEffect(() => {
     if (!isOpen || searchPending) return;
-    if (loadedPage === page && loadedScope === currentScope) return;
-    loadPage(page, listQuery);
+    if (loadedScope === currentScope) return;
+
+    if (hasSearchOverlay) {
+      const parsed = isPublisherMode
+        ? parseAppsListQuery(searchInput)
+        : parseAppsListQuery(committedSearch);
+      loadSearchFirstPage(parsed);
+      return;
+    }
+
+    loadCategoryFirstPage(activeSlug);
   }, [
     isOpen,
     searchPending,
-    page,
     currentScope,
-    loadedPage,
     loadedScope,
-    loadPage,
+    hasSearchOverlay,
+    isPublisherMode,
+    searchInput,
+    committedSearch,
+    activeSlug,
+    loadSearchFirstPage,
+    loadCategoryFirstPage,
   ]);
 
   useEffect(() => {
@@ -224,7 +308,7 @@ export default function AddAppsDialog({
   }, [isOpen]);
 
   useEffect(() => {
-    const canSearch = isKeywordSearch;
+    const canSearch = isKeywordSearch || isPublisherMode;
 
     if (!canSearch) {
       if (hideSearchingTimerRef.current) {
@@ -255,67 +339,76 @@ export default function AddAppsDialog({
         hideSearchingTimerRef.current = null;
       }
     };
-  }, [isLoading, isKeywordSearch, searchPending]);
+  }, [isLoading, isKeywordSearch, isPublisherMode, searchPending]);
 
   const handleClose = () => {
     if (adding) return;
     onClose?.();
   };
 
-  const handleNext = () => {
-    contentRef.current?.scrollTo(0, 0);
-    setPage((current) => current + 1);
+  const handleSelectCategory = (slug) => {
+    if (slug === activeSlug && !hasSearchOverlay && !searchInput.trim()) {
+      return;
+    }
+    setSearchInput("");
+    setCommittedSearch("");
+    setShowSearching(false);
+    setActiveSlug(slug);
+    setLoadedScope("");
   };
 
-  const handlePrevious = () => {
-    contentRef.current?.scrollTo(0, 0);
-    setPage((current) => Math.max(1, current - 1));
-  };
+  const handleLoadMore = async () => {
+    if (isLoading || isLoadingMore) return;
+    if (totalKnown ? displayApps.length >= total : !lastBatchFull) return;
 
-  useEffect(() => {
-    if (!isOpen || searchPending || !showPagination) return;
+    setIsLoadingMore(true);
+    const generation = loadGenerationRef.current;
 
-    const canGoPrevious = page > 1;
-    const canGoNext = totalKnown
-      ? page < totalPages
-      : apps.length === APPS_PER_PAGE;
+    if (hasSearchOverlay && searchQuery) {
+      const { response, error: fetchError } = await fetchWinstallAPI(
+        appsListPath(searchQuery, { offset: nextOffset, limit: PAGE_SIZE })
+      );
 
-    const handlePagination = (event) => {
-      const target = event.target;
-      if (
-        isLoading ||
-        (target instanceof HTMLElement &&
-          (target.tagName === "INPUT" ||
-            target.tagName === "TEXTAREA" ||
-            target.tagName === "SELECT" ||
-            target.isContentEditable))
-      ) {
+      if (generation !== loadGenerationRef.current) return;
+
+      if (fetchError) {
+        setIsLoadingMore(false);
         return;
       }
 
-      if (event.key === "ArrowRight" || event.keyCode === 39) {
-        if (!canGoNext) return;
-        event.preventDefault();
-        handleNext();
-      } else if (event.key === "ArrowLeft" || event.keyCode === 37) {
-        if (!canGoPrevious) return;
-        event.preventDefault();
-        handlePrevious();
+      const normalized = normalizeAppsPayload(response);
+      const items = transformAppIcons([...normalized.items]);
+      setApps((prev) => [...prev, ...items]);
+      if (normalized.totalKnown) {
+        setTotal(normalized.total);
+        setTotalKnown(true);
       }
-    };
+      setNextOffset(normalized.offset + items.length);
+      setLastBatchFull(items.length === PAGE_SIZE);
+      setIsLoadingMore(false);
+      return;
+    }
 
-    document.addEventListener("keydown", handlePagination);
-    return () => document.removeEventListener("keydown", handlePagination);
-  }, [
-    isOpen,
-    searchPending,
-    showPagination,
-    isLoading,
-    page,
-    totalKnown,
-    totalPages,
-    apps.length,
-  ]);
+    const result = await fetchCategoryApps({
+      slug: activeSlug,
+      offset: nextOffset,
+      limit: PAGE_SIZE,
+    });
+
+    if (generation !== loadGenerationRef.current) return;
+
+    if (result.error) {
+      setIsLoadingMore(false);
+      return;
+    }
+
+    setApps((prev) => [...prev, ...result.items]);
+    setTotal(result.total);
+    setTotalKnown(true);
+    setNextOffset(result.offset + result.items.length);
+    setLastBatchFull(result.items.length === PAGE_SIZE);
+    setIsLoadingMore(false);
+  };
 
   const isAppInPack = (app) => packAppIds.has(getAppId(app));
 
@@ -367,42 +460,9 @@ export default function AddAppsDialog({
     onClose?.();
   };
 
-  const Pagination = ({ small, disable }) => (
-    <div className={small ? dialogStyles.minPagination : dialogStyles.pagbtn}>
-      <button
-        type="button"
-        className={`button ${small ? dialogStyles.smallBtn : ""}`}
-        onClick={handlePrevious}
-        title="Previous page of apps"
-        disabled={page > 1 ? (disable ? "disabled" : undefined) : "disabled"}
-      >
-        <FiChevronLeft />
-        {!small ? "Previous" : ""}
-      </button>
-      <button
-        type="button"
-        className={`button ${small ? dialogStyles.smallBtn : ""}`}
-        title="Next page of apps"
-        onClick={handleNext}
-        disabled={
-          totalKnown
-            ? page < totalPages
-              ? disable
-                ? "disabled"
-                : undefined
-              : "disabled"
-            : apps.length === APPS_PER_PAGE
-            ? disable
-              ? "disabled"
-              : undefined
-            : "disabled"
-        }
-      >
-        {!small ? "Next" : ""}
-        <FiChevronRight />
-      </button>
-    </div>
-  );
+  const emptyMessage = hasSearchOverlay
+    ? "Could not find any apps."
+    : "No apps to show.";
 
   return (
     <>
@@ -438,7 +498,7 @@ export default function AddAppsDialog({
             <label htmlFor="add-apps-search" className={searchStyles.searchLabel}>
               Search for apps
             </label>
-            <div className={searchStyles.searchBox}>
+            <div className={`${searchStyles.searchBox} ${dialogStyles.searchBoxFull}`}>
               <div className={searchStyles.searchInner}>
                 <FiSearch />
                 <input
@@ -448,6 +508,7 @@ export default function AddAppsDialog({
                   value={searchInput}
                   autoComplete="off"
                   placeholder="Enter your search term here"
+                  aria-label="Search for apps"
                   onChange={(event) => setSearchInput(event.target.value)}
                 />
               </div>
@@ -456,23 +517,11 @@ export default function AddAppsDialog({
               )}
             </div>
           </div>
-          {showPagination && <Pagination small />}
-        </div>
-
-        <div className={dialogStyles.controls}>
-            <p>
-              {listLoading
-                ? isKeywordSearch
-                  ? "Searching..."
-                  : "Loading apps..."
-                : displayApps.length === 0
-                ? isKeywordSearch
-                  ? "Could not find any apps."
-                  : "No apps to show"
-                : totalKnown
-                ? `Showing ${currentOffset + 1}-${currentOffset + apps.length} of ${total.toLocaleString()} apps (page ${page} of ${totalPages}).`
-                : `Showing ${currentOffset + 1}-${currentOffset + apps.length} apps (page ${page}).`}
-            </p>
+          <CategoryFilterSelect
+            categories={CATEGORIES}
+            activeSlug={hasSearchOverlay ? DEFAULT_CATEGORY : activeSlug}
+            onSelect={handleSelectCategory}
+          />
         </div>
 
         <div
@@ -483,49 +532,48 @@ export default function AddAppsDialog({
 
           {!clientError && listLoading && displayApps.length === 0 && (
             <p className={dialogStyles.loading}>
-              {isKeywordSearch ? "Searching..." : "Loading apps..."}
+              {hasSearchOverlay || isKeywordSearch
+                ? "Searching..."
+                : "Loading apps..."}
             </p>
           )}
 
           {!clientError &&
             !listLoading &&
-            isKeywordSearch &&
             displayApps.length === 0 && (
-              <p className={dialogStyles.empty}>Could not find any apps.</p>
+              <p className={dialogStyles.empty}>{emptyMessage}</p>
             )}
 
           {!clientError && displayApps.length > 0 && (
-            <ul className={dialogStyles.grid}>
-              {displayApps.map((app) => (
-                <li key={app._id}>
-                  <AddAppPickerCard
-                    app={app}
-                    selected={isAppSelected(app)}
-                    alreadyAdded={isAppInPack(app)}
-                    onToggle={handleToggleApp}
-                  />
-                </li>
-              ))}
-            </ul>
+            <>
+              <ul className={dialogStyles.grid}>
+                {displayApps.map((app) => (
+                  <li key={app._id}>
+                    <AddAppPickerCard
+                      app={app}
+                      selected={isAppSelected(app)}
+                      alreadyAdded={isAppInPack(app)}
+                      onToggle={handleToggleApp}
+                    />
+                  </li>
+                ))}
+              </ul>
+
+              {showLoadMore && (
+                <div className={dialogStyles.loadMoreWrap}>
+                  <button
+                    type="button"
+                    className={dialogStyles.loadMore}
+                    onClick={handleLoadMore}
+                    disabled={isLoadingMore}
+                  >
+                    {isLoadingMore ? "Loading…" : "Load more"}
+                  </button>
+                </div>
+              )}
+            </>
           )}
-
-          {!clientError &&
-            !isKeywordSearch &&
-            !listLoading &&
-            displayApps.length === 0 && (
-              <p className={dialogStyles.empty}>No apps to show.</p>
-            )}
         </div>
-
-        {showPagination && (
-          <div className={dialogStyles.pagination}>
-            <Pagination />
-            <em>
-              Hit the <FiArrowLeftCircle /> and <FiArrowRightCircle /> keys on
-              your keyboard to navigate between pages quickly.
-            </em>
-          </div>
-        )}
 
         {hasSelection && (
           <div className={dialogStyles.selectionBar}>
