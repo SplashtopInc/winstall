@@ -17,6 +17,8 @@ export function parseOnOffEnv(value, defaultOn = true) {
 
 export const SHOW_VIEWS_INSTALLS_META = "winstall-show-views-installs";
 
+const trimEnv = (value) => String(value || "").trim();
+
 export const getIconBase = () => {
   if (typeof window !== 'undefined') {
     if (_iconBase === null) {
@@ -27,6 +29,9 @@ export const getIconBase = () => {
   return process.env.WINSTALL_ICON_BASE || '';
 };
 
+/** Browser-facing API origin (`WINSTALL_API_BASE`). Used by `_document` and ISR. */
+export const getPublicApiBase = () => trimEnv(process.env.WINSTALL_API_BASE);
+
 const readApiBase = () => {
   if (typeof window !== 'undefined') {
     if (_apiBase === null) {
@@ -34,7 +39,9 @@ const readApiBase = () => {
     }
     return _apiBase;
   }
-  return process.env.WINSTALL_API_BASE || '';
+  const internalBase = trimEnv(process.env.WINSTALL_API_INTERNAL_BASE);
+  if (internalBase) return internalBase;
+  return getPublicApiBase();
 };
 
 export const isShowViewsInstalls = () => {

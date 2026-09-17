@@ -381,8 +381,20 @@ function Store({ data, error, buildTime }) {
 }
 
 export async function getStaticProps() {
-  const { getRuntimeConfig } = require('../utils/runtimeConfig');
-  const config = await getRuntimeConfig();
+  const { getPublicApiBase } = require('../utils/runtimeConfig');
+
+  // No public API origin at build time: return empty to trigger ISR on first request
+  if (!getPublicApiBase()) {
+    console.warn('[getStaticProps /apps] Build-time: no API configured, will trigger ISR on first request');
+    return {
+      props: {
+        data: null,
+        error: null,
+        buildTime: true
+      },
+      revalidate: 1
+    };
+  }
 
   let { response, error } = await fetchWinstallAPI(`/apps?offset=0&limit=60`);
 
@@ -400,19 +412,6 @@ export async function getStaticProps() {
   const hasData = items.length > 0;
 
   if (!hasData) {
-    // No API at build time: return empty to trigger ISR on first request
-    if (!config.apiBase) {
-      console.warn('[getStaticProps /apps] Build-time: no API configured, will trigger ISR on first request');
-      return {
-        props: {
-          data: null,
-          error: null,
-          buildTime: true
-        },
-        revalidate: 1
-      };
-    }
-
     // Runtime API error: use exponential backoff to avoid hammering failing API
     const revalidate = getRevalidateTime('apps', false);
     console.warn(`[getStaticProps /apps] Runtime: no data, will retry in ${revalidate}s`);

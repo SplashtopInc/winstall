@@ -1,5 +1,5 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
-import { parseOnOffEnv } from "../utils/runtimeConfig";
+import { getPublicApiBase, parseOnOffEnv } from "../utils/runtimeConfig";
 
 class MyDocument extends Document {
   render() {
@@ -7,7 +7,7 @@ class MyDocument extends Document {
       <Html lang="en" data-scroll-behavior="smooth">
         <Head>
           <meta name="winstall-icon-base" content={process.env.WINSTALL_ICON_BASE || ''} />
-          <meta name="winstall-api-base" content={process.env.WINSTALL_API_BASE || ''} />
+          <meta name="winstall-api-base" content={getPublicApiBase()} />
           <meta
             name="winstall-show-views-installs"
             content={parseOnOffEnv(process.env.WINSTALL_SHOW_VIEWS_INSTALLS, true) ? "1" : "0"}

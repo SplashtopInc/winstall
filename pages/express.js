@@ -122,12 +122,11 @@ function ExpressSetup({ error, categoryApps }) {
 }
 
 export async function getStaticProps() {
-  const { getRuntimeConfig } = require("../utils/runtimeConfig");
-  const config = await getRuntimeConfig();
+  const { getPublicApiBase } = require("../utils/runtimeConfig");
 
   // Docker/build has no WINSTALL_API_BASE — don't bake empty static apps for an hour.
   // Same pattern as pages/index.js and pages/apps.js.
-  if (!config.apiBase) {
+  if (!getPublicApiBase()) {
     console.warn(
       "[getStaticProps /express] Build-time: no API configured, will trigger ISR on first request"
     );

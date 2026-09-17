@@ -127,11 +127,10 @@ function Home({
 }
 
 export async function getStaticProps(){
-  const { getRuntimeConfig } = require('../utils/runtimeConfig');
-  const config = await getRuntimeConfig();
+  const { getPublicApiBase } = require('../utils/runtimeConfig');
 
-  // No API at build time: return empty to trigger ISR on first request
-  if (!config.apiBase) {
+  // No public API origin at build time: return empty to trigger ISR on first request
+  if (!getPublicApiBase()) {
     console.warn('[getStaticProps /] Build-time: no API configured, will trigger ISR on first request');
     return {
       props: {
