@@ -27,7 +27,6 @@ import LikeButton from "../../components/LikeButton";
 import useRequireAuth from "../../hooks/useRequireAuth";
 import useResourceEngagement from "../../hooks/useResourceEngagement";
 import { formatCount } from "../../utils/engagementStats";
-import { isShowViewsInstalls } from "../../utils/runtimeConfig";
 import { copyPack, deletePack, fetchPackById, updatePack } from "../../utils/fetchPackAPI";
 import {
   formatAppsForPatch,
@@ -623,7 +622,7 @@ export default function PackDetailPage() {
                 Created {formatCreatedDate(pack.createdAt)}
               </span>
             </div>
-            {isShowViewsInstalls() && stats && (
+            {stats && (
               <p className={styles.counts}>
                 {formatCount(stats.views)} views · {formatCount(stats.downloads)}{" "}
                 installs
