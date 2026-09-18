@@ -1,0 +1,107 @@
+.card {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--card-bg);
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.app {
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 10px;
+}
+
+.pack {
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.appAvatar,
+.packAvatar,
+.bar {
+  background: color-mix(in srgb, var(--textColor) 10%, transparent);
+  animation: shelfSkeletonPulse 1.35s ease-in-out infinite;
+}
+
+.appAvatar {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.appText {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  padding-top: 4px;
+}
+
+.packIdentity {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.packAvatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.packText {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.bar {
+  display: block;
+  border-radius: 6px;
+  height: 12px;
+}
+
+.barTitle {
+  width: 72%;
+  height: 14px;
+}
+
+.barSub {
+  width: 44%;
+}
+
+.barDesc {
+  width: 88%;
+  height: 11px;
+}
+
+@keyframes shelfSkeletonPulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .appAvatar,
+  .packAvatar,
+  .bar {
+    animation: none;
+    opacity: 0.55;
+  }
+}

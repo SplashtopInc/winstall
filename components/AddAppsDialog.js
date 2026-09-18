@@ -3,6 +3,7 @@ import { FiTrash, FiPlus, FiSearch } from "react-icons/fi";
 
 import AddAppPickerCard from "./AddAppPickerCard";
 import CategoryFilterSelect from "./categoryFilterSelect";
+import ShelfListSkeleton from "./shelfListSkeleton";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { fetchCategoryApps } from "../utils/fetchCategoryApps";
 import { addAppsToPack } from "../utils/packHelpers";
@@ -531,11 +532,15 @@ export default function AddAppsDialog({
           {clientError && <p className={dialogStyles.error}>{clientError}</p>}
 
           {!clientError && listLoading && displayApps.length === 0 && (
-            <p className={dialogStyles.loading}>
-              {hasSearchOverlay || isKeywordSearch
-                ? "Searching..."
-                : "Loading apps..."}
-            </p>
+            <ShelfListSkeleton
+              variant="app"
+              gridClassName={dialogStyles.grid}
+              label={
+                hasSearchOverlay || isKeywordSearch
+                  ? "Searching apps"
+                  : "Loading apps"
+              }
+            />
           )}
 
           {!clientError &&

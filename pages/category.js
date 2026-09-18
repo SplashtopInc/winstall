@@ -6,6 +6,7 @@ import MetaTags from "../components/MetaTags";
 import SingleApp from "../components/SingleApp";
 import Error from "../components/Error";
 import CategoryTabs from "../components/categoryTabs";
+import ShelfListSkeleton from "../components/shelfListSkeleton";
 import { fetchCategoryApps } from "../utils/fetchCategoryApps";
 import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
 import { CATEGORY_LABELS, CATEGORY_SLUGS } from "../utils/categoryMeta";
@@ -186,7 +187,11 @@ function CategoryPage() {
             primaryIcon="grid"
           />
         ) : isLoading ? (
-          <p className={styles.status}>Loading apps…</p>
+          <ShelfListSkeleton
+            variant="app"
+            gridClassName={styles.grid}
+            label="Loading apps"
+          />
         ) : apps.length === 0 ? (
           <p className={styles.status}>No apps in this category yet.</p>
         ) : (

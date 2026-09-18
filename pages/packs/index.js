@@ -9,6 +9,7 @@ import PackCard from "../../components/PackCard";
 import CreatePackModal from "../../components/CreatePackModal";
 import PublicPacksSearch from "../../components/PublicPacksSearch";
 import PublicPacksList from "../../components/PublicPacksList";
+import ShelfListSkeleton from "../../components/shelfListSkeleton";
 import Error from "../../components/Error";
 import { LoginButtons } from "../../components/LoginPanel";
 import { fetchMyPacks, fetchPublicPacks } from "../../utils/fetchPackAPI";
@@ -379,8 +380,14 @@ export default function PacksPage() {
   );
 
   const renderMyPacks = () => {
-    if (!sessionReady || myPacksLoading) {
-      return <p className={styles.loading}>Loading...</p>;
+    if (!sessionReady) {
+      return (
+        <ShelfListSkeleton
+          variant="pack"
+          gridClassName={styles.grid}
+          label="Loading packs"
+        />
+      );
     }
 
     if (!user) {
@@ -403,6 +410,16 @@ export default function PacksPage() {
             cardClassName={styles.loginCard}
           />
         </section>
+      );
+    }
+
+    if (myPacksLoading) {
+      return (
+        <ShelfListSkeleton
+          variant="pack"
+          gridClassName={styles.grid}
+          label="Loading packs"
+        />
       );
     }
 

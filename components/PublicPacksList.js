@@ -1,5 +1,6 @@
 import PackCard from "./PackCard";
 import Error from "./Error";
+import ShelfListSkeleton from "./shelfListSkeleton";
 
 import styles from "../styles/packsIndex.module.scss";
 
@@ -31,7 +32,13 @@ export default function PublicPacksList({
   const isInitialLoad = !hasLoaded && loading;
 
   if (isInitialLoad) {
-    return <p className={styles.loading}>Loading...</p>;
+    return (
+      <ShelfListSkeleton
+        variant="pack"
+        gridClassName={styles.grid}
+        label="Loading packs"
+      />
+    );
   }
 
   if (error) {
