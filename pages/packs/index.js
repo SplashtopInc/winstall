@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FiPlus } from "react-icons/fi";
@@ -63,16 +63,18 @@ export default function PacksPage() {
   const user = session?.user ?? null;
   const userId = user?.id;
   const sessionReady = sessionStatus !== "loading";
-  const activeTab = router.query.tab === "public" ? "public" : "mine";
+
+  const [activeTab, setActiveTab] = useState("mine");
+  const tabHintAppliedRef = useRef(false);
 
   const [publicPacks, setPublicPacks] = useState([]);
   const [publicPacksLoading, setPublicPacksLoading] = useState(false);
+  const [publicPacksLoadingMore, setPublicPacksLoadingMore] = useState(false);
   const [publicPacksError, setPublicPacksError] = useState(null);
   const [publicTotal, setPublicTotal] = useState(0);
-  const [publicCurrentOffset, setPublicCurrentOffset] = useState(0);
   const [publicLoadedKey, setPublicLoadedKey] = useState(null);
-  const [publicPage, setPublicPage] = useState(1);
   const [activePublicSearch, setActivePublicSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
 
   const [myPacks, setMyPacks] = useState([]);
   const [myPacksLoading, setMyPacksLoading] = useState(false);
@@ -80,44 +82,61 @@ export default function PacksPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const authError = router.query.error;
-  const publicLoadKey = `${publicPage}:${activePublicSearch}`;
-  const publicTotalPages = Math.max(1, Math.ceil(publicTotal / PACKS_PER_PAGE));
+  const publicLoadKey = activePublicSearch || "";
 
-  const loadPublicPacks = useCallback(async ({ page = 1, q, silent = false } = {}) => {
-    if (!silent) {
-      setPublicPacksLoading(true);
-    }
-    setPublicPacksError(null);
-
-    const offset = (page - 1) * PACKS_PER_PAGE;
-    const searchKey = q || "";
-
-    try {
-      const { response, error } = await fetchPublicPacks({
-        offset,
-        limit: PACKS_PER_PAGE,
-        ...(q ? { q } : {}),
-      });
-
-      if (error) {
-        setPublicPacksError(error);
-        setPublicPacks([]);
-      } else if (response?.data) {
-        setPublicPacks(transformPackIcons(response.data, getIconBase()));
-        setPublicTotal(typeof response.total === "number" ? response.total : 0);
-        setPublicCurrentOffset(
-          typeof response.offset === "number" ? response.offset : offset
-        );
-        setPublicLoadedKey(`${page}:${searchKey}`);
-      }
-    } catch (err) {
-      setPublicPacksError(err.message || "Failed to load packs.");
-    } finally {
+  const loadPublicPacks = useCallback(
+    async ({ offset = 0, q, append = false, silent = false } = {}) => {
       if (!silent) {
-        setPublicPacksLoading(false);
+        if (append) {
+          setPublicPacksLoadingMore(true);
+        } else {
+          setPublicPacksLoading(true);
+        }
       }
-    }
-  }, []);
+      setPublicPacksError(null);
+
+      const searchKey = q || "";
+
+      try {
+        const { response, error } = await fetchPublicPacks({
+          offset,
+          limit: PACKS_PER_PAGE,
+          ...(q ? { q } : {}),
+        });
+
+        if (error) {
+          setPublicPacksError(error);
+          if (!append) {
+            setPublicPacks([]);
+            setPublicTotal(0);
+          }
+        } else if (response?.data) {
+          const nextPacks = transformPackIcons(response.data, getIconBase());
+          setPublicPacks((current) =>
+            append ? current.concat(nextPacks) : nextPacks
+          );
+          setPublicTotal(
+            typeof response.total === "number" ? response.total : 0
+          );
+          setPublicLoadedKey(searchKey);
+        }
+      } catch (err) {
+        setPublicPacksError(err.message || "Failed to load packs.");
+        if (!append) {
+          setPublicPacks([]);
+        }
+      } finally {
+        if (!silent) {
+          if (append) {
+            setPublicPacksLoadingMore(false);
+          } else {
+            setPublicPacksLoading(false);
+          }
+        }
+      }
+    },
+    []
+  );
 
   const loadMyPacks = useCallback(async ({ silent = false } = {}) => {
     if (!silent) {
@@ -144,11 +163,48 @@ export default function PacksPage() {
   }, []);
 
   useEffect(() => {
+    if (!router.isReady || tabHintAppliedRef.current) return;
+    tabHintAppliedRef.current = true;
+
+    if (router.query.tab === "public") {
+      setActiveTab("public");
+    } else if (router.query.tab === "mine") {
+      setActiveTab("mine");
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (!router.isReady) return;
+    if (!router.query.q && !router.query.page) return;
+
+    const nextQuery = {};
+    if (router.query.tab === "public" || router.query.tab === "mine") {
+      nextQuery.tab = router.query.tab;
+    }
+    if (router.query.error) {
+      nextQuery.error = router.query.error;
+    }
+    router.replace(
+      { pathname: "/packs", query: nextQuery },
+      undefined,
+      { shallow: true }
+    );
+  }, [
+    router,
+    router.isReady,
+    router.query.error,
+    router.query.page,
+    router.query.q,
+    router.query.tab,
+  ]);
+
+  useEffect(() => {
     if (activeTab !== "public") return;
     if (publicLoadedKey === publicLoadKey) return;
     loadPublicPacks({
-      page: publicPage,
+      offset: 0,
       q: activePublicSearch || undefined,
+      append: false,
     });
   }, [
     activePublicSearch,
@@ -156,28 +212,44 @@ export default function PacksPage() {
     loadPublicPacks,
     publicLoadKey,
     publicLoadedKey,
-    publicPage,
   ]);
 
   const handlePublicSearchChange = useCallback((query) => {
     setActivePublicSearch((current) => {
       if (current !== query) {
-        setPublicPage(1);
+        setPublicLoadedKey(null);
       }
       return query;
     });
   }, []);
 
-  useEffect(() => {
-    if (!router.isReady || activeTab !== "public") return;
-    if (!router.query.q && !router.query.page) return;
+  const handleClearPublicSearch = useCallback(() => {
+    setSearchInput("");
+    setActivePublicSearch((current) => {
+      if (current !== "") {
+        setPublicLoadedKey(null);
+      }
+      return "";
+    });
+  }, []);
 
-    router.replace(
-      { pathname: "/packs", query: { tab: "public" } },
-      undefined,
-      { shallow: true }
-    );
-  }, [activeTab, router.isReady, router.query.page, router.query.q]);
+  const handleLoadMorePublic = useCallback(() => {
+    if (publicPacksLoading || publicPacksLoadingMore) return;
+    if (publicPacks.length >= publicTotal) return;
+
+    loadPublicPacks({
+      offset: publicPacks.length,
+      q: activePublicSearch || undefined,
+      append: true,
+    });
+  }, [
+    activePublicSearch,
+    loadPublicPacks,
+    publicPacks.length,
+    publicPacksLoading,
+    publicPacksLoadingMore,
+    publicTotal,
+  ]);
 
   useEffect(() => {
     if (activeTab !== "mine") return;
@@ -203,8 +275,9 @@ export default function PacksPage() {
         }
       } else {
         loadPublicPacks({
-          page: publicPage,
+          offset: 0,
           q: activePublicSearch || undefined,
+          append: false,
           silent: true,
         });
       }
@@ -234,7 +307,6 @@ export default function PacksPage() {
     activeTab,
     loadMyPacks,
     loadPublicPacks,
-    publicPage,
     router.isReady,
     router.pathname,
     userId,
@@ -269,36 +341,6 @@ export default function PacksPage() {
     };
   }, []);
 
-  const setTab = (tab) => {
-    const query = tab === "public" ? { tab: "public" } : {};
-    router.push({ pathname: "/packs", query }, undefined, { shallow: true });
-  };
-
-  const handlePublicPrevious = useCallback(() => {
-    window.scrollTo(0, 0);
-    setPublicPage((current) => Math.max(1, current - 1));
-  }, []);
-
-  const handlePublicNext = useCallback(() => {
-    window.scrollTo(0, 0);
-    setPublicPage((current) => current + 1);
-  }, []);
-
-  useEffect(() => {
-    if (activeTab !== "public") return;
-
-    const handlePagination = (e) => {
-      if (e.keyCode === 39) {
-        document.getElementById("public-packs-next")?.click();
-      } else if (e.keyCode === 37) {
-        document.getElementById("public-packs-previous")?.click();
-      }
-    };
-
-    document.addEventListener("keydown", handlePagination);
-    return () => document.removeEventListener("keydown", handlePagination);
-  }, [activeTab]);
-
   const handleLogin = (provider) => {
     setLastLoginProvider(provider);
     signIn(provider, { callbackUrl: "/packs?tab=mine" });
@@ -311,23 +353,27 @@ export default function PacksPage() {
     );
     setMyPacks((current) => [pack, ...current]);
     setShowCreateModal(false);
+    setActiveTab("mine");
   };
 
   const renderPublicPacks = () => (
     <>
-      <PublicPacksSearch onSearchChange={handlePublicSearchChange} />
+      <PublicPacksSearch
+        input={searchInput}
+        onInputChange={setSearchInput}
+        onSearchChange={handlePublicSearchChange}
+        onClear={handleClearPublicSearch}
+      />
       <PublicPacksList
         packs={publicPacks}
         loading={publicPacksLoading}
+        loadingMore={publicPacksLoadingMore}
         error={publicPacksError}
         hasLoaded={publicLoadedKey !== null}
         searchQuery={activePublicSearch}
-        page={publicPage}
-        totalPages={publicTotalPages}
         total={publicTotal}
-        currentOffset={publicCurrentOffset}
-        onPrevious={handlePublicPrevious}
-        onNext={handlePublicNext}
+        onLoadMore={handleLoadMorePublic}
+        onClearSearch={handleClearPublicSearch}
       />
     </>
   );
@@ -411,18 +457,22 @@ export default function PacksPage() {
       />
 
       <div className={styles.page}>
-        <div className={styles.tabs}>
+        <div className={styles.tabs} role="tablist" aria-label="Pack views">
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "mine"}
             className={`${styles.tab} ${activeTab === "mine" ? styles.tabActive : ""}`}
-            onClick={() => setTab("mine")}
+            onClick={() => setActiveTab("mine")}
           >
             My Packs
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "public"}
             className={`${styles.tab} ${activeTab === "public" ? styles.tabActive : ""}`}
-            onClick={() => setTab("public")}
+            onClick={() => setActiveTab("public")}
           >
             Public Packs
           </button>

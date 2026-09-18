@@ -4,7 +4,11 @@ import { formatCount } from "../utils/engagementStats";
 import { readAppListCounts } from "../utils/appListCounts";
 import styles from "../styles/appListCounts.module.scss";
 
-export default function AppListCounts({ app, className = "" }) {
+export default function AppListCounts({
+  app,
+  className = "",
+  ariaLabel = "Views, downloads, and likes",
+}) {
   const counts = readAppListCounts(app);
   const views = formatCount(counts.viewCount) ?? "0";
   const downloads = formatCount(counts.downloadCount) ?? "0";
@@ -13,7 +17,7 @@ export default function AppListCounts({ app, className = "" }) {
   return (
     <ul
       className={`${styles.counts} ${className}`.trim()}
-      aria-label="Views, downloads, and likes"
+      aria-label={ariaLabel}
     >
       <li className={styles.stat}>
         <FiEye aria-hidden="true" />

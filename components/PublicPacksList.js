@@ -1,84 +1,34 @@
-import {
-  FiChevronLeft,
-  FiChevronRight,
-  FiArrowLeftCircle,
-  FiArrowRightCircle,
-} from "react-icons/fi";
-
 import PackCard from "./PackCard";
 import Error from "./Error";
 
 import styles from "../styles/packsIndex.module.scss";
-import appsStyles from "../styles/apps.module.scss";
 
-function Pagination({ small, page, totalPages, onPrevious, onNext }) {
-  return (
-    <div className={small ? appsStyles.minPagination : appsStyles.pagbtn}>
-      <button
-        type="button"
-        className={`button ${small ? appsStyles.smallBtn : ""}`}
-        id={!small ? "public-packs-previous" : undefined}
-        onClick={onPrevious}
-        title="Previous page of packs"
-        disabled={page > 1 ? undefined : "disabled"}
-      >
-        <FiChevronLeft />
-        {!small ? "Previous" : ""}
-      </button>
-      <button
-        type="button"
-        className={`button ${small ? appsStyles.smallBtn : ""}`}
-        id={!small ? "public-packs-next" : undefined}
-        onClick={onNext}
-        title="Next page of packs"
-        disabled={page < totalPages ? undefined : "disabled"}
-      >
-        {!small ? "Next" : ""}
-        <FiChevronRight />
-      </button>
-    </div>
-  );
-}
-
-function getSummary({
-  packs,
-  searchQuery,
-  currentOffset,
-  total,
-  page,
-  totalPages,
-}) {
+function getSummary({ packs, searchQuery, total }) {
   if (packs.length === 0) {
     return searchQuery
       ? `No packs matching "${searchQuery}".`
       : "No packs to show";
   }
 
-  const range = `Showing ${currentOffset + 1}-${currentOffset + packs.length} of ${total.toLocaleString()}`;
-  const pageInfo = `(page ${page} of ${totalPages})`;
-
   if (searchQuery) {
-    return `${range} results for "${searchQuery}" ${pageInfo}.`;
+    return `Showing ${packs.length} of ${total.toLocaleString()} results for "${searchQuery}".`;
   }
 
-  return `${range} packs ${pageInfo}.`;
+  return `Showing ${packs.length} of ${total.toLocaleString()} packs.`;
 }
 
 export default function PublicPacksList({
   packs,
   loading,
+  loadingMore,
   error,
   hasLoaded,
   searchQuery,
-  page,
-  totalPages,
   total,
-  currentOffset,
-  onPrevious,
-  onNext,
+  onLoadMore,
+  onClearSearch,
 }) {
   const isInitialLoad = !hasLoaded && loading;
-  const isSearching = loading && !!searchQuery;
 
   if (isInitialLoad) {
     return <p className={styles.loading}>Loading...</p>;
@@ -88,50 +38,49 @@ export default function PublicPacksList({
     return <Error detail={error} />;
   }
 
-  const summary = isSearching
-    ? "Searching..."
-    : getSummary({
-        packs,
-        searchQuery,
-        currentOffset,
-        total,
-        page,
-        totalPages,
-      });
+  const summary =
+    loading && searchQuery
+      ? "Searching..."
+      : getSummary({ packs, searchQuery, total });
+  const showLoadMore = packs.length > 0 && packs.length < total;
 
   return (
     <>
       <div className={styles.publicControls}>
         <p>{summary}</p>
-        <Pagination
-          small
-          page={page}
-          totalPages={totalPages}
-          onPrevious={onPrevious}
-          onNext={onNext}
-        />
+        {packs.length === 0 && searchQuery && (
+          <button
+            type="button"
+            className={styles.clearSearchLink}
+            onClick={onClearSearch}
+          >
+            Clear search
+          </button>
+        )}
       </div>
 
-      <ul className={styles.grid}>
-        {packs.map((pack) => (
-          <li key={pack._id}>
-            <PackCard pack={pack} showVisibility={false} />
-          </li>
-        ))}
-      </ul>
+      {packs.length > 0 && (
+        <ul className={styles.grid}>
+          {packs.map((pack) => (
+            <li key={pack._id}>
+              <PackCard pack={pack} showVisibility={false} />
+            </li>
+          ))}
+        </ul>
+      )}
 
-      <div className={appsStyles.pagination}>
-        <Pagination
-          page={page}
-          totalPages={totalPages}
-          onPrevious={onPrevious}
-          onNext={onNext}
-        />
-        <em>
-          Hit the <FiArrowLeftCircle /> and <FiArrowRightCircle /> keys on your
-          keyboard to navigate between pages quickly.
-        </em>
-      </div>
+      {showLoadMore && (
+        <div className={styles.loadMoreWrap}>
+          <button
+            type="button"
+            className={styles.loadMore}
+            onClick={onLoadMore}
+            disabled={loadingMore}
+          >
+            {loadingMore ? "Loading…" : "Load more"}
+          </button>
+        </div>
+      )}
     </>
   );
 }
