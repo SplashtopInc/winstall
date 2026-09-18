@@ -4,18 +4,10 @@ import ShelfListSkeleton from "./shelfListSkeleton";
 
 import styles from "../styles/packsIndex.module.scss";
 
-function getSummary({ packs, searchQuery, total }) {
-  if (packs.length === 0) {
-    return searchQuery
-      ? `No packs matching "${searchQuery}".`
-      : "No packs to show";
-  }
-
-  if (searchQuery) {
-    return `Showing ${packs.length} of ${total.toLocaleString()} results for "${searchQuery}".`;
-  }
-
-  return `Showing ${packs.length} of ${total.toLocaleString()} packs.`;
+function getEmptyMessage({ searchQuery }) {
+  return searchQuery
+    ? `No packs matching "${searchQuery}".`
+    : "No packs to show";
 }
 
 export default function PublicPacksList({
@@ -45,26 +37,26 @@ export default function PublicPacksList({
     return <Error detail={error} />;
   }
 
-  const summary =
-    loading && searchQuery
-      ? "Searching..."
-      : getSummary({ packs, searchQuery, total });
+  const isSearching = loading && !!searchQuery;
+  const showEmptyControls = packs.length === 0;
   const showLoadMore = packs.length > 0 && packs.length < total;
 
   return (
     <>
-      <div className={styles.publicControls}>
-        <p>{summary}</p>
-        {packs.length === 0 && searchQuery && (
-          <button
-            type="button"
-            className={styles.clearSearchLink}
-            onClick={onClearSearch}
-          >
-            Clear search
-          </button>
-        )}
-      </div>
+      {showEmptyControls && (
+        <div className={styles.publicControls}>
+          <p>{isSearching ? "Searching..." : getEmptyMessage({ searchQuery })}</p>
+          {searchQuery && !isSearching && (
+            <button
+              type="button"
+              className={styles.clearSearchLink}
+              onClick={onClearSearch}
+            >
+              Clear search
+            </button>
+          )}
+        </div>
+      )}
 
       {packs.length > 0 && (
         <ul className={styles.grid}>
