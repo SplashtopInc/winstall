@@ -73,37 +73,47 @@ export let compareVersion = (v1, v2) => {
   return v1.length === v2.length ? 0 : v1.length < v2.length ? -1 : 1;
 }
 
-export let timeAgo = (isoDate) => {
-  let date = new Date(isoDate);
+const MINUTE_SECONDS = 60;
+const HOUR_SECONDS = 60 * MINUTE_SECONDS;
+const DAY_SECONDS = 24 * HOUR_SECONDS;
+const WEEK_SECONDS = 7 * DAY_SECONDS;
+const MONTH_SECONDS = 30 * DAY_SECONDS;
+const YEAR_SECONDS = 365 * DAY_SECONDS;
 
-  let seconds = Math.floor((Date.now() - date) / 1000);
-  let unit = "second";
-  let direction = "ago";
+export let timeAgo = (isoDate, now = Date.now()) => {
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime())) return "—";
 
-  let value = seconds;
-  if (seconds >= 31536000) {
-    value = Math.floor(seconds / 31536000);
-    unit = "year";
-  } else if (seconds >= 86400) {
-    value = Math.floor(seconds / 86400);
-    unit = "day";
-  } else if (seconds >= 3600) {
-    value = Math.floor(seconds / 3600);
-    unit = "hour";
-  } else if (seconds >= 60) {
-    value = Math.floor(seconds / 60);
+  const seconds = Math.floor((now - date.getTime()) / 1000);
+  if (!Number.isFinite(seconds) || seconds < MINUTE_SECONDS) {
+    return "just now";
+  }
+
+  let value;
+  let unit;
+
+  if (seconds < HOUR_SECONDS) {
+    value = Math.floor(seconds / MINUTE_SECONDS);
     unit = "minute";
+  } else if (seconds < DAY_SECONDS) {
+    value = Math.floor(seconds / HOUR_SECONDS);
+    unit = "hour";
+  } else if (seconds < WEEK_SECONDS) {
+    value = Math.floor(seconds / DAY_SECONDS);
+    unit = "day";
+  } else if (seconds < MONTH_SECONDS) {
+    value = Math.floor(seconds / WEEK_SECONDS);
+    unit = "week";
+  } else if (seconds < YEAR_SECONDS) {
+    value = Math.floor(seconds / MONTH_SECONDS);
+    unit = "month";
+  } else {
+    value = Math.floor(seconds / YEAR_SECONDS);
+    unit = "year";
   }
 
-  // if it's more than 30 days, we just return the actual date
-  let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-  if(value > 30 && unit === "day"){
-    return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
-  }
-
-  if (value != 1) unit = unit + "s";
-  return value + " " + unit + " " + direction;
+  const label = value === 1 ? unit : `${unit}s`;
+  return `${value} ${label} ago`;
 }
 
 export const getSiteOrigin = () => {
