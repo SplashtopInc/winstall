@@ -1,0 +1,21 @@
+.letterIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-width: 25px;
+  min-height: 25px;
+  margin: 0;
+  padding: 0;
+  border-radius: inherit;
+  color: #fff;
+  font-size: 0.72em;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: none;
+  user-select: none;
+  flex-shrink: 0;
+  aspect-ratio: 1;
+}

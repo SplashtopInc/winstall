@@ -3,6 +3,11 @@ import categoryAppsList from "../data/categoryApps.json";
 import localIconOverrides from "../data/localIconOverrides.json";
 import { useState } from "react";
 import { getIconBase } from "../utils/runtimeConfig";
+import {
+  getAppLetter,
+  getAppLetterBackground,
+} from "../utils/appLetterIcon";
+import styles from "../styles/appIcon.module.scss";
 
 function GenericAppIcon() {
   return (
@@ -13,6 +18,18 @@ function GenericAppIcon() {
       width="25"
       height="25"
     />
+  );
+}
+
+function LetterAppIcon({ letter, background }) {
+  return (
+    <span
+      className={styles.letterIcon}
+      style={{ backgroundColor: background }}
+      aria-hidden="true"
+    >
+      {letter}
+    </span>
   );
 }
 
@@ -42,20 +59,30 @@ const AppIcon = ({ id, name, icon, iconUrl, iconPng }) => {
     return <AppPicture srcSetPng={iconPng} srcSetWebp={iconUrl} />;
   }
 
-  if (!icon) {
+  const iconValue = typeof icon === "string" ? icon.trim() : icon;
+  if (!iconValue) {
+    const letter = getAppLetter({ name, id });
+    if (letter) {
+      return (
+        <LetterAppIcon
+          letter={letter}
+          background={getAppLetterBackground(id)}
+        />
+      );
+    }
     return <GenericAppIcon />;
   }
 
-  if (icon.startsWith("http")) {
-    return <ExternalAppIcon src={icon} />;
+  if (iconValue.startsWith("http")) {
+    return <ExternalAppIcon src={iconValue} />;
   }
 
-  icon = icon.replace(".png", "");
+  const iconName = String(iconValue).replace(".png", "");
 
   return (
     <AppPicture
-      srcSetPng={`${getIconBase()}/icons/${icon}.png`}
-      srcSetWebp={`${getIconBase()}/icons/next/${icon}.webp`}
+      srcSetPng={`${getIconBase()}/icons/${iconName}.png`}
+      srcSetWebp={`${getIconBase()}/icons/next/${iconName}.webp`}
     />
   );
 };
