@@ -18,6 +18,8 @@ import UserMenu from "./UserMenu";
 import DeleteAccountModal from "./DeleteAccountModal";
 import { useAuthGate } from "../ctx/AuthGateContext";
 import { useSearchDialog } from "../ctx/SearchDialogContext";
+import { useAppsTotal } from "../ctx/appsTotalContext";
+import { formatAppsSearchHint } from "../utils/appsSearchHint";
 import { deleteAccount } from "../utils/fetchUserAPI";
 import { invalidateOwnPacksCache } from "../utils/packHelpers";
 
@@ -38,6 +40,8 @@ Router.onRouteChangeError = () => {
 function Nav() {
   const [ddShown, setDDShown] = useState(false);
   const { openSearch } = useSearchDialog();
+  const { appsTotal } = useAppsTotal();
+  const searchHint = formatAppsSearchHint(appsTotal);
   const navRef = useRef(null);
   const router = useRouter();
   const pathname = router.pathname;
@@ -148,7 +152,7 @@ function Nav() {
             onClick={openSearch}
           >
             <FiSearch size={15} strokeWidth={2.5} />
-            <span className={styles.searchTriggerText}>Search apps...</span>
+            <span className={styles.searchTriggerText}>{searchHint}</span>
           </button>
           <span
             onClick={switchTheme}

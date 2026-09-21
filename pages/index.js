@@ -15,6 +15,7 @@ import {
 import Error from "../components/Error";
 import { useState, useEffect } from "react";
 import { getRevalidateTime } from "../utils/revalidateCache";
+import { useAppsTotal } from "../ctx/appsTotalContext";
 
 function Home({
   appsTotal,
@@ -23,6 +24,7 @@ function Home({
   error,
   buildTime,
 }) {
+  const { setAppsTotal } = useAppsTotal();
   const [data, setData] = useState({
     appsTotal: appsTotal || 0,
     trendingApps,
@@ -58,18 +60,18 @@ function Home({
       });
   }, [buildTime]);
 
+  useEffect(() => {
+    if (typeof data.appsTotal === "number" && data.appsTotal > 0) {
+      setAppsTotal(data.appsTotal);
+    }
+  }, [data.appsTotal, setAppsTotal]);
+
   if (isLoading) {
     return (
       <div>
         <MetaTags title="Browse the winget repository - winstall" path="/" />
-        <div className={styles.intro}>
-          <div className="illu-box">
-            <div>
-              <h1>Browse the winget repository.</h1>
-              <p className={styles.lead}>Loading...</p>
-            </div>
-          </div>
-        </div>
+        <h1 className={styles.srOnly}>Browse the winget repository.</h1>
+        <p className={styles.loadingNote}>Loading...</p>
         <Footer />
       </div>
     );
@@ -83,33 +85,10 @@ function Home({
     return <Error detail={clientError} />;
   }
 
-  const packagesCount = `${Math.floor(data.appsTotal / 50) * 50}+ packages and growing.`;
-
   return (
     <div>
       <MetaTags title="Browse the winget repository - winstall" path="/" />
-      <div className={styles.intro}>
-        <div className="illu-box">
-          <div>
-            <h1>
-              Browse the winget <br/>repository.
-            </h1>
-            <p className={styles.lead}>
-              Install Windows apps quickly with Windows Package Manager.
-            </p>
-            {data.appsTotal > 0 && (
-              <p className={styles.count}>{packagesCount}</p>
-            )}
-          </div>
-          <div className="art">
-              <img
-                src="/assets/logo.svg"
-                draggable={false}
-                alt="winstall logo"
-              />
-            </div>
-        </div>
-      </div>
+      <h1 className={styles.srOnly}>Browse the winget repository.</h1>
 
       <HomeCarousel
         topApp={data.trendingApps[0]}

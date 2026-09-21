@@ -157,6 +157,8 @@
   color: var(--nav-muted, #8e8e9f);
   font-weight: 500;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .navBtn {

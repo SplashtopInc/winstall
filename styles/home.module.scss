@@ -44,19 +44,33 @@
   line-height: 1.5;
 }
 
-.count {
-  font-size: 14px;
-  color: var(--hero-count, #8e8e9f);
+.srOnly {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  white-space: nowrap;
+}
+
+.loadingNote {
+  margin: 24px 0 0;
+  font-size: 15px;
   font-weight: 600;
-  margin-top: 12px;
-  margin-bottom: 0;
+  color: var(--hero-lead, #5c5c70);
 }
 
 :global(.dark) {
   .intro,
   .generateHero {
     --hero-lead: rgba(255, 255, 255, 0.7);
-    --hero-count: rgba(255, 255, 255, 0.55);
+  }
+
+  .loadingNote {
+    color: rgba(255, 255, 255, 0.7);
   }
 }
 
