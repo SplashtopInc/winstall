@@ -1,7 +1,7 @@
 import fetchWinstallAPI from "./fetchWinstallAPI";
-import { mapStatsPayload } from "./engagementStats";
+import { mapLikePayload, mapStatsPayload } from "./engagementStats";
 
-export { formatCount, mapStatsPayload } from "./engagementStats";
+export { formatCount, mapLikePayload, mapStatsPayload } from "./engagementStats";
 
 async function fetchStats(path) {
   const { response, error, status } = await fetchWinstallAPI(path);
@@ -14,6 +14,31 @@ export async function fetchAppStats(id) {
 
 export async function fetchPackStats(id) {
   return fetchStats(`/packs/${encodeURIComponent(id)}/stats`);
+}
+
+/**
+ * @param {"app" | "pack"} targetType
+ * @param {string} targetId
+ */
+export async function fetchResourceLike(targetType, targetId) {
+  const base = targetType === "pack" ? "packs" : "apps";
+  const { response, error, status } = await fetchWinstallAPI(
+    `/${base}/${encodeURIComponent(targetId)}/like`
+  );
+
+  if (error || !response) {
+    return {
+      like: null,
+      error,
+      status,
+    };
+  }
+
+  return {
+    like: mapLikePayload(response),
+    error: null,
+    status,
+  };
 }
 
 /**

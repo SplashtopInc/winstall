@@ -1,7 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-test("mapStatsPayload maps API stats fields", async () => {
+test("mapStatsPayload maps API stats fields without liked", async () => {
   const { mapStatsPayload } = await import("../utils/engagementStats.js");
 
   assert.deepEqual(
@@ -12,17 +12,32 @@ test("mapStatsPayload maps API stats fields", async () => {
       likeCount: 428,
       liked: true,
     }),
-    { views: 12400, downloads: 3100, likeCount: 428, liked: true }
+    { views: 12400, downloads: 3100, likeCount: 428 }
   );
 
   assert.deepEqual(mapStatsPayload({ id: "x" }), {
     views: 0,
     downloads: 0,
     likeCount: 0,
-    liked: false,
   });
 
   assert.equal(mapStatsPayload(null), null);
+});
+
+test("mapLikePayload maps liked and likeCount", async () => {
+  const { mapLikePayload } = await import("../utils/engagementStats.js");
+
+  assert.deepEqual(
+    mapLikePayload({ id: "Mozilla.Firefox", liked: true, likeCount: 428 }),
+    { liked: true, likeCount: 428 }
+  );
+
+  assert.deepEqual(mapLikePayload({ id: "x", liked: false, likeCount: 0 }), {
+    liked: false,
+    likeCount: 0,
+  });
+
+  assert.equal(mapLikePayload(null), null);
 });
 
 test("formatCount shortens with K M B", async () => {

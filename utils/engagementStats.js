@@ -35,6 +35,13 @@ export function mapStatsPayload(raw) {
     views: Number(raw.viewCount) || 0,
     downloads: Number(raw.downloadCount) || 0,
     likeCount: Number(raw.likeCount) || 0,
+  };
+}
+
+export function mapLikePayload(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  return {
     liked: raw.liked === true,
+    likeCount: Number(raw.likeCount) || 0,
   };
 }

@@ -1,4 +1,4 @@
-import { isLikePath, isStatsPath } from "./engagementPaths";
+import { isLikePath } from "./engagementPaths";
 import { getRuntimeConfig } from "./runtimeConfig";
 import { isTrendingPath } from "./trendingData";
 
@@ -37,7 +37,6 @@ function prefersOptionalUserJwt(method, pathname) {
   ) {
     return true;
   }
-  if (method === "GET" && isStatsPath(pathname)) return true;
   return false;
 }
 
