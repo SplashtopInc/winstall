@@ -20,7 +20,6 @@ export default function About() {
 
       <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <div className={styles.heroBadge}>About</div>
           <h1>About winstall</h1>
           <p>
             winstall is a free, independent search engine built on top of Winget,

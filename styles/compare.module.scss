@@ -20,20 +20,6 @@
   gap: 16px;
 }
 
-.badge {
-  background: color-mix(in srgb, var(--accent) 15%, var(--main-bg));
-  padding: 5px 14px;
-  border-radius: 20px;
-
-  span {
-    font-weight: 700;
-    font-size: 13px;
-    letter-spacing: 0.78px;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-}
-
 .heroContent h1 {
   font-size: 45px;
   font-weight: 800;

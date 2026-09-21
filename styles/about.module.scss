@@ -35,19 +35,6 @@
   text-align: center;
 }
 
-.heroBadge {
-  display: inline-block;
-  background: var(--about-purple-light);
-  color: var(--about-purple);
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 5px 14px;
-  border-radius: 20px;
-  margin-bottom: 20px;
-}
-
 .heroContent {
   display: flex;
   flex-direction: column;

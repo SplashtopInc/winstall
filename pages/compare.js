@@ -84,9 +84,6 @@ export default function Compare() {
 
       <section className={styles.hero}>
         <div className={styles.heroContent}>
-          <div className={styles.badge}>
-            <span>COMPARISONS</span>
-          </div>
           <h1>See How Winstall.app Compares vs Alternatives</h1>
           <p>
             Thinking about switching to the modern Winget-powered way of installing apps?

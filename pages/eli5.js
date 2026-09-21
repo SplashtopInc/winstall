@@ -114,7 +114,6 @@ export default function Explainer() {
       </Head>
 
       <div className={styles.pageHero}>
-        <div className={styles.heroBadge}>Help</div>
         <h1>What Is Winget, and How Do You Actually Use It?</h1>
         <p className={styles.heroLead}>
           Winget is the app installer Microsoft already built into Windows.
