@@ -84,8 +84,7 @@
   align-items: center;
   justify-content: center;
 
-  img,
-  picture,
+  > :is(img, picture, span),
   picture img {
     width: 24px;
     height: 24px;
@@ -194,8 +193,7 @@
   align-items: center;
   justify-content: center;
 
-  img,
-  picture,
+  > :is(img, picture, span),
   picture img {
     width: 32px;
     height: 32px;
@@ -283,8 +281,7 @@
   }
 
   .thumbnail {
-    img,
-    picture,
+    > :is(img, picture, span),
     picture img {
       width: 28px;
       height: 28px;

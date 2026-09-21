@@ -169,8 +169,7 @@
   height: 28px;
   flex-shrink: 0;
 
-  img,
-  picture {
+  > :is(img, picture, span) {
     width: 24px;
     height: 24px;
     object-fit: contain;

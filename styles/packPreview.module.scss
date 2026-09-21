@@ -43,7 +43,7 @@
                 box-shadow: 0px 3px 5px #00000026;
                 
 
-                img, picture{
+                > :is(img, picture, span) {
                     width: 25px;
                     height: 25px;
                     margin: 0 auto;

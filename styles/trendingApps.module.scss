@@ -68,8 +68,7 @@
   background: var(--main-bg);
   overflow: hidden;
 
-  img,
-  picture {
+  > :is(img, picture, span) {
     width: 30px;
     height: 30px;
   }
