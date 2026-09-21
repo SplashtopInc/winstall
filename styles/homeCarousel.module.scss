@@ -410,31 +410,37 @@
 .adSlide {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 14px;
+  height: auto;
+  min-height: 320px;
+  overflow: visible;
   color: #fff;
   background: linear-gradient(135deg, #2979ff, #1565c0);
 
   h2 {
-    max-width: 18ch;
+    max-width: none;
     margin: 0;
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 800;
     letter-spacing: -0.03em;
-    line-height: 1.15;
+    line-height: 1.25;
   }
 
   > p {
-    max-width: 48ch;
-    margin: 12px 0 22px;
+    max-width: none;
+    margin: 0;
     font-size: 16px;
     font-weight: 600;
-    line-height: 1.45;
+    line-height: 1.5;
     opacity: 0.88;
   }
 
   > a {
     display: inline-flex;
     width: fit-content;
+    margin-top: 2px;
     padding: 8px 20px;
     align-items: center;
     border-radius: 999px;
@@ -447,9 +453,7 @@
 }
 
 .adBadge {
-  position: absolute;
-  top: 18px;
-  left: 18px;
+  position: static;
   z-index: 2;
   padding: 4px 10px;
   border-radius: 999px;
@@ -578,6 +582,20 @@
     height: 240px;
     min-height: 240px;
     padding: 24px 20px 56px;
+  }
+
+  .adSlide {
+    gap: 10px;
+    min-height: 240px;
+    height: auto;
+
+    h2 {
+      font-size: 22px;
+    }
+
+    > p {
+      font-size: 15px;
+    }
   }
 
   .story {
