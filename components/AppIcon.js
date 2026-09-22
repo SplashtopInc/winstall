@@ -12,6 +12,7 @@ import styles from "../styles/appIcon.module.scss";
 function GenericAppIcon() {
   return (
     <img
+      className={styles.iconImg}
       src="/generic-app-icon.svg"
       alt=""
       aria-hidden="true"
@@ -96,6 +97,7 @@ const ExternalAppIcon = ({ src }) => {
 
   return (
     <img
+      className={styles.iconImg}
       src={src}
       draggable={false}
       alt=""
@@ -117,10 +119,11 @@ const AppPicture = ({ srcSetPng, srcSetWebp }) => {
   }
 
   return (
-    <picture>
+    <picture className={styles.picture}>
       <source srcSet={srcSetWebp} type="image/webp" />
       <source srcSet={srcSetPng} type="image/png" />
       <img
+        className={styles.iconImg}
         src={srcSetPng}
         alt=""
         aria-hidden="true"

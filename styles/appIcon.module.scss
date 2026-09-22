@@ -17,3 +17,30 @@
   flex-shrink: 0;
   aspect-ratio: 1;
 }
+
+.picture {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 25px;
+  height: 25px;
+  margin: 0;
+  padding: 0;
+  line-height: 0;
+  flex-shrink: 0;
+
+  .iconImg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.iconImg {
+  display: block;
+  box-sizing: border-box;
+  width: 25px;
+  height: 25px;
+  margin: 0;
+  padding: 0;
+  object-fit: contain;
+}
