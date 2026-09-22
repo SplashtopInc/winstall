@@ -99,7 +99,7 @@
 
 .packTitleRow {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
 }
 
@@ -110,15 +110,13 @@
   font-size: 16px;
   font-weight: 700;
   line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .visibilityBadge {
   flex-shrink: 0;
-  margin-top: 2px;
   padding: 2px 8px;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--textColor) 18%, transparent);
@@ -143,6 +141,7 @@
 
 .packDescription {
   margin: 0;
+  min-height: calc(1.45em * 2);
   font-size: 14px;
   line-height: 1.45;
   color: var(--textColor);
@@ -205,13 +204,13 @@
   font-size: 13px;
   font-weight: 700;
   color: var(--textColor);
-  opacity: 0.6;
 }
 
 .packUpdated {
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  opacity: 0.55;
 
   svg {
     flex-shrink: 0;

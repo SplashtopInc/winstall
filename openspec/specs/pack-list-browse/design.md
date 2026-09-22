@@ -2,7 +2,7 @@
 
 约束见仓库根目录 `AGENTS.md` 与 `openspec/config.yaml`。需求见同目录 `spec.md`。
 
-`pages/packs/index.js` 无 `tab` 时 `activeTab` 为 `mine`。Public 用 `PACKS_PER_PAGE = 24` 信封追加。`PackCard` 为 Hub 轻卡：stack 身份、可选描述、最多 6 个 app 图标预览、相对时间与终身三连 counts。
+`pages/packs/index.js` 无 `tab` 时 `activeTab` 为 `mine`。Public 用 `PACKS_PER_PAGE = 24` 信封追加。`PackCard` 为 Hub 轻卡：stack 身份、名称单行省略、描述固定两行高度、最多 6 个 app 图标预览、相对时间与终身三连 counts。
 
 ## Goals / Non-Goals
 
@@ -38,7 +38,7 @@
 
 ### 3. Hub 轻卡：stack 身份 + 短图标预览
 
-**选择：** 左上用固定 pack/stack 符号（Feather `FiPackage`），不用首个 app 图标当 avatar。描述与 footer 之间保留最多 6 个 app 图标预览；溢出用 `+N`。无 app 时不渲染该行。应用数用 `apps.length` 或列表上的 `appCount`。作者读取条目上已有字段（`creator`/`user`/`author` 展示名）；没有就省略。
+**选择：** 左上用固定 pack/stack 符号（Feather `FiPackage`），不用首个 app 图标当 avatar。名称单行省略；描述固定两行高度（无描述也占位），避免同行卡片因文案长短错位。描述与 footer 之间保留最多 6 个 app 图标预览；溢出用 `+N`。无 app 时不渲染该行。应用数用 `apps.length` 或列表上的 `appCount`。作者读取条目上已有字段（`creator`/`user`/`author` 展示名）；没有就省略。
 
 **理由：** 纯文字轻卡信息层级正确但视觉偏空；图标条补「合集」内容感，同时身份区仍用 stack 符号，避免误读成单个 app。
 

@@ -62,7 +62,9 @@ export default function PackCard({ pack, href, showVisibility = true }) {
         </span>
         <div className={styles.packIdentityText}>
           <div className={styles.packTitleRow}>
-            <h3 className={styles.packTitle}>{pack.name}</h3>
+            <h3 className={styles.packTitle} title={pack.name}>
+              {pack.name}
+            </h3>
             {showVisibility && (
               <span className={styles.visibilityBadge}>{visibilityLabel}</span>
             )}
@@ -71,9 +73,12 @@ export default function PackCard({ pack, href, showVisibility = true }) {
         </div>
       </div>
 
-      {description ? (
-        <p className={styles.packDescription}>{description}</p>
-      ) : null}
+      <p
+        className={styles.packDescription}
+        title={description || undefined}
+      >
+        {description || "\u00a0"}
+      </p>
 
       {visibleApps.length > 0 && (
         <div className={styles.iconRow} aria-hidden="true">
