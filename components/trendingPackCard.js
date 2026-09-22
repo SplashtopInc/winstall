@@ -44,7 +44,6 @@ export default function TrendingPackCard({ pack }) {
           <TrendingCounts
             counts={readTrendingCounts(normalized)}
             className={countStyles.onPack}
-            likeIcon="heart"
             ariaLabel="Pack views, downloads, and likes"
           />
         </div>

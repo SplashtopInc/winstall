@@ -1,4 +1,4 @@
-import { FiDownload, FiEye, FiThumbsUp } from "react-icons/fi";
+import { FiDownload, FiEye, FiHeart } from "react-icons/fi";
 
 import { formatCount } from "../utils/engagementStats";
 import { readAppListCounts } from "../utils/appListCounts";
@@ -30,7 +30,7 @@ export default function AppListCounts({
         <span className={styles.hidden}>downloads</span>
       </li>
       <li className={styles.stat}>
-        <FiThumbsUp aria-hidden="true" />
+        <FiHeart aria-hidden="true" />
         <span>{likes}</span>
         <span className={styles.hidden}>likes</span>
       </li>

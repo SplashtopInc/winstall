@@ -30,7 +30,7 @@
 
 ### 2. 新计数行组件，不复用 `trendingCounts`
 
-**选择：** `components/appListCounts.js` + `styles/appListCounts.module.scss`。图标可同 Feather（`FiEye` / `FiDownload` / `FiThumbsUp`），顺序 views → downloads → likes。`aria-label` 用终身含义（例如 views, downloads, and likes），MUST NOT 写 this week。数字用既有 `formatCount`。
+**选择：** `components/appListCounts.js` + `styles/appListCounts.module.scss`。图标可同 Feather（`FiEye` / `FiDownload` / `FiHeart`），顺序 views → downloads → likes。`aria-label` 用终身含义（例如 views, downloads, and likes），MUST NOT 写 this week。数字用既有 `formatCount`。
 
 **理由：** `trendingCounts` 的无障碍文案和 `onHead` 样式绑在周榜上。货架卡密度不同，分开改更安全。
 

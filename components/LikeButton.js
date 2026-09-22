@@ -1,4 +1,4 @@
-import { FiThumbsUp } from "react-icons/fi";
+import { FiHeart } from "react-icons/fi";
 
 import { formatCount } from "../utils/engagementStats";
 
@@ -20,7 +20,7 @@ export default function LikeButton({
       disabled={pending}
       onClick={onClick}
     >
-      <FiThumbsUp aria-hidden="true" />
+      <FiHeart aria-hidden="true" />
       {label}
     </button>
   );
