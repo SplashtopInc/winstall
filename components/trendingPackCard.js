@@ -9,17 +9,6 @@ import {
 import styles from "../styles/trendingPacks.module.scss";
 import countStyles from "../styles/trendingCounts.module.scss";
 
-const PACK_GRADIENTS = [
-  styles.gHome,
-  styles.gGlobe,
-  styles.gStar,
-  styles.gMusic,
-  styles.gGame,
-  styles.gCode,
-  styles.gSocial,
-  styles.gSchool,
-];
-
 const PREVIEW_APP_LIMIT = 5;
 
 function readPackAppTotal(pack) {
@@ -31,10 +20,8 @@ function readPackAppTotal(pack) {
   return reported || listed;
 }
 
-export default function TrendingPackCard({ pack, index = 0 }) {
+export default function TrendingPackCard({ pack }) {
   const normalized = normalizeTrendingPack(pack);
-  const gradientClass =
-    PACK_GRADIENTS[index % PACK_GRADIENTS.length] || styles.gHome;
   const apps = Array.isArray(normalized.apps) ? normalized.apps : [];
   const previewApps = apps.slice(0, PREVIEW_APP_LIMIT);
   const overflowCount = Math.max(0, readPackAppTotal(normalized) - previewApps.length);
@@ -47,7 +34,7 @@ export default function TrendingPackCard({ pack, index = 0 }) {
       aria-label={`View pack ${normalized.title}`}
     >
       <div className={styles.packInner}>
-        <div className={`${styles.packHead} ${gradientClass}`}>
+        <div className={styles.packHead}>
           <h3 className={styles.packTitle} title={normalized.title}>
             {normalized.title}
           </h3>
@@ -56,7 +43,9 @@ export default function TrendingPackCard({ pack, index = 0 }) {
           </p>
           <TrendingCounts
             counts={readTrendingCounts(normalized)}
-            className={countStyles.onHead}
+            className={countStyles.onPack}
+            likeIcon="heart"
+            ariaLabel="Pack views, downloads, and likes"
           />
         </div>
 

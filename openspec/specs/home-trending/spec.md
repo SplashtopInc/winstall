@@ -2,7 +2,7 @@
 
 ## Purpose
 
-首页 Discover 从公开 API 展示 App 与 Pack 周热度榜；某一侧 `data` 为空则不渲染该块；顶部轮播在有周榜时展示第 1 名 App，并沿用现有首页广告。
+首页 Discover 从公开 API 展示 App 周热度榜，以及来自 `GET /packs/trending` 的 Featured Packs；某一侧 `data` 为空则不渲染该块；顶部轮播在有周榜时展示第 1 名 App，并沿用现有首页广告。
 
 ## Requirements
 
@@ -20,15 +20,15 @@
 
 ### Requirement: 空榜不展示对应板块
 
-仅当 App 榜成功读到至少一条 `data` 时，首页 MUST 渲染 Trending Apps。仅当 Pack 榜成功读到至少一条 `data` 时，首页 MUST 渲染 Trending Packs。两块 MUST 独立隐藏。
+仅当 App 榜成功读到至少一条 `data` 时，首页 MUST 渲染 Trending Apps。仅当 Pack 榜成功读到至少一条 `data` 时，首页 MUST 渲染 Featured Packs。两块 MUST 独立隐藏。
 
 #### Scenario: App 空榜只隐藏 App 板块
 - **WHEN** App trending 的 `data` 为空或读取失败，且 Pack trending 的 `data` 有条目
-- **THEN** 首页 MUST 省略 Trending Apps，且 MUST 仍展示 Trending Packs
+- **THEN** 首页 MUST 省略 Trending Apps，且 MUST 仍展示 Featured Packs
 
 #### Scenario: Pack 空榜只隐藏 Pack 板块
 - **WHEN** Pack trending 的 `data` 为空或读取失败，且 App trending 的 `data` 有条目
-- **THEN** 首页 MUST 省略 Trending Packs，且 MUST 仍展示 Trending Apps
+- **THEN** 首页 MUST 省略 Featured Packs，且 MUST 仍展示 Trending Apps
 
 #### Scenario: 两侧皆空则两块都不出现
 - **WHEN** 两次 trending 读取均为空或失败
@@ -36,19 +36,19 @@
 
 ### Requirement: 周榜卡片展示窗口互动计数
 
-已渲染的 Trending Apps 卡与 Trending Packs 卡片 MUST 展示该条目周榜 payload 上的窗口 `likes`、`downloads`、`views`。MUST NOT 用终身 `likeCount` 或 `downloadCount` 替代这三项。缺省值 MUST 按 0 展示。每项可见数字 MUST 遵循 `engagement-count-format` 的紧凑单位（小于 1000 为精确整数，大于或等于 1000 为一位小数的 `K` / `M` / `B`，不加 `+`）。首页顶部轮播若展示同一套窗口计数，MUST 使用同一格式。
+已渲染的 Trending Apps 卡与 Featured Packs 卡片 MUST 展示该条目周榜 payload 上的窗口 `likes`、`downloads`、`views`。MUST NOT 用终身 `likeCount` 或 `downloadCount` 替代这三项。缺省值 MUST 按 0 展示。每项可见数字 MUST 遵循 `engagement-count-format` 的紧凑单位（小于 1000 为精确整数，大于或等于 1000 为一位小数的 `K` / `M` / `B`，不加 `+`）。首页顶部轮播若展示同一套窗口计数，MUST 使用同一格式。
 
 #### Scenario: 周榜条目展示 like、download、view
-- **WHEN** 用户看到已渲染的 Trending Apps 或 Trending Packs
+- **WHEN** 用户看到已渲染的 Trending Apps 或 Featured Packs
 - **THEN** 每条 MUST 可见该条目的 like、download 与 view 数字
 
 ### Requirement: Trending Apps 为可勾选的扁平卡
 
-Trending Apps MUST 按 API 的 `rank` 顺序展示，最多 16 条，桌面为每行 4 卡的网格。每张卡 MUST 展示名次、名称和目录图标（MUST NOT 使用精选 Popular Apps 的 `img` 资源）。选中控件 MUST 默认隐藏，在卡片 hover（或触控设备上始终）可见，风格与现有 PrettyApp 勾选一致；激活 MUST 把该 App 加入或移出首页现有安装脚本选择集。激活应用身份 MUST 进入该 App 详情页。首页 MUST NOT 渲染 Popular Apps 板块。
+Trending Apps MUST 按 API 的 `rank` 顺序展示，最多 16 条，桌面为每行 4 卡的网格。每张卡 MUST 展示名称和目录图标（MUST NOT 使用精选 Popular Apps 的 `img` 资源）。卡片 MUST NOT 展示 `#N` 或其它可见名次。选中控件 MUST 默认隐藏，在卡片 hover（或触控设备上始终）可见，风格与现有 PrettyApp 勾选一致；激活 MUST 把该 App 加入或移出首页现有安装脚本选择集。激活应用身份 MUST 进入该 App 详情页。首页 MUST NOT 渲染 Popular Apps 板块。
 
 #### Scenario: 按接口名次展示卡
 - **WHEN** App trending 的 `data` 含多条
-- **THEN** 该板块 MUST 按 `rank` 顺序展示，且名次与名称可见
+- **THEN** 该板块 MUST 按 `rank` 顺序展示，且名称可见，MUST NOT 在卡片上展示 `#N`
 
 #### Scenario: App 板块最多展示 16 条
 - **WHEN** App trending 的 `data` 超过 16 条
@@ -62,21 +62,25 @@ Trending Apps MUST 按 API 的 `rank` 顺序展示，最多 16 条，桌面为�
 - **WHEN** 用户打开首页
 - **THEN** 页面 MUST NOT 渲染 Popular Apps 板块
 
-### Requirement: Trending Packs 使用无周次名次的合集卡
+### Requirement: Featured Packs 使用与 App 卡同底的合集卡
 
-Trending Packs MUST 用渐变头卡片渲染每条：标题、描述、窗口计数、内含应用列表。板块 MUST 按 API 的 `rank` 顺序展示，最多 8 条。整张卡 MUST 可激活并进入 Pack 详情，MUST NOT 再单独展示 View Pack 文案。卡片 MUST 使用当前 Pack 的 `name` / `description`，MUST NOT 写死 pack id 列表。卡片 MUST NOT 展示 `#N this week`、`this week` 或其它周次名次。渐变色可按展示顺序轮换，MUST NOT 依赖 API 返回主题字段。
+Featured Packs MUST 用卡片渲染每条：标题、描述、窗口计数、内含应用列表。整卡背景 MUST 使用与首页 Trending Apps 卡相同的 `var(--card-bg)`，MUST NOT 使用彩色渐变头。板块 MUST 按 API 的 `rank` 顺序展示，最多 8 条。整张卡 MUST 可激活并进入 Pack 详情，MUST NOT 再单独展示 View Pack 文案。卡片 MUST 使用当前 Pack 的 `name` / `description`，MUST NOT 写死 pack id 列表。卡片 MUST NOT 展示 `#N this week`、`this week` 或其它周次名次。已渲染板块的标题 MUST 为 `Featured Packs`，副标题 MUST 为 `Collections you can install as a set.` MUST NOT 使用 `Trending Packs` 作为板块标题。
 
 #### Scenario: Pack 卡打开详情
-- **WHEN** 用户激活一张周榜 pack 卡
+- **WHEN** 用户激活一张 Featured Pack 卡
 - **THEN** 必须进入该 Pack 的详情页
 
 #### Scenario: Pack 板块不使用精选 id
-- **WHEN** Trending Packs 渲染
+- **WHEN** Featured Packs 渲染
 - **THEN** 合集集合 MUST 来自 `GET /packs/trending` 的 `data`，MUST NOT 来自固定官方 pack id 列表
 
-#### Scenario: Pack 卡不展示周次名次
-- **WHEN** 用户看到已渲染的 Trending Packs
-- **THEN** 每张卡 MUST 含渐变头与标题，MUST NOT 展示 `#N this week` 或 `this week`，且 MUST NOT 展示 View Pack 文案
+#### Scenario: Pack 板块展示精选文案
+- **WHEN** Pack trending 的 `data` 有条目且板块已渲染
+- **THEN** 板块 MUST 展示标题 `Featured Packs` 与副标题 `Collections you can install as a set.`，MUST NOT 展示 `Trending Packs`
+
+#### Scenario: Pack 卡使用 App 卡同底且不展示周次名次
+- **WHEN** 用户看到已渲染的 Featured Packs
+- **THEN** 每张卡 MUST 含标题，背景 MUST 与 Trending Apps 卡同为 `var(--card-bg)`，MUST NOT 展示彩色渐变头，MUST NOT 展示 `#N this week` 或 `this week`，且 MUST NOT 展示 View Pack 文案
 
 #### Scenario: Pack 板块最多展示 8 条
 - **WHEN** Pack trending 的 `data` 超过 8 条

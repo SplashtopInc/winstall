@@ -1,4 +1,4 @@
-import { FiDownload, FiEye, FiThumbsUp } from "react-icons/fi";
+import { FiDownload, FiEye, FiHeart, FiThumbsUp } from "react-icons/fi";
 
 import { formatCount } from "../utils/engagementStats";
 import styles from "../styles/trendingCounts.module.scss";
@@ -7,17 +7,23 @@ function countItemClass(raw) {
   return Number(raw) > 0 ? styles.stat : `${styles.stat} ${styles.statZero}`;
 }
 
-export default function TrendingCounts({ counts, className = "" }) {
+export default function TrendingCounts({
+  counts,
+  className = "",
+  likeIcon = "thumbs",
+  ariaLabel = "This week's views, downloads, and likes",
+}) {
   if (!counts) return null;
 
   const likes = formatCount(counts.likes) ?? "0";
   const downloads = formatCount(counts.downloads) ?? "0";
   const views = formatCount(counts.views) ?? "0";
+  const LikeIcon = likeIcon === "heart" ? FiHeart : FiThumbsUp;
 
   return (
     <ul
       className={`${styles.counts} ${className}`.trim()}
-      aria-label="This week's views, downloads, and likes"
+      aria-label={ariaLabel}
     >
       <li className={countItemClass(counts.views)}>
         <FiEye aria-hidden="true" />
@@ -30,7 +36,7 @@ export default function TrendingCounts({ counts, className = "" }) {
         <span className={styles.hidden}>downloads</span>
       </li>
       <li className={countItemClass(counts.likes)}>
-        <FiThumbsUp aria-hidden="true" />
+        <LikeIcon aria-hidden="true" />
         <span>{likes}</span>
         <span className={styles.hidden}>likes</span>
       </li>

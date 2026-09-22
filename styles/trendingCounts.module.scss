@@ -59,14 +59,14 @@
   }
 }
 
-.onHead {
-  margin: 10px 0 0;
-  gap: 12px;
+.onPack {
+  margin: 4px 0 0;
+  gap: 14px;
 
   .stat {
-    color: #fff;
     font-size: 13px;
-    opacity: 0.88;
+    font-weight: 600;
+    opacity: 0.5;
 
     svg {
       width: 14px;
@@ -75,6 +75,6 @@
   }
 
   .statZero {
-    opacity: 0.38;
+    opacity: 0.32;
   }
 }

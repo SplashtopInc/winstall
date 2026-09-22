@@ -26,10 +26,10 @@
 
 ### Requirement: Pack 列表终身数与周榜窗口数分离
 
-首页已渲染的 Trending Packs 卡片 MUST 继续展示周榜 payload 上的窗口 `views`、`downloads`、`likes`。那些卡片 MUST NOT 改用列表终身 `viewCount` / `downloadCount` / `likeCount` 替代窗口三项。`PackCard` 上的计数行 MUST NOT 使用「this week」或等价周窗口文案。
+首页已渲染的 Featured Packs 卡片 MUST 继续展示周榜 payload 上的窗口 `views`、`downloads`、`likes`。那些卡片 MUST NOT 改用列表终身 `viewCount` / `downloadCount` / `likeCount` 替代窗口三项。`PackCard` 上的计数行 MUST NOT 使用「this week」或等价周窗口文案。
 
 #### Scenario: 首页周榜仍用窗口字段
-- **WHEN** 用户查看首页 Trending Packs
+- **WHEN** 用户查看首页 Featured Packs
 - **THEN** 卡片计数 MUST 来自该条目的窗口 `views` / `downloads` / `likes`，MUST NOT 改成只显示终身 `viewCount`
 
 #### Scenario: 列表卡不写 this week

@@ -8,7 +8,7 @@
 - 计数画在卡片底部元信息区：图标行之后、日期之前；视觉沿用货架计数行（图标 + 数字、中点分隔），不做成周榜那种铺在彩色头图上的主指标。
 - 保留「Last updated」；不把计数塞进标题或描述，不替换 app 图标排。
 - 只读列表 payload，不为每张卡打 `GET /packs/:id/stats`，不在卡片上点赞。
-- 首页 Trending Packs 继续用窗口 `views` / `downloads` / `likes`，不改用终身三项。
+- 首页 Featured Packs 继续用窗口 `views` / `downloads` / `likes`，不改用终身三项。
 - Pack 详情页仍读 `GET /packs/:id/stats`，本 change 不改详情。
 
 ## Capabilities

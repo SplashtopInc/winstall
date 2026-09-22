@@ -204,7 +204,7 @@ export default function HomeCarousel({ topApp, trendingPacks = [] }) {
           >
             <span className={styles.packDecor} aria-hidden="true" />
             <span className={styles.packBody}>
-              <span className={styles.packKicker}>Trending pack</span>
+              <span className={styles.packKicker}>Featured pack</span>
               <h2>{normalizedPack.title}</h2>
               <p className={styles.packDesc}>
                 {buildPackDescription(normalizedPack)}

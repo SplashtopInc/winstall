@@ -45,7 +45,6 @@ export default function TrendingApps({ apps = [] }) {
       <h3 className="blockSubtitle">Popular downloads this week.</h3>
       <ol className={styles.list}>
         {rankedApps.map((app) => {
-          const rank = Number(app.rank) || 0;
           const isSelected = selectedApps.some(
             (item) => item._id === app._id
           );
@@ -54,7 +53,7 @@ export default function TrendingApps({ apps = [] }) {
             <li
               className={`${styles.card} ${
                 isSelected ? styles.selected : ""
-              } ${rank > 0 && rank <= 3 ? styles.rankTop : ""}`}
+              }`}
               key={app._id}
             >
               <button
@@ -70,12 +69,6 @@ export default function TrendingApps({ apps = [] }) {
               >
                 {isSelected ? <FiCheck aria-hidden="true" /> : null}
               </button>
-
-              <div className={styles.top}>
-                <span className={styles.rank} aria-label={`Rank ${rank}`}>
-                  #{rank}
-                </span>
-              </div>
 
               <Link
                 href={`/apps/${encodeURIComponent(app._id)}`}

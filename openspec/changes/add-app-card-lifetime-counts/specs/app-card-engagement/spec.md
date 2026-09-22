@@ -35,7 +35,7 @@
 
 ### Requirement: 货架终身数与周榜窗口数分离
 
-首页已渲染的 Trending Apps 与 Trending Packs 卡片 MUST 继续展示周榜 payload 上的窗口 `views`、`downloads`、`likes`。那些卡片 MUST NOT 改用货架终身 `viewCount` / `downloadCount` / `likeCount` 替代窗口三项。货架 `SingleApp` 上的计数行 MUST NOT 使用「this week」或等价周窗口文案。
+首页已渲染的 Trending Apps 与 Featured Packs 卡片 MUST 继续展示周榜 payload 上的窗口 `views`、`downloads`、`likes`。那些卡片 MUST NOT 改用货架终身 `viewCount` / `downloadCount` / `likeCount` 替代窗口三项。货架 `SingleApp` 上的计数行 MUST NOT 使用「this week」或等价周窗口文案。
 
 #### Scenario: 首页周榜仍用窗口字段
 

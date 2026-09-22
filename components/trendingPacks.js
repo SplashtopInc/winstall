@@ -13,14 +13,14 @@ export default function TrendingPacks({ packs = [] }) {
   return (
     <section className="homeBlock">
       <div className="box">
-        <h2 className="blockHeader">Trending Packs</h2>
+        <h2 className="blockHeader">Featured Packs</h2>
       </div>
       <h3 className="blockSubtitle">
-        Popular collections you can install as a set.
+        Collections you can install as a set.
       </h3>
       <div className={styles.grid}>
-        {rankedPacks.map((pack, index) => (
-          <TrendingPackCard key={pack._id} pack={pack} index={index} />
+        {rankedPacks.map((pack) => (
+          <TrendingPackCard key={pack._id} pack={pack} />
         ))}
       </div>
     </section>

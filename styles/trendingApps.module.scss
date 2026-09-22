@@ -27,33 +27,12 @@
   border-color: var(--accent);
 }
 
-.top {
-  display: flex;
-  align-items: center;
-  min-height: 28px;
-  padding-right: 36px;
-}
-
-.rank {
-  font-variant-numeric: tabular-nums;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--textColor);
-  opacity: 0.45;
-}
-
-.rankTop .rank {
-  color: var(--accent);
-  opacity: 1;
-}
-
 .identity {
   display: flex;
   align-items: center;
   gap: 12px;
   min-width: 0;
+  padding-right: 36px;
   color: inherit;
   text-decoration: none;
 }

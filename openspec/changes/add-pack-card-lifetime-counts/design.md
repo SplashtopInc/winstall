@@ -2,7 +2,7 @@
 
 约束见仓库根目录 `AGENTS.md` 与 `openspec/config.yaml`。动机见 `proposal.md`。行为见 `specs/pack-card-engagement/spec.md` 与 `specs/detail-engagement/spec.md`。
 
-`GET /packs` 与 `GET /packs/me` 已平铺终身 `viewCount` / `downloadCount` / `likeCount`；`GET /packs/:id` 与 `GET /packs/trending` 不含这三项。`PackCard`（250px 高、四列）结构为：标题 → 描述（flex 吃剩余高度）→ app 图标排 → 底栏 Last updated。货架 App 卡已用 `readAppListCounts` + `AppListCounts`（`inline` 中点分隔）。首页 Trending Packs 把窗口计数铺在彩色头图上。
+`GET /packs` 与 `GET /packs/me` 已平铺终身 `viewCount` / `downloadCount` / `likeCount`；`GET /packs/:id` 与 `GET /packs/trending` 不含这三项。`PackCard`（250px 高、四列）结构为：标题 → 描述（flex 吃剩余高度）→ app 图标排 → 底栏 Last updated。货架 App 卡已用 `readAppListCounts` + `AppListCounts`（`inline` 中点分隔）。首页 Featured Packs 把窗口计数铺在彩色头图上。
 
 ## Goals / Non-Goals
 

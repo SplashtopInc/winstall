@@ -39,9 +39,11 @@
 .packHead {
   display: flex;
   flex-direction: column;
+  gap: 6px;
   min-width: 0;
   padding: 20px 20px 16px;
-  color: #fff;
+  border-bottom: 1px solid color-mix(in srgb, var(--textColor) 8%, transparent);
+  color: var(--textColor);
 }
 
 .packTitle {
@@ -50,25 +52,28 @@
   line-clamp: 2;
   -webkit-line-clamp: 2;
   overflow: hidden;
-  margin: 0 0 6px;
-  min-height: 2.5em;
+  margin: 0;
   font-size: 20px;
   font-weight: 800;
   line-height: 1.25;
-  color: #fff;
+  letter-spacing: -0.02em;
+  color: var(--textColor);
   overflow-wrap: anywhere;
 }
 
 .packDesc {
-  margin: 0;
-  min-height: 1.4em;
-  font-size: 14px;
-  line-height: 1.4;
-  opacity: 0.85;
-  color: #fff;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
+  margin: 0;
+  min-height: 2.8em;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--textColor);
+  opacity: 0.55;
 }
 
 .packApps {
@@ -104,9 +109,22 @@
   background: var(--main-bg);
   overflow: hidden;
 
-  > :is(img, picture, span, svg) {
-    width: 16px;
-    height: 16px;
+  :global(img),
+  :global(picture),
+  :global(picture img) {
+    width: 16px !important;
+    height: 16px !important;
+    max-width: 16px;
+    max-height: 16px;
+    margin: 0;
+    object-fit: contain;
+  }
+
+  :global(span) {
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 4px;
+    font-size: 10px;
   }
 }
 
@@ -122,44 +140,7 @@
   padding-left: 35px;
   font-size: 13px;
   font-weight: 700;
-  color: var(--textColor);
-  opacity: 0.5;
-}
-
-.gHome {
-  background-image: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
-}
-
-.gGlobe {
-  background-image: linear-gradient(
-    12deg,
-    rgb(110, 27, 220),
-    rgb(241, 56, 167) 100%
-  );
-}
-
-.gStar {
-  background-image: linear-gradient(to top, #aa39df 0%, #9b2fff 100%);
-}
-
-.gMusic {
-  background-image: linear-gradient(to top, #ff0844 0%, #ebaf35 100%);
-}
-
-.gGame {
-  background-image: linear-gradient(to top, #a8e063, #56ab2f);
-}
-
-.gCode {
-  background-image: linear-gradient(160deg, #111 0%, #007acc 100%);
-}
-
-.gSocial {
-  background-image: linear-gradient(160deg, #e4405f 0%, #8e2de2 100%);
-}
-
-.gSchool {
-  background-image: linear-gradient(160deg, #0b5cab 0%, #2d8cff 100%);
+  color: var(--accent);
 }
 
 @media (max-width: 1100px) {
