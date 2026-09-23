@@ -71,7 +71,7 @@ test("appsPagePath encodes special characters in query strings", async () => {
     appsPagePath("publisher: Notepad++ Team"),
     "/apps?q=publisher%3A+Notepad%2B%2B+Team"
   );
-  assert.equal(appsPagePath("tags: c++", { page: 2 }), "/apps?q=tags%3A+c%2B%2B&page=2");
+  assert.equal(appsPagePath("tags: c++"), "/apps?q=tags%3A+c%2B%2B");
   assert.equal(
     publisherAppsPagePath("Notepad++ Team"),
     "/apps?q=publisher%3A+Notepad%2B%2B+Team"

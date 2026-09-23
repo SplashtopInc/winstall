@@ -133,7 +133,7 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
     if (onSearch) onSearch(query);
     if (onEmptyChange) onEmptyChange(false);
 
-    // /apps?q= results are owned by the page list + pagination
+    // /apps?q= results are owned by the page list + Load more
     if (hideInput) {
       setResults([]);
       setHasSearchResponse(false);
