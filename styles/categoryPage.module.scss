@@ -27,6 +27,14 @@
   }
 }
 
+.adCell {
+  > * {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+  }
+}
+
 .loadMoreWrap {
   display: flex;
   justify-content: center;

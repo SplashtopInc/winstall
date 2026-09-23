@@ -1,18 +1,21 @@
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
 import PageWrapper from "../components/PageWrapper";
 import MetaTags from "../components/MetaTags";
 import SingleApp from "../components/SingleApp";
+import DonateCard from "../components/DonateCard";
 import Error from "../components/Error";
 import CategoryTabs from "../components/categoryTabs";
 import ShelfListSkeleton from "../components/shelfListSkeleton";
+import useRandomAd from "../hooks/useRandomAd";
 import { fetchCategoryApps } from "../utils/fetchCategoryApps";
 import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
 import { CATEGORY_LABELS, CATEGORY_SLUGS } from "../utils/categoryMeta";
 import styles from "../styles/categoryPage.module.scss";
 
 export const PAGE_SIZE = 56;
+export const SHELF_AD_INTERVAL = 15;
 
 export { CATEGORY_LABELS, CATEGORY_SLUGS };
 
@@ -38,6 +41,7 @@ function CategoryPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState("");
+  const shelfAd = useRandomAd("apps-list");
 
   const syncCategoryToUrl = useCallback(
     (slug) => {
@@ -197,11 +201,21 @@ function CategoryPage() {
         ) : (
           <>
             <ul className={styles.grid}>
-              {apps.map((app) => (
-                <li key={app._id || app.id || app.packageId || app.name}>
-                  <SingleApp app={app} showSelectCheckbox />
-                </li>
-              ))}
+              {apps.map((app, index) => {
+                const appKey = app._id || app.id || app.packageId || app.name;
+                return (
+                  <Fragment key={appKey}>
+                    <li>
+                      <SingleApp app={app} showSelectCheckbox />
+                    </li>
+                    {shelfAd && index % SHELF_AD_INTERVAL === 0 && (
+                      <li className={styles.adCell}>
+                        <DonateCard addMargin="" placement="apps-list" />
+                      </li>
+                    )}
+                  </Fragment>
+                );
+              })}
             </ul>
 
             {showLoadMore && (
