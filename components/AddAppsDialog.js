@@ -425,7 +425,7 @@ export default function AddAppsDialog({
       if (exists) {
         return current.filter((item) => getAppId(item) !== id);
       }
-      return [...current, { ...app, selectedVersion: app.latestVersion }];
+      return [...current, { ...app, appVersion: "" }];
     });
   };
 

@@ -370,7 +370,6 @@ export default function AppDetailView({ app }) {
 
         <LikeButton
           liked={Boolean(stats?.liked)}
-          likeCount={stats?.likeCount ?? 0}
           pending={likePending}
           onClick={onLikeClick}
           className={`${styles.likeBtn} ${stats?.liked ? styles.likeBtnOn : ""}`}

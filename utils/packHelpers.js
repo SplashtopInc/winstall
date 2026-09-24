@@ -3,6 +3,11 @@ import {
   hasInstallOptions,
   normalizeInstallOptions,
 } from "./installOptions";
+import {
+  getCatalogLatestVersion,
+  normalizeAppVersionPin,
+  resolvePackAppVersion,
+} from "./installVersion.js";
 
 function getAppId(app) {
   return app?.appId || app?._id;
@@ -11,16 +16,21 @@ function getAppId(app) {
 export function normalizePackDetailApps(apps = []) {
   return (apps || []).map((app) => {
     const appId = getAppId(app);
-    const pinnedVersion =
-      app.selectedVersion ?? app.appVersion ?? app.latestVersion ?? "";
+    const rawPin = normalizeAppVersionPin(app.appVersion);
+    const { displayVersion } = resolvePackAppVersion({
+      ...app,
+      appVersion: rawPin,
+    });
+    const catalogLatest = getCatalogLatestVersion(app);
     const { likeCount, likes, ...rest } = app;
 
     return {
       ...rest,
       _id: appId || app._id,
       unavailable: app.available === false || Boolean(app.unavailable),
-      selectedVersion: pinnedVersion,
-      appVersion: pinnedVersion,
+      appVersion: rawPin,
+      selectedVersion: displayVersion,
+      latestVersion: catalogLatest,
     };
   });
 }
@@ -29,11 +39,14 @@ export function toAppSnapshot(app) {
   const appId = getAppId(app);
   if (!appId) return null;
 
+  const pin = Object.prototype.hasOwnProperty.call(app || {}, "appVersion")
+    ? normalizeAppVersionPin(app.appVersion)
+    : "";
+
   const snapshot = {
     appId,
     appName: app.appName ?? app.name ?? "",
-    appVersion:
-      app.selectedVersion ?? app.appVersion ?? app.latestVersion ?? "",
+    appVersion: pin,
     icon: app.icon,
     publisher: app.publisher,
   };
@@ -104,14 +117,16 @@ export function mergeAppsWithEnrichedData(existingApps = [], apiApps = []) {
       merged.publisher = existing.publisher;
     }
 
-    merged.appVersion =
-      existing.appVersion ?? existing.selectedVersion ?? apiApp.latestVersion ?? "";
-    merged.selectedVersion =
-      existing.selectedVersion ?? existing.appVersion ?? apiApp.latestVersion ?? "";
-
-    if (existing.latestVersion && existing.latestVersion !== merged.appVersion) {
-      merged.latestVersion = existing.latestVersion;
-    }
+    merged.appVersion = normalizeAppVersionPin(
+      existing.appVersion ?? apiApp.appVersion
+    );
+    const resolved = resolvePackAppVersion({
+      ...merged,
+      appVersion: merged.appVersion,
+    });
+    merged.selectedVersion = resolved.displayVersion;
+    merged.latestVersion =
+      getCatalogLatestVersion(merged) || existing.latestVersion || "";
 
     return merged;
   });

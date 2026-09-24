@@ -36,6 +36,10 @@ import {
   removeAppFromPack,
   syncOwnPacksCacheEntry,
 } from "../../utils/packHelpers";
+import {
+  getCatalogLatestVersion,
+  resolvePackAppVersion,
+} from "../../utils/installVersion";
 import { getIconBase } from "../../utils/runtimeConfig";
 import { trackPackStats } from "../../utils/trackPackStats";
 import {
@@ -428,7 +432,7 @@ export default function PackDetailPage() {
   };
 
   const handleVersionChange = (app, nextVersion) => {
-    if (!isOwner || !nextVersion) return;
+    if (!isOwner || nextVersion == null) return;
 
     let nextApps = [];
 
@@ -436,10 +440,14 @@ export default function PackDetailPage() {
       nextApps = current.map((item) => {
         if (item._id !== app._id) return item;
 
+        const appVersion = nextVersion;
+        const resolved = resolvePackAppVersion({ ...item, appVersion });
+
         return {
           ...item,
-          appVersion: nextVersion,
-          selectedVersion: nextVersion,
+          appVersion,
+          selectedVersion: resolved.displayVersion,
+          latestVersion: getCatalogLatestVersion(item),
         };
       });
       return nextApps;
@@ -578,13 +586,7 @@ export default function PackDetailPage() {
   }
 
   const appCount = apps.length;
-  const installableApps = apps
-    .filter((app) => !app.unavailable)
-    .map((app) => ({
-      ...app,
-      selectedVersion:
-        app.selectedVersion || app.appVersion || app.latestVersion,
-    }));
+  const installableApps = apps.filter((app) => !app.unavailable);
   const metaDesc =
     appCount > 0
       ? `${pack.description} Includes ${apps
@@ -664,7 +666,6 @@ export default function PackDetailPage() {
 
             <LikeButton
               liked={Boolean(stats?.liked)}
-              likeCount={stats?.likeCount ?? 0}
               pending={likePending}
               onClick={onLikeClick}
               className={`${styles.likeBtn} ${stats?.liked ? styles.likeBtnOn : ""}`}
@@ -734,6 +735,7 @@ export default function PackDetailPage() {
                   onConfig={handleAppSettings}
                   onDelete={handleDeleteApp}
                   onVersionChange={isOwner ? handleVersionChange : undefined}
+                  allowUnpinnedVersion={isOwner}
                 />
               </li>
             ))}

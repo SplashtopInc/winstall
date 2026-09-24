@@ -1,4 +1,5 @@
 import getEffectiveConfig from "./getEffectiveConfig";
+import { getPinnedInstallVersion } from "./installVersion";
 
 export function buildInstallerOptions(sourceFilters = {}) {
   const options = {
@@ -28,10 +29,7 @@ export function buildInstallerConfig(apps, filters = {}) {
     apps: (apps || []).map((app) => ({
       name: app.name,
       id: app._id,
-      version:
-        app.selectedVersion !== app.latestVersion
-          ? app.selectedVersion
-          : undefined,
+      version: getPinnedInstallVersion(app),
       options: buildInstallerOptions(
         getEffectiveConfig(filters, app.installOptions)
       ),

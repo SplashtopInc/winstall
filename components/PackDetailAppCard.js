@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   FiClock,
@@ -9,7 +9,8 @@ import {
   FiChevronDown,
 } from "react-icons/fi";
 import AppIcon from "./AppIcon";
-import { compareVersion, timeAgo } from "../utils/helpers";
+import { timeAgo } from "../utils/helpers";
+import { resolvePackAppVersion } from "../utils/installVersion";
 import styles from "../styles/packDetail.module.scss";
 
 export default function PackDetailAppCard({
@@ -20,29 +21,30 @@ export default function PackDetailAppCard({
   onConfig,
   onDelete,
   onVersionChange,
+  allowUnpinnedVersion = false,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
   const unavailable = Boolean(app.unavailable);
+  // API returns versions with tip first — do not re-sort.
+  const versions = Array.isArray(app.versions) ? app.versions : [];
 
-  const versions = useMemo(() => {
-    if (!app.versions?.length) return [];
+  const { displayVersion, pinnedVersion } = allowUnpinnedVersion
+    ? resolvePackAppVersion(app)
+    : {
+        displayVersion:
+          app.selectedVersion || app.appVersion || app.latestVersion || "",
+        pinnedVersion: app.selectedVersion || app.appVersion || "",
+      };
 
-    if (app.versions.length === 1) {
-      return app.versions;
-    }
-
-    return [...app.versions].sort((a, b) =>
-      compareVersion(b.version, a.version)
-    );
-  }, [app.versions]);
-
-  const displayVersion =
-    app.selectedVersion || app.appVersion || app.latestVersion;
+  const selectValue = allowUnpinnedVersion ? pinnedVersion || "" : displayVersion;
   const canManage = showActions ?? isOwner;
   const canSelectVersion =
-    canManage && !unavailable && versions.length > 1 && onVersionChange;
+    canManage &&
+    !unavailable &&
+    onVersionChange &&
+    (allowUnpinnedVersion ? versions.length >= 1 : versions.length > 1);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -110,11 +112,14 @@ export default function PackDetailAppCard({
         <span className={styles.versionLabel}>v{displayVersion}</span>
         <select
           className={styles.versionSelector}
-          value={displayVersion}
+          value={selectValue}
           onClick={(event) => event.stopPropagation()}
           onChange={handleVersionSelect}
           aria-label={`Select version for ${app.name}`}
         >
+          {allowUnpinnedVersion && (
+            <option value="">Latest</option>
+          )}
           {versions.map((entry) => (
             <option key={entry.version} value={entry.version}>
               v{entry.version}

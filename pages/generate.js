@@ -112,7 +112,7 @@ function Generate() {
       const apply = (list) =>
         list.map((item) =>
           item._id === app._id
-            ? { ...item, selectedVersion: nextVersion, appVersion: nextVersion }
+            ? { ...item, selectedVersion: nextVersion }
             : item
         );
       setApps(apply);

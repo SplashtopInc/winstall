@@ -1,3 +1,5 @@
+import { getPinnedInstallVersion } from "./installVersion";
+
 // schema from https://raw.githubusercontent.com/microsoft/winget-cli/master/schemas/JSON/packages/packages.schema.1.0.json
 
 let wingetImportSchema = {
@@ -24,7 +26,11 @@ const generateWingetImport = async (apps) => {
     await apps.map(app => {
         const individualPackage = {
             "Id": app._id,
-            "Version": app.selectedVersion
+        }
+
+        const pinnedVersion = getPinnedInstallVersion(app);
+        if (pinnedVersion) {
+            individualPackage.Version = pinnedVersion;
         }
 
         packages.push(individualPackage);

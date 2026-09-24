@@ -3,6 +3,7 @@ import styles from "../../styles/exportApps.module.scss";
 import generateWingetImport from "../../utils/generateWingetImport";
 import getEffectiveConfig from "../../utils/getEffectiveConfig";
 import { DEFAULT_INSTALL_FILTERS } from "../../utils/defaultInstallOptions";
+import { getPinnedInstallVersion } from "../../utils/installVersion";
 import GenericExport from "./GenericExport";
 import InstallerExport from "./InstallerExport";
 import AdvancedConfig from "./AdvancedConfig";
@@ -107,9 +108,11 @@ const ExportApps = ({
 
         apps.map((app) => {
             const appFilters = buildFilterString(getEffectiveConfig(filters, app.installOptions));
+            const pinnedVersion = getPinnedInstallVersion(app);
+            const versionFlag = pinnedVersion ? ` -v "${pinnedVersion}"` : "";
 
             installs.push(
-                `winget install --id=${app._id}${app.selectedVersion !== app.latestVersion ? ` -v "${app.selectedVersion}"` : ""} -e ${appFilters}`
+                `winget install --id=${app._id}${versionFlag} -e ${appFilters}`
             );
             return app;
         });

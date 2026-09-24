@@ -102,7 +102,7 @@ When a Pack detail page loads, the web app MUST request `GET /packs/:id/stats` o
 
 ### Requirement: Pack like uses the API
 
-Pack like and unlike MUST be sent to winstall-api with the session API JWT. The signed-in like status and visible like count on Pack detail MUST be read from `GET /packs/:id/like` with that JWT. The web app MUST NOT restore a local PackLike document model or a local `/api/packs` like route.
+Pack like and unlike MUST be sent to winstall-api with the session API JWT. The signed-in like status on Pack detail MUST be read from `GET /packs/:id/like` with that JWT. Pack detail MUST NOT display a like count. The web app MUST NOT restore a local PackLike document model or a local `/api/packs` like route.
 
 #### Scenario: Pack like does not use a local store
 - **WHEN** a signed-in user likes or unlikes a pack
@@ -110,7 +110,7 @@ Pack like and unlike MUST be sent to winstall-api with the session API JWT. The 
 
 #### Scenario: Pack like status uses GET like
 - **WHEN** a signed-in user opens a Pack detail page
-- **THEN** the client MUST call `GET /packs/:id/like` on the API origin with the session JWT and MUST NOT take the pressed state or the visible like count from `GET /packs/:id/stats`
+- **THEN** the client MUST call `GET /packs/:id/like` on the API origin with the session JWT and MUST NOT take the pressed state from `GET /packs/:id/stats`, and MUST NOT display a like count
 
 ### Requirement: Pack 详情直接消费补齐后的 apps
 
