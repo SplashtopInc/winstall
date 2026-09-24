@@ -79,10 +79,8 @@ async function pollStatus(statusUrl, timeoutMs = 60000) {
 }
 
 export function installerFilename(apps) {
-  const appSlug = (apps[0]?.name || "apps")
-    .replace(/[^a-zA-Z0-9]/g, "_")
-    .replace(/_+/g, "_")
-    .replace(/^_|_$/g, "");
+  const appSlug = (apps[0]?._id || "apps")
+    .replace(/\./g, "_");
   return `winstall-${appSlug}${apps.length > 1 ? "-etc" : ""}.exe`;
 }
 

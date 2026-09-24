@@ -109,3 +109,27 @@ The App detail page MUST show a Download installer control on the same action ro
 #### Scenario: Copy stays on the command
 - **WHEN** a user views an App detail page
 - **THEN** Copy MUST remain on the command box and the command format MUST stay `winget install -e --id …`
+
+### Requirement: Instant installer download filename formatting
+
+When triggering an instant installer download, the client MUST derive the executable filename using the package identifier (`_id` or `id`), NOT the display name (`name`), to guarantee filesystem-safe ASCII names across all locales. Dots (`.`) in the package identifier MUST be converted to underscores (`_`). When more than one app is selected, the suffix `-etc` MUST be appended before the `.exe` extension.
+
+#### Scenario: Single app installer filename
+- **WHEN** a user downloads an instant installer for a single app (e.g., `_id: "Tencent.WeChat"`)
+- **THEN** the downloaded filename MUST be `winstall-Tencent_WeChat.exe`
+
+#### Scenario: Multiple apps installer filename
+- **WHEN** a user downloads an instant installer for multiple apps where the first app is `Tencent.WeChat`
+- **THEN** the downloaded filename MUST be `winstall-Tencent_WeChat-etc.exe`
+
+#### Scenario: Fallback when identifier is missing
+- **WHEN** a user downloads an instant installer without an app identifier
+- **THEN** the downloaded filename MUST fall back to `winstall-apps.exe`
+
+## References
+
+### WinGet Manifest Schemas
+- Version Schema (1.12.0): https://aka.ms/winget-manifest.version.1.12.0.schema.json
+- Installer Schema (1.12.0): https://aka.ms/winget-manifest.installer.1.12.0.schema.json
+- DefaultLocale Schema (1.12.0): https://aka.ms/winget-manifest.defaultLocale.1.12.0.schema.json
+
