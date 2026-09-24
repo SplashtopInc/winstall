@@ -14,454 +14,127 @@
   position: relative;
   box-sizing: border-box;
   flex: 0 0 100%;
-  height: 320px;
-  min-height: 320px;
-  padding: 28px 28px 56px;
+  height: 260px;
+  min-height: 260px;
   overflow: hidden;
 }
 
-.story {
-  --story-tint: #5b8def;
+.adSlide {
   display: grid;
-  grid-template-columns: minmax(140px, 0.52fr) minmax(0, 1.48fr);
+  grid-template-columns: minmax(120px, 0.42fr) minmax(0, 1.58fr);
   align-items: center;
-  gap: 32px;
-  padding: 28px 48px 56px 36px;
-  text-decoration: none;
+  gap: 28px;
+  padding: 24px 48px 52px 28px;
   color: #1b1b22;
-  background:
-    radial-gradient(
-      ellipse 120% 90% at 14% 52%,
-      color-mix(in srgb, var(--story-tint) 34%, transparent) 0%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 70% 55% at 92% 8%,
-      color-mix(in srgb, var(--story-tint) 14%, #ffffff) 0%,
-      transparent 72%
-    ),
-    linear-gradient(
-      128deg,
-      color-mix(in srgb, var(--story-tint) 6%, #fcfdff) 0%,
-      color-mix(in srgb, var(--story-tint) 14%, #ffffff) 42%,
-      color-mix(in srgb, var(--story-tint) 22%, #f3f7fc) 100%
-    );
-
-  h2 {
-    position: relative;
-    z-index: 1;
-    max-width: 16ch;
-    margin: 0;
-    color: #15151c;
-    font-size: 34px;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    line-height: 1.08;
-  }
+  background: linear-gradient(
+    to bottom,
+    var(--ad-start-color, #e7dffd),
+    var(--ad-end-color, #cebef4)
+  );
 }
 
-.storyDecor {
+.adDecor {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  background: repeating-linear-gradient(
-    -38deg,
-    transparent,
-    transparent 52px,
-    color-mix(in srgb, var(--story-tint) 5%, transparent) 52px,
-    color-mix(in srgb, var(--story-tint) 5%, transparent) 53px
-  );
-  opacity: 0.45;
-  mask-image: linear-gradient(
-    105deg,
-    #000 0%,
-    transparent 42%,
-    transparent 100%
-  );
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(
-        color-mix(in srgb, var(--story-tint) 10%, transparent) 1px,
-        transparent 1px
-      ),
-      linear-gradient(
-        90deg,
-        color-mix(in srgb, var(--story-tint) 10%, transparent) 1px,
-        transparent 1px
-      );
-    background-size: 56px 56px;
-    opacity: 0.22;
-    mask-image: radial-gradient(
-      ellipse 95% 85% at 22% 50%,
-      #000 0%,
-      transparent 78%
-    );
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    left: 6%;
-    top: 50%;
-    width: min(42vw, 320px);
-    height: min(42vw, 320px);
-    border: 1px solid color-mix(in srgb, var(--story-tint) 16%, transparent);
-    border-radius: 50%;
-    opacity: 0.55;
-    transform: translateY(-50%);
-    box-shadow:
-      0 0 0 36px color-mix(in srgb, var(--story-tint) 5%, transparent),
-      0 0 0 72px color-mix(in srgb, var(--story-tint) 3%, transparent),
-      inset 0 0 0 1px color-mix(in srgb, #ffffff 40%, transparent);
-  }
 }
 
-.storyMedia {
+.adDecorImg {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+}
+
+.adMedia {
   position: relative;
   z-index: 1;
   display: grid;
+  place-items: center;
   min-height: 168px;
-  place-items: center;
-  padding: 8px 0;
 }
 
-.storyIcon {
-  position: relative;
-  display: grid;
-  width: 88px;
-  height: 88px;
-  place-items: center;
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: -70%;
-    z-index: -1;
-    border-radius: 50%;
-    background: radial-gradient(
-      circle,
-      color-mix(in srgb, var(--story-tint) 30%, transparent) 0%,
-      transparent 70%
-    );
-    opacity: 0.9;
-  }
-
-  :global(img),
-  :global(picture),
-  :global(picture img) {
-    width: 72px !important;
-    height: 72px !important;
-    object-fit: contain;
-  }
+.adMediaPlaceholder {
+  display: block;
+  width: min(100%, 200px);
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  background: color-mix(in srgb, #ffffff 55%, #f3d5b5);
+  box-shadow: inset 0 0 0 1px rgba(80, 50, 30, 0.08);
 }
 
-.storyInfo {
+.adCopy {
   position: relative;
   z-index: 1;
   display: flex;
   min-width: 0;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
-  padding-right: 12px;
+  gap: 8px;
+  padding-right: 8px;
 }
 
-.storyKicker {
+.adName {
   margin: 0;
-  color: color-mix(in srgb, var(--story-tint) 72%, #333);
-  font-size: 12px;
+  color: #1a1a2e;
+  font-size: 28px;
   font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
 }
 
-.storyDesc {
-  max-width: 40ch;
+.adHeadline {
   margin: 0;
-  color: rgba(27, 27, 34, 0.72);
+  color: #2a2a3a;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.adBody {
+  width: 640px;
+  max-width: 100%;
+  margin: 0;
+  color: rgba(42, 42, 58, 0.72);
   display: -webkit-box;
   -webkit-box-orient: vertical;
   line-clamp: 2;
   -webkit-line-clamp: 2;
   overflow: hidden;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-.storyMeta {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: 2px;
-  color: rgba(27, 27, 34, 0.78);
   font-size: 14px;
-  font-weight: 700;
-
-  span {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-    line-height: 1.15;
-  }
-
-  strong {
-    color: #15151c;
-    font-size: 16px;
-    font-weight: 800;
-  }
-
-  small {
-    color: rgba(27, 27, 34, 0.55);
-    font-size: 12px;
-    font-weight: 600;
-  }
+  font-weight: 500;
+  line-height: 1.45;
 }
 
-.storyMetaSep {
-  width: 1px;
-  height: 28px;
-  background: rgba(27, 27, 34, 0.18);
-}
-
-.storyCta {
+.adCta {
   display: inline-flex;
   min-height: 40px;
-  margin-top: 8px;
+  margin-top: 10px;
   padding: 0 22px;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid rgba(27, 27, 34, 0.78);
+  border: 1.5px solid rgba(27, 27, 34, 0.82);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--story-tint) 16%, rgba(255, 255, 255, 0.72));
-  backdrop-filter: blur(8px);
+  background: transparent;
   color: #15151c;
   font-size: 14px;
   font-weight: 800;
-}
-
-.story:hover .storyCta,
-.story:focus-visible .storyCta {
-  border-color: #15151c;
-  background: #15151c;
-  color: #fff;
-}
-
-.packStory {
-  --pack-tint: #d4a017;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 28px 56px;
   text-decoration: none;
-  color: #1b1b22;
-  background:
-    radial-gradient(
-      ellipse 85% 70% at 18% 88%,
-      color-mix(in srgb, var(--pack-tint) 28%, transparent) 0%,
-      transparent 62%
-    ),
-    radial-gradient(
-      ellipse 70% 55% at 88% 12%,
-      color-mix(in srgb, var(--pack-tint) 22%, #ffffff) 0%,
-      transparent 70%
-    ),
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--pack-tint) 10%, #fffdf8) 0%,
-      color-mix(in srgb, var(--pack-tint) 24%, #ffffff) 46%,
-      color-mix(in srgb, var(--pack-tint) 32%, #faf6ee) 100%
-    );
-}
+  transition: 0.2s background ease, 0.2s color ease, 0.2s border-color ease;
 
-.packDecor {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-
-  &::before {
-    content: "";
-    position: absolute;
-    left: -8%;
-    top: 18%;
-    width: min(46vw, 360px);
-    height: min(46vw, 360px);
-    border-radius: 42% 58% 52% 48%;
-    background: color-mix(in srgb, var(--pack-tint) 14%, transparent);
-    opacity: 0.75;
-    transform: rotate(-8deg);
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    right: -6%;
-    bottom: 8%;
-    width: min(38vw, 300px);
-    height: min(38vw, 300px);
-    border-radius: 58% 42% 48% 52%;
-    background: color-mix(in srgb, var(--pack-tint) 12%, transparent);
-    opacity: 0.65;
-    transform: rotate(12deg);
-    box-shadow:
-      -120px -80px 0 -40px color-mix(in srgb, var(--pack-tint) 8%, transparent),
-      120px -40px 0 -60px color-mix(in srgb, var(--pack-tint) 6%, transparent);
-  }
-}
-
-.packBody {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  width: min(100%, 720px);
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  text-align: center;
-}
-
-.packKicker {
-  margin: 0;
-  color: color-mix(in srgb, var(--pack-tint) 72%, #333);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.packStory h2 {
-  max-width: 20ch;
-  margin: 0;
-  color: #15151c;
-  font-size: 34px;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.08;
-}
-
-.packDesc {
-  max-width: 46ch;
-  margin: 0;
-  color: rgba(27, 27, 34, 0.72);
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  line-clamp: 2;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.5;
-}
-
-.packIcons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 18px;
-  margin-top: 6px;
-}
-
-.packIconMark {
-  display: grid;
-  width: 56px;
-  height: 56px;
-  place-items: center;
-
-  :global(img),
-  :global(picture),
-  :global(picture img) {
-    width: 48px !important;
-    height: 48px !important;
-    object-fit: contain;
-  }
-}
-
-.packCta {
-  display: inline-flex;
-  min-height: 40px;
-  margin-top: 8px;
-  padding: 0 24px;
-  align-items: center;
-  justify-content: center;
-  border: 1.5px solid rgba(27, 27, 34, 0.78);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--pack-tint) 14%, rgba(255, 255, 255, 0.72));
-  backdrop-filter: blur(8px);
-  color: #15151c;
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.packStory:hover .packCta,
-.packStory:focus-visible .packCta {
-  border-color: #15151c;
-  background: #15151c;
-  color: #fff;
-}
-
-.adSlide {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 14px;
-  height: auto;
-  min-height: 320px;
-  overflow: visible;
-  color: #fff;
-  background: linear-gradient(135deg, #2979ff, #1565c0);
-
-  h2 {
-    max-width: none;
-    margin: 0;
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.25;
-  }
-
-  > p {
-    max-width: none;
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 1.5;
-    opacity: 0.88;
-  }
-
-  > a {
-    display: inline-flex;
-    width: fit-content;
-    margin-top: 2px;
-    padding: 8px 20px;
-    align-items: center;
-    border-radius: 999px;
-    background: #e040a0;
+  &:hover,
+  &:focus-visible {
+    border-color: #15151c;
+    background: #15151c;
     color: #fff;
-    font-size: 14px;
-    font-weight: 700;
-    text-decoration: none;
+    outline: none;
   }
-}
-
-.adBadge {
-  position: static;
-  z-index: 2;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.35);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .controls {
@@ -474,10 +147,6 @@
   align-items: stretch;
   background: transparent;
   color: #2c2c34;
-}
-
-.controlsOnDark {
-  color: #fff;
 }
 
 .ctrl {
@@ -520,130 +189,55 @@
 }
 
 @media (max-width: 790px) {
-  .story {
-    grid-template-columns: minmax(120px, 0.48fr) minmax(0, 1.52fr);
-    gap: 22px;
-    padding: 24px 40px 56px 24px;
-
-    h2 {
-      font-size: 26px;
-    }
+  .adSlide {
+    gap: 20px;
+    padding: 22px 40px 52px 22px;
   }
 
-  .storyDecor::after {
-    left: 2%;
-    width: min(48vw, 240px);
-    height: min(48vw, 240px);
+  .adName {
+    font-size: 24px;
   }
 
-  .storyMedia {
-    min-height: 140px;
+  .adHeadline {
+    font-size: 15px;
   }
 
-  .storyIcon {
-    width: 80px;
-    height: 80px;
-
-    :global(img),
-    :global(picture),
-    :global(picture img) {
-      width: 64px !important;
-      height: 64px !important;
-    }
-  }
-
-  .adSlide h2 {
-    font-size: 26px;
-  }
-
-  .packStory h2 {
-    font-size: 26px;
-  }
-
-  .packIcons {
-    gap: 14px;
-  }
-
-  .packIconMark {
-    width: 48px;
-    height: 48px;
-
-    :global(img),
-    :global(picture),
-    :global(picture img) {
-      width: 40px !important;
-      height: 40px !important;
-    }
+  .adMediaPlaceholder {
+    width: min(100%, 160px);
   }
 }
 
 @media (max-width: 590px) {
   .slide {
-    height: 240px;
+    height: auto;
     min-height: 240px;
-    padding: 24px 20px 56px;
   }
 
   .adSlide {
-    gap: 10px;
-    min-height: 240px;
-    height: auto;
-
-    h2 {
-      font-size: 22px;
-    }
-
-    > p {
-      font-size: 15px;
-    }
-  }
-
-  .story {
     grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 20px 18px 56px;
+    gap: 14px;
+    padding: 20px 18px 52px;
   }
 
-  .storyDecor::after {
-    left: 50%;
-    top: 18%;
-    transform: translateX(-50%);
+  .adMedia {
+    min-height: 0;
   }
 
-  .storyMedia {
-    min-height: 112px;
+  .adMediaPlaceholder {
+    width: min(100%, 140px);
+    aspect-ratio: 16 / 10;
   }
 
-  .storyIcon {
-    width: 72px;
-    height: 72px;
-
-    :global(img),
-    :global(picture),
-    :global(picture img) {
-      width: 56px !important;
-      height: 56px !important;
-    }
+  .adName {
+    font-size: 22px;
   }
 
-  .packStory {
-    padding: 24px 18px 56px;
+  .adHeadline {
+    font-size: 14px;
   }
 
-  .packIcons {
-    gap: 12px;
-  }
-
-  .packIconMark {
-    width: 44px;
-    height: 44px;
-
-    :global(img),
-    :global(picture),
-    :global(picture img) {
-      width: 36px !important;
-      height: 36px !important;
-    }
+  .adBody {
+    font-size: 13px;
   }
 }
 

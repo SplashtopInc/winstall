@@ -90,10 +90,7 @@ function Home({
       <MetaTags title="Browse the winget repository - winstall" path="/" />
       <h1 className={styles.srOnly}>Browse the winget repository.</h1>
 
-      <HomeCarousel
-        topApp={data.trendingApps[0]}
-        trendingPacks={data.trendingPacks}
-      />
+      <HomeCarousel />
 
       <TopCategories />
 

@@ -92,7 +92,7 @@ export default function TrendingApps({ apps = [] }) {
 
               <TrendingCounts
                 counts={readTrendingCounts(app)}
-                className={countStyles.inline}
+                className={`${styles.counts} ${countStyles.inline}`}
               />
             </li>
           );
