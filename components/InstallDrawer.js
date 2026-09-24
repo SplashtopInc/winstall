@@ -11,6 +11,7 @@ export default function InstallDrawer({
   persistHint,
   packId,
   onPackDownload,
+  allowDefaultOptions = true,
 }) {
   return (
     <>
@@ -50,6 +51,7 @@ export default function InstallDrawer({
             persistHint={persistHint}
             packId={packId}
             onPackDownload={onPackDownload}
+            allowDefaultOptions={allowDefaultOptions}
           />
         </div>
       </div>

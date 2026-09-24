@@ -18,6 +18,7 @@ const ExportApps = ({
     persistHint,
     packId,
     onPackDownload,
+    allowDefaultOptions = true,
 }) => {
     const [ batScript, setBatScript ] = useState("");
     const [ psScript, setPsScript ] = useState("");
@@ -177,13 +178,15 @@ return (
             }) }
         </ul>
 
-        <AdvancedConfig
-            refreshConfig={refreshFilters}
-            activeTab={active}
-            onFiltersChange={onDefaultFiltersChange}
-            initialFilters={resolvedInitialFilters}
-            persistHint={persistHint}
-        />
+        {allowDefaultOptions && (
+            <AdvancedConfig
+                refreshConfig={refreshFilters}
+                activeTab={active}
+                onFiltersChange={onDefaultFiltersChange}
+                initialFilters={resolvedInitialFilters}
+                persistHint={persistHint}
+            />
+        )}
 
         { tabs.map((tab, index) => {
             return <section key={index} className={ tab.key === active ? styles.displaySection : styles.hideSection }>{ tab.element }</section>

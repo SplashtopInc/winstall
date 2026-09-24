@@ -748,12 +748,13 @@ export default function PackDetailPage() {
         isOpen={installDrawerOpen}
         onClose={() => setInstallDrawerOpen(false)}
         initialFilters={defaultFilters}
-        onDefaultFiltersChange={handleDefaultFiltersChange}
-        persistHint={
-          isOwner
-            ? "These options are saved with this pack."
-            : "These options apply while exporting this pack."
+        onDefaultFiltersChange={
+          isOwner ? handleDefaultFiltersChange : undefined
         }
+        persistHint={
+          isOwner ? "These options are saved with this pack." : undefined
+        }
+        allowDefaultOptions={isOwner}
         packId={pack._id}
         onPackDownload={reloadStats}
       />
