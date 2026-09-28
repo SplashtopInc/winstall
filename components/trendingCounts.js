@@ -1,11 +1,14 @@
 import { FiDownload, FiEye, FiHeart } from "react-icons/fi";
 
 import { formatCount } from "../utils/engagementStats";
+import { isTrendingCountVisible } from "../utils/trendingCountVisibility";
 import styles from "../styles/trendingCounts.module.scss";
 
-function countItemClass(raw) {
-  return Number(raw) > 0 ? styles.stat : `${styles.stat} ${styles.statZero}`;
-}
+const COUNT_ITEMS = [
+  { key: "viewCount", label: "views", Icon: FiEye },
+  { key: "downloadCount", label: "downloads", Icon: FiDownload },
+  { key: "likeCount", label: "likes", Icon: FiHeart },
+];
 
 export default function TrendingCounts({
   counts,
@@ -14,30 +17,23 @@ export default function TrendingCounts({
 }) {
   if (!counts) return null;
 
-  const likes = formatCount(counts.likeCount) ?? "0";
-  const downloads = formatCount(counts.downloadCount) ?? "0";
-  const views = formatCount(counts.viewCount) ?? "0";
+  const visible = COUNT_ITEMS.filter((item) =>
+    isTrendingCountVisible(counts[item.key])
+  );
+  if (visible.length === 0) return null;
 
   return (
     <ul
       className={`${styles.counts} ${className}`.trim()}
       aria-label={ariaLabel}
     >
-      <li className={countItemClass(counts.viewCount)}>
-        <FiEye aria-hidden="true" />
-        <span>{views}</span>
-        <span className={styles.hidden}>views</span>
-      </li>
-      <li className={countItemClass(counts.downloadCount)}>
-        <FiDownload aria-hidden="true" />
-        <span>{downloads}</span>
-        <span className={styles.hidden}>downloads</span>
-      </li>
-      <li className={countItemClass(counts.likeCount)}>
-        <FiHeart aria-hidden="true" />
-        <span>{likes}</span>
-        <span className={styles.hidden}>likes</span>
-      </li>
+      {visible.map(({ key, label, Icon }) => (
+        <li className={styles.stat} key={key}>
+          <Icon aria-hidden="true" />
+          <span>{formatCount(counts[key])}</span>
+          <span className={styles.hidden}>{label}</span>
+        </li>
+      ))}
     </ul>
   );
 }

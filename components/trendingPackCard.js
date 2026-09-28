@@ -1,13 +1,8 @@
 import Link from "next/link";
 
 import AppIcon from "./AppIcon";
-import TrendingCounts from "./trendingCounts";
-import {
-  normalizeTrendingPack,
-  readTrendingCounts,
-} from "../utils/trendingData";
+import { normalizeTrendingPack } from "../utils/trendingData";
 import styles from "../styles/trendingPacks.module.scss";
-import countStyles from "../styles/trendingCounts.module.scss";
 
 const PREVIEW_APP_LIMIT = 5;
 
@@ -41,11 +36,6 @@ export default function TrendingPackCard({ pack }) {
           <p className={styles.packDesc} title={normalized.desc || undefined}>
             {normalized.desc || "\u00a0"}
           </p>
-          <TrendingCounts
-            counts={readTrendingCounts(normalized)}
-            className={countStyles.onPack}
-            ariaLabel="Pack views, downloads, and likes"
-          />
         </div>
 
         <div className={styles.packApps}>
