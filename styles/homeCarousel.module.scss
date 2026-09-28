@@ -21,10 +21,10 @@
 
 .adSlide {
   display: grid;
-  grid-template-columns: minmax(120px, 0.42fr) minmax(0, 1.58fr);
+  grid-template-columns: 280px minmax(0, 1fr);
   align-items: center;
-  gap: 28px;
-  padding: 24px 48px 52px 28px;
+  gap: 40px;
+  padding: 0 48px;
   color: #1b1b22;
   background: linear-gradient(
     to bottom,
@@ -56,8 +56,16 @@
   position: relative;
   z-index: 1;
   display: grid;
-  place-items: center;
-  min-height: 168px;
+  align-self: center;
+  justify-items: start;
+}
+
+.adImage {
+  display: block;
+  width: 280px;
+  height: 180px;
+  object-fit: contain;
+  border-radius: 14px;
 }
 
 .adMediaPlaceholder {
@@ -73,9 +81,15 @@
   position: relative;
   z-index: 1;
   display: flex;
+  align-self: center;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 750px;
+  height: 180px;
   min-width: 0;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: flex-start;
   gap: 8px;
   padding-right: 8px;
 }
@@ -83,39 +97,39 @@
 .adName {
   margin: 0;
   color: #1a1a2e;
-  font-size: 28px;
-  font-weight: 800;
+  font-size: 26px;
+  font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.15;
 }
 
 .adHeadline {
   margin: 0;
-  color: #2a2a3a;
-  font-size: 16px;
-  font-weight: 700;
+  color: #1a1a2e;
+  font-size: 17px;
+  font-weight: 400;
   line-height: 1.35;
 }
 
 .adBody {
-  width: 640px;
+  width: 100%;
   max-width: 100%;
   margin: 0;
-  color: rgba(42, 42, 58, 0.72);
+  color: #5c5c70;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   line-clamp: 2;
   -webkit-line-clamp: 2;
   overflow: hidden;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.45;
 }
 
 .adCta {
   display: inline-flex;
   min-height: 40px;
-  margin-top: 10px;
+  margin-top: auto;
   padding: 0 22px;
   align-items: center;
   justify-content: center;
@@ -190,8 +204,8 @@
 
 @media (max-width: 790px) {
   .adSlide {
-    gap: 20px;
-    padding: 22px 40px 52px 22px;
+    gap: 40px;
+    padding: 0 40px 0 48px;
   }
 
   .adName {
@@ -216,7 +230,7 @@
   .adSlide {
     grid-template-columns: 1fr;
     gap: 14px;
-    padding: 20px 18px 52px;
+    padding: 0 18px;
   }
 
   .adMedia {

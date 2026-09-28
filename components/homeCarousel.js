@@ -6,6 +6,13 @@ import styles from "../styles/homeCarousel.module.scss";
 
 const AUTOPLAY_INTERVAL_MS = 6500;
 
+function publicAssetSrc(path) {
+  if (typeof path !== "string") return "";
+  const trimmed = path.trim();
+  if (!trimmed) return "";
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+}
+
 export default function HomeCarousel() {
   const bannerAds = useHomeBannerAds();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -44,7 +51,10 @@ export default function HomeCarousel() {
         className={styles.track}
         style={{ transform: `translateX(-${activeIndex * 100}%)` }}
       >
-        {bannerAds.map((ad) => (
+        {bannerAds.map((ad) => {
+          const imageSrc = publicAssetSrc(ad.image);
+          const bannerBgSrc = publicAssetSrc(ad["banner-bg"]);
+          return (
           <article
             key={ad.id}
             className={`${styles.slide} ${styles.adSlide}`}
@@ -53,15 +63,17 @@ export default function HomeCarousel() {
               "--ad-end-color": ad["end-color"],
             }}
           >
-            <span className={styles.adDecor} aria-hidden="true">
-              <img
-                className={styles.adDecorImg}
-                src="/assets/icon_banner.svg"
-                alt=""
-              />
-            </span>
+            {bannerBgSrc ? (
+              <span className={styles.adDecor} aria-hidden="true">
+                <img className={styles.adDecorImg} src={bannerBgSrc} alt="" />
+              </span>
+            ) : null}
             <div className={styles.adMedia} aria-hidden="true">
-              <span className={styles.adMediaPlaceholder} />
+              {imageSrc ? (
+                <img className={styles.adImage} src={imageSrc} alt="" />
+              ) : (
+                <span className={styles.adMediaPlaceholder} />
+              )}
             </div>
             <div className={styles.adCopy}>
               <h2 className={styles.adName}>{ad.name}</h2>
@@ -77,7 +89,8 @@ export default function HomeCarousel() {
               </a>
             </div>
           </article>
-        ))}
+          );
+        })}
       </div>
 
       {bannerAds.length > 1 && (

@@ -13,9 +13,9 @@
 
 **Non-Goals:**
 
-- 不在本 change 加入产品图资源或 `image` 字段。
+- 不新增图片文件；左栏使用 `data/ads.json` 已有的 `image` 路径。
 - 不改 Trending Apps / Featured Packs 板块。
-- 不改货架 `pickAd`、`DonateCard`、`data/ads.json` 的启用集合（只读 `name`）。
+- 不改货架 `pickAd`、`DonateCard`，也不改 `data/ads.json` 的启用集合。Banner 额外读取已有 `image` 与 `banner-bg`。
 - 不改 API。
 
 ## Decisions
@@ -38,9 +38,9 @@
 
 ### 3. 构图与装饰
 
-**选择：** 固定高 260px。浅暖底色。右侧/底层用 CSS 或内联 SVG 画半透明几何（圆、描边矩形、浅色斜线），opacity 叠在底色上，不盖住正文。左栏空占位（圆角矩形），后续再塞图。文案：`name` / `headline` / `body` / 描边 pill `cta`。箭头与自动播放可保留；`controlsOnDark` 随浅底改为深色控件。
+**选择：** 固定高 260px。底色用 `start-color` / `end-color`。背景装饰用该条 `banner-bg`，路径规则与 `image` 相同（`assets/ads/banner_bg_purple.svg` → `/assets/ads/banner_bg_purple.svg`）。缺省或空白则不渲染装饰图。左栏 `image` 固定 280×180、圆角 14px；左缘距 banner 48px，右缘距文字区 40px（图片列宽等于图片宽，间距不再被更宽的列吃掉）。图片与文字区在 banner 内垂直居中，文字区高 180px：标题顶对齐图片顶，按钮底对齐图片底。文字区 `max-width` 750px。`name` 26px、字重 700、`#1A1A2E`；`headline` 17px、字重 400、`#1A1A2E`；`body` 14px、字重 400、`#5C5C70`。路径非空时加上站点根前缀（`assets/ads/ad_stb.png` → `/assets/ads/ad_stb.png`）。`image` 缺省或空白则保留空占位。箭头与自动播放可保留。
 
-**理由：** 对齐参考稿；产品图明确后续再加。
+**理由：** 产品图已经写在 `ads.json` 的 `image`，banner 只负责展示。
 
 **备选：** 继续深蓝 `adSlide`。否决。
 
@@ -49,7 +49,7 @@
 - **[启用不足 2 条]** → 展示 1 张或隐藏；不编造第二条。
 - **[首屏无广告再出现]** → 与今日相同：客户端 `sessionStorage` 后才有幻灯片。
 - **[Purpose 仍写「轮播含第 1 名」]** → 归档时改 `openspec/specs/home-trending/spec.md` 的 Purpose。
-- **[左栏空一段时间]** → 接受。
+- **[某条没有 image]** → 左栏留空占位，不编造图。
 
 ## Migration Plan
 

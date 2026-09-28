@@ -13,7 +13,7 @@
 **Goals:**
 
 - ISR 接入两个 trending GET，不与生成脚本耦合。
-- 混合轮播：SSR 第 1 名来自 App 榜 `[0]`；广告幻灯片客户端从现有池挑选。
+- 混合轮播改为只播广告：客户端从启用池独立无放回抽最多 2 条；不展示周榜第 1 名或 Featured pack。
 - 删除 Featured Packs 拉取与仅首页使用的推荐组件。
 - 首页不渲染 Popular Apps，也不再为该块做 ISR 补全。
 - 新增标识符符合 lowerCamelCase / `UPPER_SNAKE_CASE` / API kebab-case。
@@ -44,16 +44,11 @@
 
 **备选：** 复用现有 `PackPreview` / 横滑名次行。否决：与 discover demo 卡片一致。
 
-### 4. 轮播替换首页独立广告卡
+### 4. 轮播只播独立抽签的广告
 
-保留介绍区。轮播放在今日首页 `DonateCard` 的位置。组件 `components/homeCarousel.js`，样式 `styles/homeCarousel.module.scss`。幻灯片：
+轮播放在今日首页 `DonateCard` 的位置。组件 `components/homeCarousel.js`，样式 `styles/homeCarousel.module.scss`。banner 高 260px。幻灯片只来自启用广告池：`pickHomeBannerAds` 无放回最多抽 2 条，会话键与货架 `winstall_ad_id` 分离；`utm_content` 为 `home-a` / `home-b`。底色用 `start-color` / `end-color`。背景装饰用该条 `banner-bg`；产品图用 `image`，固定 280×180、圆角 14px，左缘距 banner 48px，距文字区 40px。文字区与图片同高 180px、顶底对齐，最宽 750px。`name` 26px/700/`#1A1A2E`，`headline` 17px/400/`#1A1A2E`，`body` 14px/400/`#5C5C70`。无启用广告则不渲染轮播。点、箭头、自动播放可参考 demo，不全部写入 spec。
 
-1. 若存在 `trendingApps[0]`，第 1 名（文案对齐 demo：`#1 this week`，GET/ADDED 绑定选择集）。
-2. 挂载后一张广告：`pickAd` + `buildAdHref(..., "home")`（与今日相同的 session 粘性 id）。
-
-两张都没有则不渲染轮播。允许只有一张。点、箭头、自动播放可参考 demo，不写入 spec。
-
-其它 `placement` 仍可用现有广告卡组件；首页 MUST NOT 再挂独立首页广告卡。
+其它 `placement` 仍可用现有广告卡组件；首页 MUST NOT 再挂独立首页广告卡。MUST NOT 把周榜 App 或 Featured pack 放进轮播。
 
 ### 5. 删除 Featured Packs 与首页 Popular Apps
 
@@ -61,13 +56,13 @@
 
 ### 6. 文案
 
-不要在前端用「今天往前 6 个日历日」拼窗口。App 周榜可用静态「this week」。Pack 数据仍读 `GET /packs/trending`，但首页板块标题 MUST 为 `Featured Packs`，副标题 MUST 为 `Collections you can install as a set.`（名单可由固定 userid / bootscore 置顶，不是周热度排行）。Pack 板块 MUST NOT 使用 `Trending Packs`、`this week` 或周次名次。不要写 most added。顶部轮播里的 Pack 幻灯片 kicker MUST 为 `Featured pack`，MUST NOT 为 `Trending pack`。
+不要在前端用「今天往前 6 个日历日」拼窗口。App 周榜可用静态「this week」。Pack 数据仍读 `GET /packs/trending`，但首页板块标题 MUST 为 `Featured Packs`，副标题 MUST 为 `Collections you can install as a set.`（名单可由固定 userid / bootscore 置顶，不是周热度排行）。Pack 板块 MUST NOT 使用 `Trending Packs`、`this week` 或周次名次。不要写 most added。顶部轮播 MUST NOT 再出现 Featured pack 幻灯片。
 
 ## Risks / Trade-offs
 
 - [未跑 `trending:generate` 则空榜] → 藏周榜板块；介绍区仍可用。
 - [预览卡弱于 demo pack 卡] → Pack 卡改为与 App 卡同底的扁平卡。
-- [广告幻灯片晚于 SSR 第 1 名] → 可能先一张再两张；优于服务端随机广告（会丢掉 session 粘性）。
+- [广告幻灯片晚于 SSR] → 客户端 `sessionStorage` 后才有幻灯片；无广告则不渲染轮播。
 - [Pack snapshot 图标稀疏] → 预览可能走占位图标；v1 不再打目录。
 - [新增 lowerCamelCase 组件与旧 PascalCase 并存] → 仅约束本能力新文件。
 

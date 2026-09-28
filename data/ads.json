@@ -8,8 +8,10 @@
     "body": "Transparent pricing, no 28 day cancellation trap, high performance and reliability, best in class customer service.",
     "cta": "Free trial",
     "targetUrl": "https://www.splashtop.com/compare/teamviewer-alternative",
-    "start-color": "#FDF2DF",
-    "end-color": "#F4E0BE",
+    "start-color": "#E7DFFD",
+    "end-color": "#CEBEF4",
+    "image": "assets/ads/ad_stb.png",
+    "banner-bg": "assets/ads/banner_bg_pinkpurple.svg",
     "enabled": true
   },
   {
@@ -21,8 +23,10 @@
     "body": "Full-speed access to your build box, GPU, and local environment, not a laggy screen share. No per-session throttling, no surprise renewal terms, real humans on support.",
     "cta": "Free trial",
     "targetUrl": "https://www.splashtop.com/products/remote-access",
-    "start-color": "#E7DFFD",
-    "end-color": "#CEBEF4",
+    "start-color": "#E1DFFD",
+    "end-color": "#C3BEF4",
+    "image": "assets/ads/ad_stb.png",
+    "banner-bg": "assets/ads/banner_bg_purple.svg",
     "enabled": true
   },
   {
@@ -34,8 +38,10 @@
     "body": "Splashtop AEM turns a one-machine install into zero-touch deployment across every endpoint you manage, with the transparent, no-surprises pricing IT teams keep switching for.",
     "cta": "Free trial",
     "targetUrl": "https://www.splashtop.com/aem",
-    "start-color": "#E7DFFD",
-    "end-color": "#CEBEF4",
+    "start-color": "#DFE8FD",
+    "end-color": "#BECFF4",
+    "image": "assets/ads/ad_aem.png",
+    "banner-bg": "assets/ads/banner_bg_gray.svg",
     "enabled": true
   },
   {
@@ -47,8 +53,10 @@
     "body": "Transparent pricing, no 28-day cancellation trap, instant unattended access when installs go wrong, best in class customer service.",
     "cta": "Free trial",
     "targetUrl": "https://www.splashtop.com/compare/teamviewer-alternative/remote-support-vs-teamviewer-single",
-    "start-color": "#E7DFFD",
-    "end-color": "#CEBEF4",
+    "start-color": "#D8EDEB",
+    "end-color": "#B8E3DF",
+    "image": "assets/ads/ad_remote_support.png",
+    "banner-bg": "assets/ads/banner_bg_green.svg",
     "enabled": true
   },
   {
@@ -60,8 +68,10 @@
     "body": "One link, no pre-installed agent required, get into the user's machine and fix it live.",
     "cta": "Free trial",
     "targetUrl": "https://www.splashtop.com/sos",
-    "start-color": "#E7DFFD",
-    "end-color": "#CEBEF4",
+    "start-color": "#D8EDEB",
+    "end-color": "#B8E3DF",
+    "image": "assets/ads/ad_remote_support.png",
+    "banner-bg": "assets/ads/banner_bg_green.svg",
     "enabled": true
   },
   {
@@ -75,6 +85,8 @@
     "targetUrl": "https://www.splashtop.com/enterprise",
     "start-color": "#E6EBF1",
     "end-color": "#DCE6F4",
+    "image": "assets/ads/ad_enterprise.png",
+    "banner-bg": "assets/ads/banner_bg_gray.svg",
     "enabled": true
   },
   {
@@ -88,6 +100,8 @@
     "targetUrl": "https://www.splashtop.com/secure",
     "start-color": "#DFF4FD",
     "end-color": "#BEE4F4",
+    "image": "assets/ads/ad_ssw.png",
+    "banner-bg": "assets/ads/banner_bg_lightblue.svg",
     "enabled": true
   },
   {
@@ -101,6 +115,8 @@
     "targetUrl": "https://www.splashtop.com/shield",
     "start-color": "#DFF4FD",
     "end-color": "#BEE4F4",
+    "image": "assets/ads/ad_shield.png",
+    "banner-bg": "assets/ads/banner_bg_lightblue.svg",
     "enabled": true
   }
 ]
