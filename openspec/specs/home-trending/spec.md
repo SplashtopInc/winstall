@@ -36,9 +36,9 @@
 - **WHEN** 两次 trending 读取均为空或失败
 - **THEN** 首页 MUST 省略这两个周榜板块
 
-### Requirement: 周榜卡片展示窗口互动计数
+### Requirement: 周榜卡片展示终身互动计数
 
-已渲染的 Trending Apps 卡与 Featured Packs 卡片 MUST 展示该条目周榜 payload 上的窗口 `likes`、`downloads`、`views`。MUST NOT 用终身 `likeCount` 或 `downloadCount` 替代这三项。缺省值 MUST 按 0 展示。每项可见数字 MUST 遵循 `engagement-count-format` 的紧凑单位（小于 1000 为精确整数，大于或等于 1000 为一位小数的 `K` / `M` / `B`，不加 `+`）。首页顶部轮播若展示同一套窗口计数，MUST 使用同一格式。
+已渲染的 Trending Apps 卡与 Featured Packs 卡片 MUST 展示该条目周榜 payload 上的终身 `viewCount`、`downloadCount`、`likeCount`。MUST NOT 用短名 `views`、`downloads`、`likes` 替代这三项。缺省值 MUST 按 0 展示。每项可见数字 MUST 遵循 `engagement-count-format` 的紧凑单位（小于 1000 为精确整数，大于或等于 1000 为一位小数的 `K` / `M` / `B`，不加 `+`）。首页顶部轮播若展示同一套计数，MUST 使用同一格式。
 
 #### Scenario: 周榜条目展示 like、download、view
 - **WHEN** 用户看到已渲染的 Trending Apps 或 Featured Packs
@@ -66,7 +66,7 @@ Trending Apps MUST 按 API 的 `rank` 顺序展示，最多 16 条，桌面为�
 
 ### Requirement: Featured Packs 使用与 App 卡同底的合集卡
 
-Featured Packs MUST 用卡片渲染每条：标题、描述、窗口计数、内含应用列表。整卡背景 MUST 使用与首页 Trending Apps 卡相同的 `var(--card-bg)`，MUST NOT 使用彩色渐变头。板块 MUST 按 API 的 `rank` 顺序展示，最多 8 条。整张卡 MUST 可激活并进入 Pack 详情，MUST NOT 再单独展示 View Pack 文案。卡片 MUST 使用当前 Pack 的 `name` / `description`，MUST NOT 写死 pack id 列表。卡片 MUST NOT 展示 `#N this week`、`this week` 或其它周次名次。已渲染板块的标题 MUST 为 `Featured Packs`，副标题 MUST 为 `Collections you can install as a set.` MUST NOT 使用 `Trending Packs` 作为板块标题。
+Featured Packs MUST 用卡片渲染每条：标题、描述、终身计数、内含应用列表。整卡背景 MUST 使用与首页 Trending Apps 卡相同的 `var(--card-bg)`，MUST NOT 使用彩色渐变头。板块 MUST 按 API 的 `rank` 顺序展示，最多 8 条。整张卡 MUST 可激活并进入 Pack 详情，MUST NOT 再单独展示 View Pack 文案。卡片 MUST 使用当前 Pack 的 `name` / `description`，MUST NOT 写死 pack id 列表。卡片 MUST NOT 展示 `#N this week`、`this week` 或其它周次名次。已渲染板块的标题 MUST 为 `Featured Packs`，副标题 MUST 为 `Collections you can install as a set.` MUST NOT 使用 `Trending Packs` 作为板块标题。
 
 #### Scenario: Pack 卡打开详情
 - **WHEN** 用户激活一张 Featured Pack 卡

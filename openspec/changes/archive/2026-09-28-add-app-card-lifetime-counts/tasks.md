@@ -11,5 +11,5 @@
 ## 3. 核对各表面
 
 - [x] 3.1 在 `/category` 与 `/apps`（含搜索或发行商）确认货架卡显示终身三项，且无 `GET /apps/:id/stats`
-- [x] 3.2 确认首页 Trending Apps / Packs 仍用窗口 `views` / `downloads` / `likes`，文案未改成货架终身数
+- [x] 3.2 确认首页 Trending Apps / Featured Packs 读 `viewCount` / `downloadCount` / `likeCount`，不读短名 `views` / `downloads` / `likes`
 - [x] 3.3 确认 Pack 编辑列表的 `SingleApp` 在快照无字段时显示 0 0 0，且未改 `PackDetailAppCard`

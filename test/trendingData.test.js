@@ -30,7 +30,7 @@ test("normalizeTrendingResponse treats missing or malformed data as empty", asyn
   );
 });
 
-test("readTrendingCounts uses weekly window fields not lifetime totals", async () => {
+test("readTrendingCounts uses lifetime count fields", async () => {
   const { readTrendingCounts } = await import("../utils/trendingData.js");
 
   assert.deepEqual(
@@ -40,13 +40,14 @@ test("readTrendingCounts uses weekly window fields not lifetime totals", async (
       views: 40,
       likeCount: 900,
       downloadCount: 1200,
+      viewCount: 40,
     }),
-    { likes: 3, downloads: 12, views: 40 }
+    { likeCount: 900, downloadCount: 1200, viewCount: 40 }
   );
   assert.deepEqual(readTrendingCounts({}), {
-    likes: 0,
-    downloads: 0,
-    views: 0,
+    likeCount: 0,
+    downloadCount: 0,
+    viewCount: 0,
   });
 });
 

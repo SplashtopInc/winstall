@@ -1,12 +1,12 @@
 ## Why
 
-货架列表接口已在每条 `data[]` 上平铺终身 `viewCount`、`downloadCount`、`likeCount`，但目录卡片 `SingleApp` 仍不展示这些信号。详情规范还禁止列表出计数，和现网货架能力冲突。现在要把终身三项只读画在所有 `SingleApp` 上，并与首页周榜窗口数分开。
+货架列表接口已在每条 `data[]` 上平铺终身 `viewCount`、`downloadCount`、`likeCount`，但目录卡片 `SingleApp` 仍不展示这些信号。详情规范还禁止列表出计数，和现网货架能力冲突。现在要把终身三项只读画在所有 `SingleApp` 上。首页周榜同样读 `viewCount`、`downloadCount`、`likeCount`，不读短名窗口字段。
 
 ## What Changes
 
 - 所有 `SingleApp`（含分类页、`/apps`、搜索结果、Pack 编辑列表）在现有卡片上贴一行只读终身计数：views、downloads、likes，顺序与周榜卡一致；缺字段或为 0 仍显示 0。
 - 只读 payload，不在卡片上点赞，不为列表打 `GET /apps/:id/stats` 或新增批量详情接口。
-- 首页 Trending Apps / Packs 继续用窗口 `views` / `downloads` / `likes`，文案与组件不和货架终身数混用。
+- 首页 Trending Apps / Featured Packs 与货架一样读 `viewCount` / `downloadCount` / `likeCount`，不读 `views` / `downloads` / `likes`，不为卡片再请求详情 stats。
 - Pack 详情 `PackDetailAppCard` 不在本 change 改造（它不走 `SingleApp`，且 `GET /apps/:id` / Pack 快照不带这三项）。
 - 修改 `detail-engagement`：列表禁止展示计数的要求改为允许 `SingleApp` 展示货架终身三项。
 

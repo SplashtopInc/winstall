@@ -1,6 +1,6 @@
 ## Context
 
-互动计数由 `utils/engagementStats.js` 的 `formatCount` 统一格式化：详情 stats、Like、货架终身三项、周榜窗口三项、首页 carousel。App/Pack 详情的 views / installs 在 stats 读成功时始终展示，不再使用 `WINSTALL_SHOW_VIEWS_INSTALLS`。
+互动计数由 `utils/engagementStats.js` 的 `formatCount` 统一格式化：详情 stats、Like、货架终身三项、周榜终身三项、首页 carousel。App/Pack 详情的 views / installs 在 stats 读成功时始终展示，不再使用 `WINSTALL_SHOW_VIEWS_INSTALLS`。
 
 ## Goals / Non-Goals
 

@@ -2,14 +2,14 @@
 
 约束见仓库根目录 `AGENTS.md` 与 `openspec/config.yaml`。动机见 `proposal.md`。行为见 `specs/app-card-engagement/spec.md` 与 `specs/detail-engagement/spec.md`。
 
-货架列表（`GET /apps`、`GET /apps/categories/:id`、`GET /apps/search`、`GET /publishers/:id`）已在 `data[]` 平铺终身 `viewCount` / `downloadCount` / `likeCount`。首页周榜用窗口 `views` / `downloads` / `likes`，由 `components/trendingCounts.js` 渲染。`SingleApp` 被分类页、`/apps`、`Search.js`、`PackAppsList` 共用。Pack 详情走 `PackDetailAppCard` + `GET /apps/:id`，不在本设计改造。
+货架列表（`GET /apps`、`GET /apps/categories/:id`、`GET /apps/search`、`GET /publishers/:id`）与首页周榜（`GET /apps/trending`、`GET /packs/trending`）都在条目上平铺终身 `viewCount` / `downloadCount` / `likeCount`。周榜由 `components/trendingCounts.js` 读这三项，不读短名 `views` / `downloads` / `likes`。`SingleApp` 被分类页、`/apps`、`Search.js`、`PackAppsList` 共用。Pack 详情走 `PackDetailAppCard` + `GET /apps/:id`，不在本设计改造。
 
 ## Goals / Non-Goals
 
 **Goals:**
 
 - 在既有 `SingleApp` 上贴一行只读终身计数，所有现有调用点自动带上。
-- 字段映射与周榜 helper 分开，避免窗口字段和「this week」文案漏进货架。
+- 字段映射与周榜 helper 分开，避免短名 `views` / `downloads` / `likes` 和「this week」窗口文案漏进货架。
 - 新增文件 lowerCamelCase；不重命名 `SingleApp.js`。
 
 **Non-Goals:**
@@ -24,9 +24,9 @@
 
 **选择：** `utils/appListCounts.js` 导出 `readAppListCounts(app)`，只认 `viewCount` / `downloadCount` / `likeCount`，缺省为 0。MUST NOT 回退到 `views` / `downloads` / `likes`。
 
-**理由：** 周榜 payload 同时带窗口三项和部分终身字段；混读会把首页语义带进货架，或把窗口数当成终身。
+**理由：** 接口已去掉短名窗口字段。混读会把不存在的 `views` / `downloads` / `likes` 当成计数。
 
-**备选：** 复用 `readTrendingCounts` — 否决，key 不同且语义是窗口。
+**备选：** 复用 `readTrendingCounts` — 字段名已经相同，货架仍用 `readAppListCounts`，避免和周榜卡片布局绑在一起。
 
 ### 2. 新计数行组件，不复用 `trendingCounts`
 
@@ -56,7 +56,7 @@
 
 - **[Risk] `GET /apps?offset=0&limit=…` 命中重启前的 Redis 页缓存，All / `/apps` 首页暂时没有字段。** 缓解：Web 缺省当 0；缓存过期后自动正确。不在本 change 清 Redis。
 - **[Risk] Pack 编辑列表长期全 0。** 接受；与规范「缺字段当 0」一致。
-- **[Risk] 同一应用在首页周榜与货架数字不同。** 接受；一个是窗口，一个是终身。
+- **[Risk] 同一应用在首页周榜与货架数字相同来源。** 两边都读终身三项；缺字段显示 0。
 - **[新增 lowerCamelCase 与旧 PascalCase 并存]** 仅约束本能力新文件。
 
 ## Migration Plan

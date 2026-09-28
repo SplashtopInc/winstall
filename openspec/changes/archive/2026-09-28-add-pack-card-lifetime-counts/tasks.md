@@ -6,4 +6,4 @@
 ## 2. 核对各表面
 
 - [x] 2.1 在 `/packs` Explore 与 Mine 确认 `PackCard` 显示 views → downloads → likes，缺字段为 0，且无 `GET /packs/:id/stats`
-- [x] 2.2 确认首页 Trending Packs 仍用窗口 `views` / `downloads` / `likes` 与 this week 文案，未改用终身三项
+- [x] 2.2 确认首页 Featured Packs 读 `viewCount` / `downloadCount` / `likeCount`，不读短名 `views` / `downloads` / `likes`

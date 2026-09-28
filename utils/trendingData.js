@@ -13,9 +13,9 @@ export function normalizeTrendingResponse(response) {
 
 export function readTrendingCounts(item) {
   return {
-    likes: Number(item?.likes) || 0,
-    downloads: Number(item?.downloads) || 0,
-    views: Number(item?.views) || 0,
+    viewCount: Number(item?.viewCount) || 0,
+    downloadCount: Number(item?.downloadCount) || 0,
+    likeCount: Number(item?.likeCount) || 0,
   };
 }
 
