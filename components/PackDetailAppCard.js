@@ -13,6 +13,13 @@ import { timeAgo } from "../utils/helpers";
 import { resolvePackAppVersion } from "../utils/installVersion";
 import styles from "../styles/packDetail.module.scss";
 
+function formatVersionLabel(app) {
+  const { displayVersion, pinnedVersion } = resolvePackAppVersion(app);
+  if (!displayVersion) return "";
+  if (pinnedVersion) return `v${displayVersion}`;
+  return `v${displayVersion} (latest)`;
+}
+
 export default function PackDetailAppCard({
   app,
   isOwner = false,
@@ -39,6 +46,7 @@ export default function PackDetailAppCard({
       };
 
   const selectValue = allowUnpinnedVersion ? pinnedVersion || "" : displayVersion;
+  const versionLabelText = formatVersionLabel(app);
   const canManage = showActions ?? isOwner;
   const canSelectVersion =
     canManage &&
@@ -106,10 +114,10 @@ export default function PackDetailAppCard({
     </>
   );
 
-  const versionContent = displayVersion ? (
+  const versionContent = versionLabelText ? (
     canSelectVersion ? (
       <div className={styles.appMetaVersion}>
-        <span className={styles.versionLabel}>v{displayVersion}</span>
+        <span className={styles.versionLabel}>{versionLabelText}</span>
         <select
           className={styles.versionSelector}
           value={selectValue}
@@ -129,7 +137,7 @@ export default function PackDetailAppCard({
         <FiChevronDown aria-hidden="true" />
       </div>
     ) : (
-      <span>v{displayVersion}</span>
+      <span>{versionLabelText}</span>
     )
   ) : null;
 

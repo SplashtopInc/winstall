@@ -79,6 +79,11 @@ function Generate() {
               versions: app.versions?.length ? app.versions : existingApp.versions,
               selectedVersion: app.selectedVersion || existingApp.selectedVersion,
               latestVersion: app.latestVersion || existingApp.latestVersion,
+              ...(Object.prototype.hasOwnProperty.call(app, "appVersion")
+                ? { appVersion: app.appVersion }
+                : Object.prototype.hasOwnProperty.call(existingApp, "appVersion")
+                  ? { appVersion: existingApp.appVersion }
+                  : {}),
             };
           });
         });
@@ -108,13 +113,25 @@ function Generate() {
     };
 
     const handleVersionChange = (app, nextVersion) => {
-      if (!nextVersion) return;
       const apply = (list) =>
-        list.map((item) =>
-          item._id === app._id
-            ? { ...item, selectedVersion: nextVersion }
-            : item
-        );
+        list.map((item) => {
+          if (item._id !== app._id) return item;
+
+          const tip =
+            (Array.isArray(item.versions) && item.versions[0]?.version) ||
+            item.latestVersion ||
+            "";
+
+          if (!nextVersion) {
+            return { ...item, appVersion: "", selectedVersion: tip };
+          }
+
+          return {
+            ...item,
+            appVersion: nextVersion,
+            selectedVersion: nextVersion,
+          };
+        });
       setApps(apply);
       setSelectedApps(apply);
     };
@@ -212,6 +229,7 @@ function Generate() {
                   onConfig={handleSettingsClick}
                   onDelete={handleDeleteApp}
                   onVersionChange={handleVersionChange}
+                  allowUnpinnedVersion
                 />
               </li>
             ))}

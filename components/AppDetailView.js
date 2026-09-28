@@ -30,7 +30,7 @@ export default function AppDetailView({ app }) {
   }, [app.versions]);
 
   const latestVersion = versions[0]?.version || app.latestVersion;
-  const [version, setVersion] = useState(latestVersion);
+  const [pinnedVersion, setPinnedVersion] = useState("");
   const [selected, setSelected] = useState(false);
   const [copied, setCopied] = useState(false);
   const [toast, setToast] = useState("");
@@ -95,14 +95,14 @@ export default function AppDetailView({ app }) {
   }, [app._id]);
 
   useEffect(() => {
-    setVersion(latestVersion);
-  }, [app._id, latestVersion]);
+    setPinnedVersion("");
+  }, [app._id]);
 
   useEffect(() => {
     const found = selectedApps.find((a) => a._id === app._id);
     setSelected(!!found);
-    if (found?.selectedVersion) {
-      setVersion(found.selectedVersion);
+    if (found?.appVersion) {
+      setPinnedVersion(found.appVersion);
     }
   }, [selectedApps, app._id]);
 
@@ -128,13 +128,17 @@ export default function AppDetailView({ app }) {
   }, []);
 
   const handleVersionChange = (next) => {
-    setVersion(next);
+    setPinnedVersion(next);
 
     if (selected) {
       setSelectedApps(
-        selectedApps.map((a) =>
-          a._id === app._id ? { ...a, selectedVersion: next } : a
-        )
+        selectedApps.map((a) => {
+          if (a._id !== app._id) return a;
+          if (!next) {
+            return { ...a, appVersion: "", selectedVersion: latestVersion };
+          }
+          return { ...a, selectedVersion: next, appVersion: next };
+        })
       );
     }
   };
@@ -147,10 +151,17 @@ export default function AppDetailView({ app }) {
       setSelected(false);
       setToast(`Removed ${app.name}`);
     } else {
-      setSelectedApps([
-        ...selectedApps,
-        { ...app, selectedVersion: version, latestVersion },
-      ]);
+      const nextApp = {
+        ...app,
+        selectedVersion: pinnedVersion || latestVersion,
+        latestVersion,
+      };
+      if (pinnedVersion) {
+        nextApp.appVersion = pinnedVersion;
+      } else {
+        delete nextApp.appVersion;
+      }
+      setSelectedApps([...selectedApps, nextApp]);
       setSelected(true);
       setToast(`Added ${app.name}`);
     }
@@ -170,8 +181,9 @@ export default function AppDetailView({ app }) {
         [
           {
             ...app,
-            selectedVersion: version,
+            selectedVersion: pinnedVersion || latestVersion,
             latestVersion,
+            ...(pinnedVersion ? { appVersion: pinnedVersion } : {}),
           },
         ],
         DEFAULT_INSTALL_FILTERS
@@ -194,10 +206,9 @@ export default function AppDetailView({ app }) {
   };
 
   const handleCopy = async () => {
-    const installCmd =
-      version === latestVersion
-        ? `winget install -e --id ${app._id}`
-        : `winget install -e --id ${app._id} -v "${version}"`;
+    const installCmd = pinnedVersion
+      ? `winget install -e --id ${app._id} -v "${pinnedVersion}"`
+      : `winget install -e --id ${app._id}`;
 
     try {
       await navigator.clipboard.writeText(installCmd);
@@ -298,20 +309,25 @@ export default function AppDetailView({ app }) {
               <label className={styles.verLabel} htmlFor="app-version-select">
                 Version
               </label>
-              <select
-                id="app-version-select"
-                className={styles.verSel}
-                value={version}
-                aria-label="Select app version"
-                onChange={(e) => handleVersionChange(e.target.value)}
-              >
-                {versions.map((v) => (
-                  <option key={v.version} value={v.version}>
-                    {v.version}
-                    {v.version === latestVersion ? " (latest)" : ""}
-                  </option>
-                ))}
-              </select>
+              <div className={styles.verSelectWrap}>
+                <span className={styles.verFace} aria-hidden="true">
+                  {pinnedVersion || `${latestVersion}(latest)`}
+                </span>
+                <select
+                  id="app-version-select"
+                  className={styles.verSel}
+                  value={pinnedVersion}
+                  aria-label="Select app version"
+                  onChange={(e) => handleVersionChange(e.target.value)}
+                >
+                  {latestVersion && <option value="">Latest</option>}
+                  {versions.map((v) => (
+                    <option key={v.version} value={v.version}>
+                      {v.version}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           )}
         </div>
@@ -321,10 +337,10 @@ export default function AppDetailView({ app }) {
             <span>
               winget install -e --id{" "}
               <span className={styles.cmdId}>{app._id}</span>
-              {version !== latestVersion && (
+              {pinnedVersion && (
                 <>
                   {" "}
-                  -v <span className={styles.cmdId}>{`"${version}"`}</span>
+                  -v <span className={styles.cmdId}>{`"${pinnedVersion}"`}</span>
                 </>
               )}
             </span>
@@ -482,10 +498,12 @@ export default function AppDetailView({ app }) {
             </div>
           )}
 
-          {version && (
+          {(pinnedVersion || latestVersion) && (
             <div className={styles.infoItem}>
               <span className={styles.infoKey}>Version</span>
-              <span className={styles.infoValue}>{version}</span>
+              <span className={styles.infoValue}>
+                {pinnedVersion || `${latestVersion}(latest)`}
+              </span>
             </div>
           )}
 

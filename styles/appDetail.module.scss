@@ -145,27 +145,36 @@
   color: var(--detail-faint, #8e8e9f);
 }
 
-.verSel {
-  appearance: none;
-  background: var(--card-bg);
-  border: none;
-  border-radius: 50px;
+.verSelectWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.verFace {
   padding: 5px 28px 5px 12px;
-  font-family: inherit;
+  border-radius: 50px;
+  background: var(--card-bg);
   font-size: 13px;
   font-weight: 700;
-  color: var(--textColor);
-  cursor: pointer;
   line-height: 1.3;
-  box-shadow: none;
+  color: var(--textColor);
+  pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
+}
 
-  option {
-    background: var(--main-bg);
-    color: var(--textColor);
-  }
+.verSel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  appearance: none;
+  border: none;
 }
 
 .cmd {
@@ -816,7 +825,7 @@
     --detail-brd-strong: #333438;
   }
 
-  .verSel {
+  .verFace {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23aaaaaa' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   }
 }

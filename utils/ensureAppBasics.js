@@ -69,7 +69,9 @@ export async function ensureAppWithVersions(app) {
     ? savedVersion
     : latestVersion;
 
-  return {
+  const hasExplicitPin = Object.prototype.hasOwnProperty.call(app, "appVersion");
+
+  const nextApp = {
     ...app,
     ...appData,
     _id: app._id,
@@ -80,6 +82,14 @@ export async function ensureAppWithVersions(app) {
     selectedVersion,
     installOptions: app.installOptions,
   };
+
+  if (hasExplicitPin) {
+    nextApp.appVersion = app.appVersion;
+  } else {
+    delete nextApp.appVersion;
+  }
+
+  return nextApp;
 }
 
 export async function ensureAppsWithVersions(apps) {

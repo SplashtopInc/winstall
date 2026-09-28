@@ -109,14 +109,25 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
           id="v-selector"
           name="Select app version"
           onChange={(e) => {
-            setVersion(e.target.value);
-            app.selectedVersion = e.target.value;
+            const nextVersion = e.target.value;
+            setVersion(nextVersion);
+            app.selectedVersion = nextVersion;
+            app.appVersion = nextVersion;
 
             if (selected) {
-              let found = selectedApps.find((a) => a._id === app._id);
-              found.selectedVersion = e.target.value;
+              setSelectedApps(
+                selectedApps.map((item) =>
+                  item._id === app._id
+                    ? {
+                        ...item,
+                        selectedVersion: nextVersion,
+                        appVersion: nextVersion,
+                      }
+                    : item
+                )
+              );
 
-              if(onVersionChange) onVersionChange();
+              if (onVersionChange) onVersionChange();
             }
           }}
         >
