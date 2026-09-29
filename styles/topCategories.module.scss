@@ -1,26 +1,27 @@
 .row {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 18px;
+  gap: 12px;
 }
 
 .card {
   box-sizing: border-box;
   display: flex;
   min-width: 0;
-  height: 87px;
-  padding: 0 21px;
+  height: 64px;
+  padding: 0 16px;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
   border: 2px solid transparent;
-  border-radius: 18px;
-  background: color-mix(in srgb, var(--categoryTint) 16%, #fff);
+  border-radius: 14px;
+  background: var(--categoryFill);
   color: var(--textColor);
   text-decoration: none;
   transition: border-color 0.15s ease;
 
   &:hover {
-    border-color: color-mix(in srgb, var(--categoryTint) 45%, transparent);
+    border-color: color-mix(in srgb, var(--categoryInk) 28%, transparent);
   }
 
   &:focus-visible {
@@ -31,17 +32,17 @@
 
 .icon {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
   place-items: center;
-  border-radius: 50%;
-  background: #fff;
+  border-radius: 10px;
+  background: var(--categoryBadge);
   color: var(--categoryInk);
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     stroke-width: 2.2px;
   }
 }
@@ -52,42 +53,68 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 
 .toneBrowser {
-  --categoryTint: #9b2eff;
-  --categoryInk: #6d28d9;
+  --categoryFill: #efdeff;
+  --categoryBadge: #e3c4ff;
+  --categoryInk: #5a3480;
 }
 
 .toneDevelopment {
-  --categoryTint: #4f46e5;
-  --categoryInk: #3730a3;
+  --categoryFill: #e3e1fb;
+  --categoryBadge: #cdc9fb;
+  --categoryInk: #2c4880;
 }
 
 .toneDocuments {
-  --categoryTint: #f59e0b;
-  --categoryInk: #b45309;
+  --categoryFill: #dce6fc;
+  --categoryBadge: #c2d4fc;
+  --categoryInk: #0e5070;
 }
 
 .toneCommunication {
-  --categoryTint: #2563eb;
-  --categoryInk: #1d4ed8;
+  --categoryFill: #d8f2fd;
+  --categoryBadge: #beeafd;
+  --categoryInk: #3c3a88;
 }
 
 .toneUtilities {
-  --categoryTint: #0d9488;
-  --categoryInk: #0f766e;
+  --categoryFill: #d8eeec;
+  --categoryBadge: #c1eeea;
+  --categoryInk: #1a5860;
 }
 
-:global(.dark) .card {
-  background: color-mix(in srgb, var(--categoryTint) 22%, var(--card-bg));
+:global(.dark) .toneBrowser {
+  --categoryFill: #2e1c3f;
+  --categoryBadge: #492965;
+  --categoryInk: #c8aee0;
 }
 
-:global(.dark) .icon {
-  background: color-mix(in srgb, #fff 10%, var(--card-bg));
-  color: color-mix(in srgb, var(--categoryTint) 35%, #fff);
+:global(.dark) .toneDevelopment {
+  --categoryFill: #1f1c3f;
+  --categoryBadge: #2e2965;
+  --categoryInk: #b3afde;
+}
+
+:global(.dark) .toneDocuments {
+  --categoryFill: #1c273f;
+  --categoryBadge: #293c65;
+  --categoryInk: #aebde0;
+}
+
+:global(.dark) .toneCommunication {
+  --categoryFill: #1c353f;
+  --categoryBadge: #295365;
+  --categoryInk: #aed1e0;
+}
+
+:global(.dark) .toneUtilities {
+  --categoryFill: #243836;
+  --categoryBadge: #2f605b;
+  --categoryInk: #bbd3d1;
 }
 
 @media (max-width: 1100px) {
@@ -102,8 +129,8 @@
   }
 
   .card {
-    height: 78px;
-    padding: 0 18px;
+    height: 64px;
+    padding: 0 14px;
   }
 
   .label {

@@ -32,10 +32,10 @@ export default function TopCategories() {
               href={{ pathname: "/category", query: { category: slug } }}
               className={`${styles.card} ${TOP_CATEGORY_TONES[slug] || ""}`}
             >
+              <span className={styles.label}>{label}</span>
               <span className={styles.icon} aria-hidden="true">
                 {Icon ? <Icon /> : null}
               </span>
-              <span className={styles.label}>{label}</span>
             </Link>
           );
         })}
