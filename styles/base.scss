@@ -698,14 +698,14 @@ article {
 }
 
 .homeBlock {
-  margin-top: 18px;
-  padding-top: 8px;
+  margin-top: 32px;
+  padding-top: 5px;
   border-top: 1px solid var(--detail-brd, #edecf0);
 
   h2.blockHeader {
     margin: 0;
     padding-bottom: 0;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 800;
     line-height: 1.2;
     color: var(--textColor);
@@ -715,9 +715,15 @@ article {
     margin-bottom: 18px;
   }
 
+  > .box:has(+ .blockSubtitle) {
+    margin-bottom: 0;
+  }
+
   h3.blockSubtitle {
     margin: 0;
     padding-top: 0;
+    font-size: 16px;
+    font-weight: 400;
     opacity: 0.75;
   }
 
