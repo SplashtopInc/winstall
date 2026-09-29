@@ -18,3 +18,4 @@
 
 - **命名规范**: 文件名、变量和函数名使用 `lowerCamelCase`，常量使用 `UPPER_SNAKE_CASE`，API 路由使用 `kebab-case` 小写复数形式（如 `/apps/trending`），手册与指南文档使用 `kebab-case`。
 - **语言规范**: 文档、需求设计、任务规划与语义解释使用中文书写；代码注释使用英文。
+- **公开 URL 硬约束**: 网站页面路径 `/apps/:id`（App 详情）、`/packs/:id`（Pack 详情）、`/apps`（Apps 列表）、`/packs`（Packs 列表）不得变更，不得改成别的规范路径（含重定向）。查询参数不在此约束内。详见 `openspec/specs/public-urls/spec.md`。
