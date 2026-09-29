@@ -2,6 +2,8 @@ import styles from "../styles/donateCard.module.scss";
 import { FiPlus } from "react-icons/fi";
 import useRandomAd from "../hooks/useRandomAd";
 
+const SHELF_PLACEMENTS = new Set(["apps-list", "pack-list"]);
+
 const DonateCard = ({ addMargin = "both", placement = "home" }) => {
   const ad = useRandomAd(placement);
 
@@ -13,9 +15,12 @@ const DonateCard = ({ addMargin = "both", placement = "home" }) => {
       : addMargin === "top"
         ? styles.marginTop
         : null;
+  const shelfClass = SHELF_PLACEMENTS.has(placement) ? styles.shelf : null;
 
   return (
-    <div className={`${styles.container} ${marginClass || ""}`.trim()}>
+    <div
+      className={`${styles.container} ${shelfClass || ""} ${marginClass || ""}`.trim()}
+    >
       <h2>{ad.headline}</h2>
       <p>{ad.body}</p>
       <div className={styles.buttons}>

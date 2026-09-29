@@ -25,6 +25,17 @@
   }
 }
 
+// Match SingleApp compact title (15px) and description (13px) on shelf grids.
+.shelf {
+  h2 {
+    font-size: 15px;
+  }
+
+  p {
+    font-size: 13px;
+  }
+}
+
 .buttons {
   display: flex;
   flex-wrap: wrap;
