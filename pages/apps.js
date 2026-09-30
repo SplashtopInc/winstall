@@ -25,7 +25,7 @@ import TrySearching from "../components/TrySearching";
 import { useAppsTotal } from "../ctx/appsTotalContext";
 
 export const PAGE_SIZE = 56;
-export const SHELF_AD_INTERVAL = 15;
+export const SHELF_AD_INDEX = 0;
 
 function normalizeAppsPayload(payload) {
   if (!payload) return { items: [], total: 0, totalKnown: false, offset: 0, limit: 0 };
@@ -350,7 +350,7 @@ function Store({ data, error, buildTime }) {
               >
                 <SingleApp app={app} showSelectCheckbox />
 
-                {index % SHELF_AD_INTERVAL === 0 && (
+                {index === SHELF_AD_INDEX && (
                   <DonateCard addMargin="" placement="apps-list" />
                 )}
               </React.Fragment>

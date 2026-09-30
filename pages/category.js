@@ -15,7 +15,7 @@ import { CATEGORY_LABELS, CATEGORY_SLUGS } from "../utils/categoryMeta";
 import styles from "../styles/categoryPage.module.scss";
 
 export const PAGE_SIZE = 56;
-export const SHELF_AD_INTERVAL = 15;
+export const SHELF_AD_INDEX = 0;
 
 export { CATEGORY_LABELS, CATEGORY_SLUGS };
 
@@ -208,7 +208,7 @@ function CategoryPage() {
                     <li>
                       <SingleApp app={app} showSelectCheckbox />
                     </li>
-                    {shelfAd && index % SHELF_AD_INTERVAL === 0 && (
+                    {shelfAd && index === SHELF_AD_INDEX && (
                       <li className={styles.adCell}>
                         <DonateCard addMargin="" placement="apps-list" />
                       </li>

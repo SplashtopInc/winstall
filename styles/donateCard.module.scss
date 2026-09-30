@@ -25,8 +25,11 @@
   }
 }
 
-// Match SingleApp compact title (15px) and description (13px) on shelf grids.
+// Match SingleApp compact title (15px), description (13px), and padding on shelf grids.
 .shelf {
+  padding: 16px;
+  box-sizing: border-box;
+
   h2 {
     font-size: 15px;
   }
@@ -89,5 +92,11 @@
 @media (max-width: 590px) {
   .container {
     border-radius: 12px;
+  }
+}
+
+@media (max-width: 690px) {
+  .shelf {
+    padding: 10px;
   }
 }
