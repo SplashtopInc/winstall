@@ -6,14 +6,14 @@ GitHub 告警 **CVE-2026-75604**（[GHSA-p293-qw3h-jr36](https://github.com/verc
 
 另外两条依赖告警也要在同一次升级里清掉：
 
-- **ip-address**（[GHSA-2vr4-cq9g-pvrc](https://github.com/beaugunderson/ip-address/security/advisories/GHSA-2vr4-cq9g-pvrc) / CVE-2026-101910）：`10.2.0` 至 `10.5.1` 之前，`Address6` 不把 NAT64 本地用途网段 `64:ff9b:1::/48` 判为私有，用这些分类做信任边界时可能绕过 SSRF 检查。当前 lockfile 是 **10.4.0**，由 `mongodb` → `socks`（`ip-address@^10.1.1`）引入。修复版本是 **10.5.1**。
+- **ip-address**（[GHSA-2vr4-cq9g-pvrc](https://github.com/beaugunderson/ip-address/security/advisories/GHSA-2vr4-cq9g-pvrc) / CVE-2026-101910，以及 [GHSA-j6r3-76f7-8jcv](https://github.com/beaugunderson/ip-address/security/advisories/GHSA-j6r3-76f7-8jcv) / CVE-2026-101912）：前者是 `10.5.1` 起才把 NAT64 本地用途网段 `64:ff9b:1::/48` 判为私有；后者在 **10.7.1** 之前，`isInSubnet()` / `isHostInSubnet()` 会把不同地址族当成同一地址空间比较，allowlist 可能放行范围外地址。当前 lockfile 是 **10.4.0**，由 `mongodb` → `socks`（`ip-address@^10.1.1`）引入。修复版本是 **10.7.1**。
 - **undici**（[GHSA-3wwx-pv8p-q78v](https://github.com/nodejs/undici/security/advisories/GHSA-3wwx-pv8p-q78v) / CVE-2026-85024）：WebSocket `permessage-deflate` 在解压超过上限后又收到畸形 DEFLATE 时，会丢掉 zlib 的 error 监听，未处理错误可打垮整个 Node 进程。`7.28.0` 至 **7.29.1** 之前受影响。`package.json` 是 `^7.24.6`，lockfile 是 **7.29.0**。修复版本是 **7.29.1**。应用只用 `EnvHttpProxyAgent` 做代理，不打开 undici WebSocket，但包版本仍会被扫描标记。
 
 ## What Changes
 
 - 将 `next` 从锁定的 **16.3.1** 升到 **16.3.3**（`package.json` 已是 `^16.3.0`，主要更新 lockfile）。
 - 用 `overrides.sharp` 把传递依赖 **sharp 升到 0.35.4**（含 libheif 1.23.2）。不把 sharp 加为直接依赖。
-- 用 `overrides["ip-address"]` 把传递依赖 **ip-address 升到 10.5.1**。不把它加为直接依赖。
+- 用 `overrides["ip-address"]` 把传递依赖 **ip-address 升到 10.7.1**。不把它加为直接依赖。不升到 10.7.2。
 - 把直接依赖 **undici** 从锁定的 **7.29.0** 升到 **7.29.1**，声明范围改为 `^7.29.1`。不升到 8.x。
 - 保持 React 19.2、`next-auth@4`、`@serwist/next`、Pages Router、`--webpack` 生产构建和 `node:22-slim` Docker 不变。
 - 不改页面路径、API 或用户可见行为。16.3.3 会关闭 AVIF 图片优化；本仓库未使用 `next/image`，也不配置 `images`。sharp 升级只替换 Next 图片优化所用的可选二进制。
@@ -32,7 +32,7 @@ GitHub 告警 **CVE-2026-75604**（[GHSA-p293-qw3h-jr36](https://github.com/verc
 
 ## Impact
 
-- **依赖：** `package.json` / `package-lock.json` 中的 `next`（及 Next 自带的同版本包，如 `@next/env`）、直接依赖 `undici@7.29.1`，以及 overrides 带到 **sharp 0.35.4**（含 `@img/sharp-*`）和 **ip-address 10.5.1**。`next-auth` 的 override 已指向 `$next`，随 lockfile 对齐。
+- **依赖：** `package.json` / `package-lock.json` 中的 `next`（及 Next 自带的同版本包，如 `@next/env`）、直接依赖 `undici@7.29.1`，以及 overrides 带到 **sharp 0.35.4**（含 `@img/sharp-*`）和 **ip-address 10.7.1**。`next-auth` 的 override 已指向 `$next`，随 lockfile 对齐。
 - **运行时：** Node 引擎下限仍为 `>=20.9.0`。Dockerfile 仍为 `node:22-slim` + standalone。
 - **构建：** `dev` 继续 `next dev --turbopack`；`build` / `build:docker` 继续 `--webpack`，以便 Serwist 注入 webpack 配置。
 - **范围外：** 不升到 16.4+ 或 canary，不把 undici 升到 8.x，不迁移 App Router，不改 Serwist / Auth，不改代理或 Mongo 的调用方式，不处理上述告警以外的 audit 项。

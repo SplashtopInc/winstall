@@ -10,7 +10,7 @@
 
 - 把解析到的 `next` 固定到 **16.3.3**，使 CVE-2026-75604 与 GHSA-2xp9-vwfh-vxw4 不再覆盖当前 lockfile。
 - 把解析到的 `sharp` 固定到 **0.35.4**，使 GHSA-rgj7-g3m4-5g8c（libheif 的 GHSA-g89c-p67h-r497 与 GHSA-2jg2-4ch7-h545）不再覆盖当前 lockfile。
-- 把解析到的 `ip-address` 固定到 **10.5.1**，使 GHSA-2vr4-cq9g-pvrc 不再覆盖当前 lockfile。
+- 把解析到的 `ip-address` 固定到 **10.7.1**，使 GHSA-2vr4-cq9g-pvrc 与 GHSA-j6r3-76f7-8jcv 不再覆盖当前 lockfile。
 - 把直接依赖 `undici` 固定到 **7.29.1**，使 GHSA-3wwx-pv8p-q78v 不再覆盖当前 lockfile。
 - 升级后生产 webpack 构建、standalone 产物、现有测试仍通过。
 
@@ -51,11 +51,11 @@
 
 **备选：** 只 `npm update sharp`、不写 override。不采用：范围仍允许 0.35.3，lockfile 一旦按旧范围重解就可能回到受影响版本。
 
-### 5. 用 overrides 把 ip-address 锁到 10.5.1
+### 5. 用 overrides 把 ip-address 锁到 10.7.1
 
-**选择：** 在 `overrides` 增加 `"ip-address": "10.5.1"`。不把它写入 `dependencies`。caret `^10.5.1` 会解析到 10.7.2，因此 lock 用精确版本。
+**选择：** 在 `overrides` 增加 `"ip-address": "10.7.1"`。不把它写入 `dependencies`。不用 caret：`^10.5.1` 会解析到 10.7.2，超出本 change 点名的修复版本。
 
-**理由：** 它不是顶层依赖，父级 `socks` 的范围是 `^10.1.1`，现有 lock 停在 10.4.0。`10.5.1` 落在该范围内。应用代码不调用 `Address6.isPrivate()`；告警仍会标在传递依赖上。override 与 sharp 同一做法。
+**理由：** 它不是顶层依赖，父级 `socks` 的范围是 `^10.1.1`，现有 lock 停在 10.4.0。`10.7.1` 落在该范围内，同时盖住 NAT64 分类（10.5.1）和跨地址族 `isInSubnet()` 比较（10.7.1）。应用代码不调用这些分类方法；告警仍会标在传递依赖上。override 与 sharp 同一做法。
 
 **备选：** 升级 `mongodb` 以带动新的 `socks` / `ip-address`。不采用：Mongo 主版本或次版本不在这几条告警的修复路径上。
 
@@ -68,13 +68,13 @@
 ## Risks / Trade-offs
 
 - **[Risk] 补丁仍可能让 webpack / Turbopack 构建失败。** → Mitigation：实现时跑 `npm test`、`npm run build`；失败则停，不改产品代码来迁就，除非构建错误明确来自该补丁且修复范围仍在本 change 内。
-- **[Risk] lockfile 把 `@next/*` 或传递依赖一起抬高。** → Mitigation：只接受 `next@16.3.3` 及其声明的同版本配套（如 `@next/env@16.3.3`）、`undici@7.29.1`，以及 override 带来的 `sharp@0.35.4`（含 `@img/sharp-*`）和 `ip-address@10.5.1`。不顺手升级无关顶层依赖。
+- **[Risk] lockfile 把 `@next/*` 或传递依赖一起抬高。** → Mitigation：只接受 `next@16.3.3` 及其声明的同版本配套（如 `@next/env@16.3.3`）、`undici@7.29.1`，以及 override 带来的 `sharp@0.35.4`（含 `@img/sharp-*`）和 `ip-address@10.7.1`。不顺手升级无关顶层依赖。
 - **[Risk] sharp 0.35.4 的预编译二进制与 `node:22-slim`（glibc）不匹配，镜像构建失败。** → Mitigation：`npm run build` 与既有 Docker 安装路径都要能解析 linux glibc 的 `@img/sharp-linux-*`。失败则停，不改用系统 libheif。
 - **[Trade-off] 生产在 Linux 上本来打不到 Windows RCE。** → 仍升级，否则 Dependabot / GitHub Advisory 会继续对 lockfile 告警。
 
 ## Migration Plan
 
-1. `npm install next@16.3.3 undici@7.29.1`，并加上 `overrides` 中的 `sharp` 与 `ip-address` 后安装，使 lockfile 中 next 为 16.3.3、sharp 为 0.35.4、ip-address 为 10.5.1、undici 为 7.29.1。
+1. `npm install next@16.3.3 undici@7.29.1`，并加上 `overrides` 中的 `sharp` 与 `ip-address` 后安装，使 lockfile 中 next 为 16.3.3、sharp 为 0.35.4、ip-address 为 10.7.1、undici 为 7.29.1。
 2. `npm test` 与 `npm run build` 通过后再合入。
 3. 回滚：去掉这两个 override，并把 lockfile 与 `undici` 声明恢复到 `next@16.3.1`、`sharp@0.35.3`、`ip-address@10.4.0`、`undici@^7.24.6`（解析 7.29.0）后重新安装。无数据迁移。
 

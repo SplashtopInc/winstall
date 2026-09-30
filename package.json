@@ -33,7 +33,7 @@
     "uuid": "^11.1.0",
     "browserslist": "^4.28.7",
     "sharp": "0.35.4",
-    "ip-address": "10.5.1",
+    "ip-address": "10.7.1",
     "next-auth": {
       "next": "$next"
     }
