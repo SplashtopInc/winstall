@@ -25,13 +25,15 @@
     "react-modal": "^3.16.3",
     "redis": "^4.7.0",
     "tunnel": "^0.0.6",
-    "undici": "^7.24.6",
+    "undici": "^7.29.1",
     "uuid": "^11.1.0"
   },
   "overrides": {
     "serialize-javascript": "^7.0.3",
     "uuid": "^11.1.0",
     "browserslist": "^4.28.7",
+    "sharp": "0.35.4",
+    "ip-address": "10.5.1",
     "next-auth": {
       "next": "$next"
     }
