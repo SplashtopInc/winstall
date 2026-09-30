@@ -243,7 +243,7 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
               </span>
               <span className={styles.identityText}>
                 <strong>{app.name}</strong>
-                {app.publisher && <small>{app.publisher}</small>}
+                <small>{app.publisher || "\u00a0"}</small>
               </span>
             </Link>
             {showSettingsIcon && (

@@ -8,12 +8,12 @@
 
 ### Requirement: SingleApp 展示货架终身计数
 
-当统计展示开关打开时，凡渲染为 `SingleApp` 的应用卡 MUST 展示该应用对象上的终身 `viewCount`、`downloadCount`、`likeCount`。三项 MUST 按 views、downloads、likes 的顺序排成一行，放在描述之后，且均为只读。缺省、非数字或缺失字段 MUST 按 0 展示，MUST NOT 隐藏为 0 的项。开关关闭时，这些卡片 MUST NOT 展示上述三项或计数行。紧凑货架卡 MUST 贴近首页 Trending Apps 的身份区（图标瓷片、名称、发行商），MUST NOT 展示 version，描述 MUST 最多两行。系统 MUST NOT 为该行请求 `GET /apps/:id/stats`，MUST NOT 读取短名 `views`、`downloads`、`likes`，MUST NOT 在卡片上提供点赞或取消点赞。`large` 详情型 `SingleApp` 若出现，仍 MUST 遵守本计数开关，且 MUST NOT 因此改写详情页的 stats 读取。
+当统计展示开关打开时，凡渲染为 `SingleApp` 的应用卡 MUST 展示该应用对象上的终身 `viewCount`、`downloadCount`、`likeCount`。三项 MUST 按 views、downloads、likes 的顺序排成一行，放在描述之后，且均为只读。缺省、非数字或缺失字段 MUST 按 0 展示，MUST NOT 隐藏为 0 的项。开关关闭时，这些卡片 MUST NOT 展示上述三项或计数行。紧凑货架卡 MUST 贴近首页 Trending Apps 的身份区（图标瓷片、名称、发行商），MUST NOT 展示 version。名称 MUST 按实际行数占位，最多两行，MUST NOT 在单行名称下预留第二行空位。发行商 MUST 紧跟名称，随名称行数上下移动；缺发行商时仍保留一行。名称与发行商所在区域的最小高度 MUST 等于两行名称加一行发行商，使描述从固定位置开始。描述 MUST 最多两行。系统 MUST NOT 为该行请求 `GET /apps/:id/stats`，MUST NOT 读取短名 `views`、`downloads`、`likes`，MUST NOT 在卡片上提供点赞或取消点赞。`large` 详情型 `SingleApp` 若出现，仍 MUST 遵守本计数开关，且 MUST NOT 因此改写详情页的 stats 读取。
 
 #### Scenario: 紧凑货架卡不展示 version，描述最多两行
 
 - **WHEN** 用户在 `/category` 或 `/apps` 查看紧凑 `SingleApp`
-- **THEN** 卡片 MUST NOT 展示 version，描述 MUST 最多显示两行
+- **THEN** 卡片 MUST NOT 展示 version，单行名称下 MUST NOT 空出第二行，发行商 MUST 紧跟名称，描述 MUST 最多显示两行且起始位置不随名称是否换行而改变
 
 #### Scenario: 分类货架卡片显示终身三项
 
