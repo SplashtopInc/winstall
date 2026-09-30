@@ -8,6 +8,7 @@ import {
   fetchResourceLike,
   setResourceLike,
 } from "../utils/engagementApi";
+import { isStatsDisplayEnabled } from "../utils/statsDisplay";
 
 function emptyStats() {
   return { views: 0, downloads: 0, likeCount: 0, liked: false };
@@ -48,7 +49,7 @@ export default function useResourceEngagement({
   const isSignedIn = sessionStatus === "authenticated" && !!session?.user;
 
   const loadStats = useCallback(async () => {
-    if (!targetId) return;
+    if (!isStatsDisplayEnabled() || !targetId) return;
 
     const fetchStats = targetType === "pack" ? fetchPackStats : fetchAppStats;
     const { stats: next } = await fetchStats(targetId);

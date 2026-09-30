@@ -2,6 +2,7 @@ import { FiDownload, FiEye, FiHeart } from "react-icons/fi";
 
 import { formatCount } from "../utils/engagementStats";
 import { readAppListCounts } from "../utils/appListCounts";
+import { isStatsDisplayEnabled } from "../utils/statsDisplay";
 import styles from "../styles/appListCounts.module.scss";
 
 export default function AppListCounts({
@@ -9,6 +10,8 @@ export default function AppListCounts({
   className = "",
   ariaLabel = "Views, downloads, and likes",
 }) {
+  if (!isStatsDisplayEnabled()) return null;
+
   const counts = readAppListCounts(app);
   const views = formatCount(counts.viewCount) ?? "0";
   const downloads = formatCount(counts.downloadCount) ?? "0";

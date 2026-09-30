@@ -1,5 +1,6 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
 import { getPublicApiBase } from "../utils/runtimeConfig";
+import { statsDisplayMetaContent } from "../utils/statsDisplay";
 
 class MyDocument extends Document {
   render() {
@@ -8,6 +9,7 @@ class MyDocument extends Document {
         <Head>
           <meta name="winstall-icon-base" content={process.env.WINSTALL_ICON_BASE || ''} />
           <meta name="winstall-api-base" content={getPublicApiBase()} />
+          <meta name="winstall-show-stats" content={statsDisplayMetaContent()} />
           <script src="https://cmp.osano.com/169nu5TMub7Nk2Epy/7c82a576-285f-4b1c-8d4b-a1a4da5b7346/osano.js"></script>
           <script
             dangerouslySetInnerHTML={{

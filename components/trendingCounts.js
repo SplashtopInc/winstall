@@ -2,6 +2,7 @@ import { FiDownload, FiEye, FiHeart } from "react-icons/fi";
 
 import { formatCount } from "../utils/engagementStats";
 import { isTrendingCountVisible } from "../utils/trendingCountVisibility";
+import { isStatsDisplayEnabled } from "../utils/statsDisplay";
 import styles from "../styles/trendingCounts.module.scss";
 
 const COUNT_ITEMS = [
@@ -15,7 +16,7 @@ export default function TrendingCounts({
   className = "",
   ariaLabel = "Views, downloads, and likes",
 }) {
-  if (!counts) return null;
+  if (!isStatsDisplayEnabled() || !counts) return null;
 
   const visible = COUNT_ITEMS.filter((item) =>
     isTrendingCountVisible(counts[item.key])

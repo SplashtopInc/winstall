@@ -14,6 +14,7 @@ import { buildSiteUrl, compareVersion, timeAgo } from "../utils/helpers";
 import LikeButton from "./LikeButton";
 import useResourceEngagement from "../hooks/useResourceEngagement";
 import { formatCount } from "../utils/engagementStats";
+import { isStatsDisplayEnabled } from "../utils/statsDisplay";
 import { trackAppStats } from "../utils/trackAppStats";
 import { DEFAULT_INSTALL_FILTERS } from "../utils/defaultInstallOptions";
 import { downloadInstantInstaller } from "../utils/downloadInstantInstaller";
@@ -294,7 +295,7 @@ export default function AppDetailView({ app }) {
         </div>
       </section>
 
-      {stats && (
+      {isStatsDisplayEnabled() && stats && (
         <p className={styles.counts}>
           {formatCount(stats.views)} views · {formatCount(stats.downloads)}{" "}
           installs
