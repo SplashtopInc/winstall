@@ -1,7 +1,7 @@
 function generateStaticSiteMap(urlPrefix) {
   return `<?xml version="1.0" encoding="UTF-8"?>
    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-     ${['', 'apps', 'packs', 'express', 'privacy', 'eli5', 'compare', 'compare-ninite', 'compare-unigetui', 'compare-chocolatey']
+     ${['', 'apps', 'packs', 'category', 'about', 'express', 'privacy', 'eli5', 'compare', 'compare-ninite', 'compare-unigetui', 'compare-chocolatey']
        .map((page) => {
          const loc = page ? `${urlPrefix}/${page}` : `${urlPrefix}/`;
          return `
