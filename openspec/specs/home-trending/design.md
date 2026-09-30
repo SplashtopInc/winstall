@@ -40,7 +40,7 @@
 ### 3. 卡片映射到现有 UI，新文件 lowerCamelCase
 
 - **Apps：** 不用 `PrettyApp`（依赖精选 `img`）。组件 `components/trendingApps.js`：对齐 `.demo/discover.html` 扁平卡——4 列网格（最多 16）、hover 显示勾选（同 PrettyApp）、图标 + 名称/发布者、终身计数中点分隔。卡片不展示 `#N` 名次，仍按 API `rank` 排序。`AppIcon` hydrate；加入/移除走选择上下文；身份链到详情。样式 `styles/trendingApps.module.scss`。计数用终身 `viewCount` / `downloadCount` / `likeCount`（`components/trendingCounts.js`），不用短名 `views` / `downloads` / `likes`。
-- **Packs：** 组件 `components/trendingPackCard.js`（由 `trendingPacks.js` 渲染）：标题、描述、终身计数、内含 App 行；整卡链接到 Pack 详情（无单独 View Pack）。整卡背景使用与 Trending Apps 相同的 `var(--card-bg)`，不使用彩色渐变头。数据仍来自 `GET /packs/trending`（后期可用 bootscore 人工置顶，名单可能相对固定）。首页最多展示 8 条。`name` / `description` 映射为标题与描述。缺图标时用 `AppIcon` 占位。不做 Featured 那种逐个 `/apps/:id` 补全。
+- **Packs：** 组件 `components/trendingPackCard.js`（由 `trendingPacks.js` 渲染）：标题最多一行省略、描述固定两行省略、应用预览固定 5 行再加一行 “+n more” 占位；整卡链接到 Pack 详情（无单独 View Pack）。整卡背景使用与 Trending Apps 相同的 `var(--card-bg)`，不使用彩色渐变头。数据仍来自 `GET /packs/trending`（后期可用 bootscore 人工置顶，名单可能相对固定）。首页最多展示 8 条。`name` / `description` 映射为标题与描述。缺图标时用 `AppIcon` 占位。不做 Featured 那种逐个 `/apps/:id` 补全。
 
 **备选：** 复用现有 `PackPreview` / 横滑名次行。否决：与 discover demo 卡片一致。
 

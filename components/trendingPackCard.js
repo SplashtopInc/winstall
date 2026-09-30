@@ -39,25 +39,45 @@ export default function TrendingPackCard({ pack }) {
         </div>
 
         <div className={styles.packApps}>
-          {previewApps.map((app) => (
-            <div className={styles.packApp} key={app._id || app.name}>
-              <span className={styles.appMark}>
-                <AppIcon
-                  id={app._id}
-                  name={app.name}
-                  icon={app.icon}
-                  iconUrl={app.iconUrl}
-                  iconPng={app.iconPng}
+          {Array.from({ length: PREVIEW_APP_LIMIT }, (_, index) => {
+            const app = previewApps[index];
+            if (!app) {
+              return (
+                <div
+                  className={styles.packApp}
+                  key={`slot-${index}`}
+                  aria-hidden="true"
                 />
-              </span>
-              <span className={styles.appName} title={app.name}>
-                {app.name}
-              </span>
-            </div>
-          ))}
-          {overflowCount > 0 && (
-            <div className={styles.packMore}>+{overflowCount} more</div>
-          )}
+              );
+            }
+
+            return (
+              <div className={styles.packApp} key={app._id || `${app.name}-${index}`}>
+                <span className={styles.appMark}>
+                  <AppIcon
+                    id={app._id}
+                    name={app.name}
+                    icon={app.icon}
+                    iconUrl={app.iconUrl}
+                    iconPng={app.iconPng}
+                  />
+                </span>
+                <span className={styles.appName} title={app.name}>
+                  {app.name}
+                </span>
+              </div>
+            );
+          })}
+          <div
+            className={
+              overflowCount > 0
+                ? styles.packMore
+                : `${styles.packMore} ${styles.packMoreReserve}`
+            }
+            aria-hidden={overflowCount > 0 ? undefined : true}
+          >
+            {overflowCount > 0 ? `+${overflowCount} more` : "+0 more"}
+          </div>
         </div>
       </div>
     </Link>

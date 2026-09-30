@@ -47,18 +47,17 @@
 }
 
 .packTitle {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  line-clamp: 2;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
+  display: block;
+  min-width: 0;
   margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   font-size: 20px;
   font-weight: 800;
   line-height: 1.25;
   letter-spacing: -0.02em;
   color: var(--textColor);
-  overflow-wrap: anywhere;
 }
 
 .packDesc {
@@ -68,7 +67,7 @@
   -webkit-line-clamp: 2;
   overflow: hidden;
   margin: 0;
-  min-height: 2.8em;
+  height: calc(1.4em * 2);
   font-size: 14px;
   font-weight: 500;
   line-height: 1.4;
@@ -89,14 +88,11 @@
   align-items: center;
   gap: 10px;
   min-width: 0;
+  min-height: 25px;
   margin-bottom: 8px;
   font-size: 14px;
   font-weight: 600;
   color: var(--textColor);
-
-  &:last-child {
-    margin-bottom: 0;
-  }
 }
 
 .appMark {
@@ -137,10 +133,16 @@
 
 .packMore {
   margin-top: 4px;
+  min-height: calc(13px * 1.4);
   padding-left: 35px;
   font-size: 13px;
   font-weight: 700;
+  line-height: 1.4;
   color: var(--accent);
+}
+
+.packMoreReserve {
+  visibility: hidden;
 }
 
 @media (max-width: 1100px) {
