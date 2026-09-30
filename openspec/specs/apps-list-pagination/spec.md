@@ -48,11 +48,11 @@ The apps catalog, search results, publisher browse, and Add Apps dialog MUST NOT
 - **THEN** the UI does not offer client-side sort and displays apps in API order
 
 ### Requirement: `/apps` 全量目录用 Load more
-在 `/apps` 且没有生效搜索查询时，系统 MUST 请求 `GET /apps`，带 `offset` 与 `limit`，`limit` MUST 为 56，MUST NOT 发送 `sort`。系统 MUST 使用 `{ total, offset, limit, data }` 渲染。当 `total` 大于已展示条数时 MUST 展示 Load more；激活 Load more MUST 追加下一批且不得替换已展示卡片。系统 MUST NOT 展示 Prev/Next、顶栏小翻页或左右方向键翻列表。系统 MUST NOT 展示「Showing … of N apps (page x of y)」这类当前页范围文案。无查询标题仍可展示应用总数。
+在 `/apps` 且没有生效搜索查询时，系统 MUST 请求 `GET /apps`，带 `offset` 与 `limit`，MUST NOT 发送 `sort`。首屏 `limit` MUST 为 59，Load more 的 `limit` MUST 为 60。系统 MUST 使用 `{ total, offset, limit, data }` 渲染。当 `total` 大于已展示条数时 MUST 展示 Load more；激活 Load more MUST 追加下一批且不得替换已展示卡片。系统 MUST NOT 展示 Prev/Next、顶栏小翻页或左右方向键翻列表。系统 MUST NOT 展示「Showing … of N apps (page x of y)」这类当前页范围文案。无查询标题仍可展示应用总数。
 
 #### Scenario: 无查询时用 Load more 追加
 - **WHEN** 用户打开 `/apps` 且全量目录超过第一批，并激活 Load more
-- **THEN** 已展示卡片仍在，下一批追加在其后，且请求 `GET /apps` 的 `limit` 为 56
+- **THEN** 已展示卡片仍在，下一批追加在其后，且该次请求 `GET /apps` 的 `limit` 为 60
 
 #### Scenario: 无范围页码文案
 - **WHEN** 用户在 `/apps` 查看有结果的目录或搜索列表

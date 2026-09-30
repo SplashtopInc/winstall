@@ -40,7 +40,7 @@
 
 ### Requirement: 分类列表使用分类接口信封
 
-当当前 slug 为 `all` 时，系统 MUST 请求 `GET /apps`，带 `offset` 与 `limit`，MUST NOT 发送分类过滤，MUST NOT 发送 `sort`。当当前 slug 为其余分类时，系统 MUST 请求 `GET /apps/categories/:id`，带 `offset` 与 `limit`，MUST NOT 发送 `sort`。系统 MUST 使用 `{ total, offset, limit, data }` 中的 `data` 渲染。列表顺序 MUST 为接口返回顺序。`:id` MUST 为当前 slug（必要时 URL 编码）。MUST NOT 把响应当成裸数组。当 `total` 大于当前已展示条数时，MUST 展示 Load more。激活 Load more MUST 追加下一页且不得替换已展示卡片。更换分类 MUST 丢弃上一列表并加载第一页。`total` 为 0 且 `data` 为空时 MUST 展示空网格且 MUST NOT 展示 Load more。请求失败 MUST 展示错误态，且 MUST NOT 留下另一分类的过期列表。
+当当前 slug 为 `all` 时，系统 MUST 请求 `GET /apps`，带 `offset` 与 `limit`，MUST NOT 发送分类过滤，MUST NOT 发送 `sort`。当当前 slug 为其余分类时，系统 MUST 请求 `GET /apps/categories/:id`，带 `offset` 与 `limit`，MUST NOT 发送 `sort`。首屏 `limit` MUST 为 59，Load more 的 `limit` MUST 为 60。系统 MUST 使用 `{ total, offset, limit, data }` 中的 `data` 渲染。列表顺序 MUST 为接口返回顺序。`:id` MUST 为当前 slug（必要时 URL 编码）。MUST NOT 把响应当成裸数组。当 `total` 大于当前已展示条数时，MUST 展示 Load more。激活 Load more MUST 追加下一页且不得替换已展示卡片。更换分类 MUST 丢弃上一列表并加载第一页。`total` 为 0 且 `data` 为空时 MUST 展示空网格且 MUST NOT 展示 Load more。请求失败 MUST 展示错误态，且 MUST NOT 留下另一分类的过期列表。
 
 #### Scenario: Load more 追加下一页
 - **WHEN** 某分类应用数超过第一页，且用户激活 Load more

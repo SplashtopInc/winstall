@@ -38,13 +38,13 @@
 
 **备选：** 动态 `model.categories` — 推迟。
 
-### 3. 分页为 Load more，`PAGE_SIZE` 为 56
+### 3. 分页为 Load more，首屏 59、其后 60
 
-**选择：** 首次 `offset=0&limit=56`。Load more 用响应里的 `offset`、`limit`、`data.length` 算下一 `offset`。URL 不写 offset，只写 `category`。`shown.length >= total` 时隐藏 Load more。
+**选择：** 首次 `offset=0&limit=59`。Load more 的 `limit` 为 60，并用响应里的 `offset`、`limit`、`data.length` 算下一 `offset`。URL 不写 offset，只写 `category`。`shown.length >= total` 时隐藏 Load more。`/apps` 目录同一组页大小。
 
-**理由：** 分类列表需要比 demo 的 8 条更大的首屏密度；接口默认 60 时小分类几乎看不到 Load more。
+**理由：** 首屏 59 个应用加 1 格广告是 60 格，能被 4、3、2 整除。其后不再插广告，每批 60 也是这些列数的倍数，累计行数仍然排满。
 
-**备选：** `/apps` 式上下页 — 否决。
+**备选：** 首屏和 Load more 都用 56。否决：加上 1 格广告后是 57 格，四列网格最后一行只剩 1 格。
 
 ### 4. 卡片复用既有 `SingleApp`
 

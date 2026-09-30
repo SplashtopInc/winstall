@@ -24,7 +24,8 @@ import SearchEmptyState from "../components/SearchEmptyState";
 import TrySearching from "../components/TrySearching";
 import { useAppsTotal } from "../ctx/appsTotalContext";
 
-export const PAGE_SIZE = 56;
+export const PAGE_SIZE = 60;
+export const FIRST_PAGE_SIZE = PAGE_SIZE - 1;
 export const SHELF_AD_INDEX = 0;
 
 function normalizeAppsPayload(payload) {
@@ -148,7 +149,10 @@ function Store({ data, error, buildTime }) {
     setClientError("");
 
     const { response, error: fetchError } = await fetchWinstallAPI(
-      appsListPath(listQueryArg, { offset, limit: PAGE_SIZE })
+      appsListPath(listQueryArg, {
+        offset,
+        limit: offset === 0 ? FIRST_PAGE_SIZE : PAGE_SIZE,
+      })
     );
 
     if (fetchError) {
@@ -395,7 +399,7 @@ export async function getStaticProps() {
   }
 
   let { response, error } = await fetchWinstallAPI(
-    `/apps?offset=0&limit=${PAGE_SIZE}`
+    `/apps?offset=0&limit=${FIRST_PAGE_SIZE}`
   );
 
   const items = normalizeAppsPayload(response).items;

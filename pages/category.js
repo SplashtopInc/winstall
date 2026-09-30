@@ -14,7 +14,8 @@ import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
 import { CATEGORY_LABELS, CATEGORY_SLUGS } from "../utils/categoryMeta";
 import styles from "../styles/categoryPage.module.scss";
 
-export const PAGE_SIZE = 56;
+export const PAGE_SIZE = 60;
+export const FIRST_PAGE_SIZE = PAGE_SIZE - 1;
 export const SHELF_AD_INDEX = 0;
 
 export { CATEGORY_LABELS, CATEGORY_SLUGS };
@@ -88,7 +89,7 @@ function CategoryPage() {
       const result = await fetchCategoryApps({
         slug: activeSlug,
         offset: 0,
-        limit: PAGE_SIZE,
+        limit: FIRST_PAGE_SIZE,
       });
 
       if (cancelled) return;
