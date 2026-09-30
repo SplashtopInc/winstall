@@ -151,7 +151,9 @@ function Store({ data, error, buildTime }) {
     const { response, error: fetchError } = await fetchWinstallAPI(
       appsListPath(listQueryArg, {
         offset,
-        limit: offset === 0 ? FIRST_PAGE_SIZE : PAGE_SIZE,
+        limit: offset === 0 && listQueryArg.kind === "list"
+          ? FIRST_PAGE_SIZE
+          : PAGE_SIZE,
       })
     );
 
@@ -354,7 +356,7 @@ function Store({ data, error, buildTime }) {
               >
                 <SingleApp app={app} showSelectCheckbox />
 
-                {index === SHELF_AD_INDEX && (
+                {!hasActiveQuery && index === SHELF_AD_INDEX && (
                   <DonateCard addMargin="" placement="apps-list" />
                 )}
               </React.Fragment>
