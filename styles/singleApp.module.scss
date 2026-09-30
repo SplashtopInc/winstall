@@ -413,12 +413,12 @@
         flex-shrink: 0;
         place-items: center;
         border-radius: 12px;
-        background: var(--main-bg);
+        background: transparent;
         overflow: hidden;
 
         > :is(img, picture, span) {
-            width: 30px;
-            height: 30px;
+            width: 100%;
+            height: 100%;
             margin: 0;
             text-indent: 0;
         }

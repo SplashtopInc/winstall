@@ -102,25 +102,25 @@
   flex-shrink: 0;
   place-items: center;
   border-radius: 6px;
-  background: var(--main-bg);
+  background: transparent;
   overflow: hidden;
 
   :global(img),
   :global(picture),
   :global(picture img) {
-    width: 16px !important;
-    height: 16px !important;
-    max-width: 16px;
-    max-height: 16px;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none;
+    max-height: none;
     margin: 0;
     object-fit: contain;
   }
 
   :global(span) {
-    width: 16px !important;
-    height: 16px !important;
-    border-radius: 4px;
-    font-size: 10px;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 6px;
+    font-size: 12px;
   }
 }
 

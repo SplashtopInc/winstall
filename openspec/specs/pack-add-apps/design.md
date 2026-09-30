@@ -39,7 +39,7 @@
 
 ### 3. 两套卡片，皮对齐 compact 目录卡
 
-**选择：** 继续 `AddAppPickerCard` + 本地 `selectedApps` / `alreadyAdded` / 底部加 pack。样式对齐 compact `SingleApp`：图标瓷片、名称、发行商、描述两行、`appListCounts` 终身三项。网格四列、单元格拉满。不搬 checkbox，不把身份区做成进详情的 Link（整卡仍 toggle）。
+**选择：** 继续 `AddAppPickerCard` + 本地 `selectedApps` / `alreadyAdded` / 底部加 pack。样式对齐 compact `SingleApp`：图标不加白底和内边距、名称、发行商、描述两行、`appListCounts` 终身三项。网格四列、单元格拉满。不搬 checkbox，不把身份区做成进详情的 Link（整卡仍 toggle）。
 
 **理由：** 加入 pack 与全局勾选是两条状态机；合并组件会把 `preventGlobalSelect` 和 Already added 缠进目录卡。
 
