@@ -206,9 +206,7 @@ function CategoryPage() {
                 const appKey = app._id || app.id || app.packageId || app.name;
                 return (
                   <Fragment key={appKey}>
-                    <li>
-                      <SingleApp app={app} showSelectCheckbox />
-                    </li>
+                    <SingleApp app={app} showSelectCheckbox />
                     {shelfAd && index === SHELF_AD_INDEX && (
                       <li className={styles.adCell}>
                         <DonateCard addMargin="" placement="apps-list" />
