@@ -48,6 +48,8 @@
   height: 100%;
   width: auto;
   max-width: none;
+  transform: translateZ(0);
+  backface-visibility: hidden;
   pointer-events: none;
   user-select: none;
 }
@@ -66,6 +68,8 @@
   height: 180px;
   object-fit: contain;
   border-radius: 14px;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .adMediaPlaceholder {

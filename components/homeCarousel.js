@@ -1,10 +1,44 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 import useHomeBannerAds from "../hooks/useHomeBannerAds";
 import styles from "../styles/homeCarousel.module.scss";
 
 const AUTOPLAY_INTERVAL_MS = 6500;
+const IMAGE_RETRY_DELAY_MS = 400;
+
+function repaintImage(img) {
+  img.style.opacity = "0.99";
+  requestAnimationFrame(() => {
+    img.style.opacity = "";
+  });
+}
+
+function retryImage(img) {
+  if (img.dataset.retried === "1") return;
+  const current = img.currentSrc || img.src;
+  if (!current) return;
+  img.dataset.retried = "1";
+  img.src = "";
+  img.src = current;
+}
+
+function BannerImg({ className, src }) {
+  return (
+    <img
+      className={className}
+      src={src}
+      alt=""
+      decoding="sync"
+      onLoad={(event) => {
+        repaintImage(event.currentTarget);
+      }}
+      onError={(event) => {
+        retryImage(event.currentTarget);
+      }}
+    />
+  );
+}
 
 function publicAssetSrc(path) {
   if (typeof path !== "string") return "";
@@ -15,6 +49,7 @@ function publicAssetSrc(path) {
 
 export default function HomeCarousel() {
   const bannerAds = useHomeBannerAds();
+  const trackRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -37,6 +72,30 @@ export default function HomeCarousel() {
     return () => window.clearInterval(timer);
   }, [bannerAds.length, paused]);
 
+  useEffect(() => {
+    const slide = trackRef.current?.children[activeIndex];
+    if (!slide) return undefined;
+
+    const timers = [];
+
+    slide.querySelectorAll("img").forEach((img) => {
+      if (img.complete) {
+        if (img.naturalWidth === 0) retryImage(img);
+        return;
+      }
+
+      timers.push(
+        window.setTimeout(() => {
+          if (!img.complete || img.naturalWidth === 0) retryImage(img);
+        }, IMAGE_RETRY_DELAY_MS)
+      );
+    });
+
+    return () => {
+      timers.forEach((id) => window.clearTimeout(id));
+    };
+  }, [activeIndex, bannerAds]);
+
   if (bannerAds.length === 0) return null;
 
   return (
@@ -48,6 +107,7 @@ export default function HomeCarousel() {
       onMouseLeave={() => setPaused(false)}
     >
       <div
+        ref={trackRef}
         className={styles.track}
         style={{ transform: `translateX(-${activeIndex * 100}%)` }}
       >
@@ -65,12 +125,12 @@ export default function HomeCarousel() {
           >
             {bannerBgSrc ? (
               <span className={styles.adDecor} aria-hidden="true">
-                <img className={styles.adDecorImg} src={bannerBgSrc} alt="" />
+                <BannerImg className={styles.adDecorImg} src={bannerBgSrc} />
               </span>
             ) : null}
             <div className={styles.adMedia} aria-hidden="true">
               {imageSrc ? (
-                <img className={styles.adImage} src={imageSrc} alt="" />
+                <BannerImg className={styles.adImage} src={imageSrc} />
               ) : (
                 <span className={styles.adMediaPlaceholder} />
               )}
