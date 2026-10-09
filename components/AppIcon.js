@@ -29,7 +29,7 @@ function LetterAppIcon({ letter, background }) {
       style={{ backgroundColor: background }}
       aria-hidden="true"
     >
-      {letter}
+      <span className={styles.letter}>{letter}</span>
     </span>
   );
 }

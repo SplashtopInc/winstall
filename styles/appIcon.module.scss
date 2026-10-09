@@ -9,13 +9,18 @@
   padding: 0;
   border-radius: 4px;
   color: #fff;
-  font-size: 12px;
   font-weight: 700;
   line-height: 1;
   text-transform: none;
   user-select: none;
   flex-shrink: 0;
   aspect-ratio: 1;
+  container-type: inline-size;
+
+  .letter {
+    font-size: calc(100cqi * 2 / 5);
+    line-height: 1;
+  }
 }
 
 .picture {

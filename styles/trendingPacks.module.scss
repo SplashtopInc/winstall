@@ -116,11 +116,10 @@
     object-fit: contain;
   }
 
-  :global(span) {
+  > :global(span) {
     width: 100% !important;
     height: 100% !important;
     border-radius: 6px;
-    font-size: 12px;
   }
 }
 
