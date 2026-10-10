@@ -46,7 +46,7 @@
 
 ### 4. 轮播只播独立抽签的广告
 
-轮播放在今日首页 `DonateCard` 的位置。组件 `components/homeCarousel.js`，样式 `styles/homeCarousel.module.scss`。banner 高 260px。幻灯片只来自启用广告池：`pickHomeBannerAds` 无放回最多抽 2 条，会话键与货架 `winstall_ad_id` 分离；`utm_content` 为 `home-a` / `home-b`。底色用 `start-color` / `end-color`。背景装饰用该条 `banner-bg`；产品图用 `image`，固定 280×180、圆角 14px，左缘距 banner 48px，距文字区 40px。文字区与图片同高 180px、顶底对齐，最宽 750px。`name` 26px/700/`#1A1A2E`，`headline` 17px/400/`#1A1A2E`，`body` 14px/400/`#5C5C70`。无启用广告则不渲染轮播。点、箭头、自动播放可参考 demo，不全部写入 spec。
+轮播放在今日首页 `DonateCard` 的位置。组件 `components/homeCarousel.js`，样式 `styles/homeCarousel.module.scss`。banner 高 260px。幻灯片只来自启用广告池：`pickHomeBannerAds` 按 `product` 分组，先均匀抽最多 2 个不同产品，再在每个产品内均匀抽 1 条。空白或缺失的 `product` 用该条 `id` 各自成组。同产品的 `winstall_home_banner_ad_ids` 丢弃并重抽，产品不同的缓存仍沿用。会话键与货架 `winstall_ad_id` 分离；`utm_content` 为 `home-a` / `home-b`。底色用 `start-color` / `end-color`。背景装饰用该条 `banner-bg`；产品图用 `image`，固定 280×180、圆角 14px，左缘距 banner 48px，距文字区 40px。文字区与图片同高 180px、顶底对齐，最宽 750px。`name` 26px/700/`#1A1A2E`，`headline` 17px/400/`#1A1A2E`，`body` 14px/400/`#5C5C70`。无启用广告则不渲染轮播。点、箭头、自动播放可参考 demo，不全部写入 spec。
 
 其它 `placement` 仍可用现有广告卡组件；首页 MUST NOT 再挂独立首页广告卡。MUST NOT 把周榜 App 或 Featured pack 放进轮播。
 

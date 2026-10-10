@@ -25,8 +25,68 @@ export function pickAd(ads) {
 }
 
 /**
- * Pick up to `count` enabled ads without replacement for the home banner.
+ * Banner exclusion key. Blank or missing product falls back to the ad id.
+ */
+function productGroupKey(ad) {
+  const product = typeof ad?.product === "string" ? ad.product.trim() : "";
+  if (product) return product;
+  return ad?.id == null ? "" : String(ad.id);
+}
+
+function shuffleItems(items, random) {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(random() * (i + 1));
+    const tmp = shuffled[i];
+    shuffled[i] = shuffled[j];
+    shuffled[j] = tmp;
+  }
+  return shuffled;
+}
+
+function sharesProductGroup(ads) {
+  const seen = new Set();
+  for (const ad of ads) {
+    const key = productGroupKey(ad);
+    if (seen.has(key)) return true;
+    seen.add(key);
+  }
+  return false;
+}
+
+/**
+ * Pick up to `count` enabled ads, at most one creative per product.
+ * Does not read window or sessionStorage. `random` returns values in [0, 1).
+ * @returns {object[]}
+ */
+export function selectDistinctProductAds(
+  ads,
+  count = BANNER_AD_COUNT,
+  random = Math.random
+) {
+  const pool = getEnabledAds(ads);
+  const groups = new Map();
+  for (const ad of pool) {
+    const key = productGroupKey(ad);
+    const group = groups.get(key);
+    if (group) group.push(ad);
+    else groups.set(key, [ad]);
+  }
+
+  const limit = Math.max(0, Math.min(count, groups.size));
+  if (limit === 0) return [];
+
+  const keys = shuffleItems([...groups.keys()], random);
+  return keys.slice(0, limit).map((key) => {
+    const group = shuffleItems(groups.get(key), random);
+    return group[0];
+  });
+}
+
+/**
+ * Pick up to `count` enabled ads for the home banner, at most one per product.
  * Uses a separate session key from shelf `pickAd`.
+ * A cached pair that shares a product is discarded and redrawn.
  * @returns {object[]} empty on server / empty pool
  */
 export function pickHomeBannerAds(ads, count = BANNER_AD_COUNT) {
@@ -44,7 +104,7 @@ export function pickHomeBannerAds(ads, count = BANNER_AD_COUNT) {
         const restored = ids
           .map((id) => pool.find((ad) => ad.id === id))
           .filter(Boolean);
-        if (restored.length > 0) {
+        if (restored.length > 0 && !sharesProductGroup(restored)) {
           return restored.slice(0, limit);
         }
       }
@@ -53,15 +113,7 @@ export function pickHomeBannerAds(ads, count = BANNER_AD_COUNT) {
     // ignore bad cache
   }
 
-  const shuffled = [...pool];
-  for (let i = shuffled.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const tmp = shuffled[i];
-    shuffled[i] = shuffled[j];
-    shuffled[j] = tmp;
-  }
-
-  const selected = shuffled.slice(0, limit);
+  const selected = selectDistinctProductAds(ads, count);
   try {
     sessionStorage.setItem(
       BANNER_SESSION_KEY,
