@@ -665,7 +665,8 @@
   margin-bottom: 0;
 
   :global(img),
-  :global(picture) {
+  :global(picture),
+  > :global(span) {
     width: 40px;
     height: 40px;
   }
