@@ -161,7 +161,8 @@
   overflow: hidden;
 
   :global(img),
-  :global(picture) {
+  :global(picture),
+  > :global(span) {
     width: 14px;
     height: 14px;
   }
@@ -208,7 +209,8 @@
   overflow: hidden;
 
   :global(img),
-  :global(picture) {
+  :global(picture),
+  > :global(span) {
     width: 100%;
     height: 100%;
   }
