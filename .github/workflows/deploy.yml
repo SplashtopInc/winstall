@@ -20,8 +20,8 @@ jobs:
           key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
           script: |
             cd winstall
-            git fetch --all
-            git reset --hard origin/${{ github.ref_name }}
+            git fetch origin "+refs/tags/${{ github.ref_name }}:refs/tags/${{ github.ref_name }}"
+            git checkout --force --detach "${{ github.sha }}"
             npm install
             npm run build
             pm2 restart winstall
