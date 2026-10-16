@@ -44,7 +44,7 @@ export default function Footer() {
         className={styles.brand}
       >
         <img
-          src={"/assets/splashtop-small.png"}
+          src={"/assets/splashtop_small.png"}
           alt="splashtop logo"
           draggable={false}
         />

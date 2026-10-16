@@ -102,7 +102,7 @@ function Nav() {
             draggable={false}
           />
           <img
-            src="/assets/winstall logo_dark.svg"
+            src="/assets/winstall_logo_dark.svg"
             alt="winstall"
             className={`${styles.brandLogo} ${styles.brandLogoDark}`}
             draggable={false}
