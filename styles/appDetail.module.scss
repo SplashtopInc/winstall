@@ -133,11 +133,40 @@
   margin: 0;
 }
 
+.cmdTabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.cmdTab,
+.cmdTabActive {
+  border: none;
+  background: transparent;
+  padding: 0 0 6px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--detail-faint, #8e8e9f);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.cmdTabActive {
+  color: var(--textColor);
+  border-bottom-color: var(--accent);
+}
+
 .verWrap {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+.verWrapHidden {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .verLabel {
@@ -782,7 +811,8 @@
 
   .instLabel,
   .verLabel,
-  .infoKey {
+  .infoKey,
+  .cmdTab {
     --detail-faint: rgba(255, 255, 255, 0.55);
   }
 

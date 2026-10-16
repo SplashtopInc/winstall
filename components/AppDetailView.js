@@ -32,8 +32,10 @@ export default function AppDetailView({ app }) {
 
   const latestVersion = versions[0]?.version || app.latestVersion;
   const [pinnedVersion, setPinnedVersion] = useState("");
+  const [commandTab, setCommandTab] = useState("install");
   const [selected, setSelected] = useState(false);
   const [copied, setCopied] = useState(false);
+  const copyResetTimerRef = useRef(null);
   const [toast, setToast] = useState("");
   const [shareOpen, setShareOpen] = useState(false);
   const [copyStatus, setCopyStatus] = useState("idle");
@@ -48,6 +50,15 @@ export default function AppDetailView({ app }) {
     targetId: app._id,
     callbackUrl: `/apps/${app._id}`,
   });
+
+  useEffect(() => {
+    setCommandTab("install");
+    setCopied(false);
+    if (copyResetTimerRef.current) {
+      clearTimeout(copyResetTimerRef.current);
+      copyResetTimerRef.current = null;
+    }
+  }, [app._id]);
 
   const TAG_PREVIEW_COUNT = 8;
   const allTags = Array.isArray(app.tags) ? app.tags : [];
@@ -206,17 +217,34 @@ export default function AppDetailView({ app }) {
     }
   };
 
+  const selectCommandTab = (next) => {
+    if (next === commandTab) return;
+    if (copyResetTimerRef.current) {
+      clearTimeout(copyResetTimerRef.current);
+      copyResetTimerRef.current = null;
+    }
+    setCommandTab(next);
+    setCopied(false);
+  };
+
   const handleCopy = async () => {
-    const installCmd = pinnedVersion
-      ? `winget install -e --id ${app._id} -v "${pinnedVersion}"`
-      : `winget install -e --id ${app._id}`;
+    const command =
+      commandTab === "upgrade"
+        ? `winget upgrade -e --id ${app._id}`
+        : pinnedVersion
+          ? `winget install -e --id ${app._id} -v "${pinnedVersion}"`
+          : `winget install -e --id ${app._id}`;
 
     try {
-      await navigator.clipboard.writeText(installCmd);
+      await navigator.clipboard.writeText(command);
       setCopied(true);
       setToast("Command copied");
       trackAppStats(app._id, "download");
-      setTimeout(() => setCopied(false), 1800);
+      if (copyResetTimerRef.current) clearTimeout(copyResetTimerRef.current);
+      copyResetTimerRef.current = setTimeout(() => {
+        setCopied(false);
+        copyResetTimerRef.current = null;
+      }, 1800);
     } catch {
       setToast("Copy failed");
     }
@@ -304,9 +332,14 @@ export default function AppDetailView({ app }) {
 
       <div className={styles.inst}>
         <div className={styles.instHead}>
-          <p className={styles.instLabel}>Install {app.name} with winget</p>
+          <p className={styles.instLabel}>{app.name} with winget</p>
           {versions.length > 0 && (
-            <div className={styles.verWrap}>
+            <div
+              className={`${styles.verWrap} ${
+                commandTab === "install" ? "" : styles.verWrapHidden
+              }`}
+              aria-hidden={commandTab !== "install"}
+            >
               <label className={styles.verLabel} htmlFor="app-version-select">
                 Version
               </label>
@@ -319,6 +352,7 @@ export default function AppDetailView({ app }) {
                   className={styles.verSel}
                   value={pinnedVersion}
                   aria-label="Select app version"
+                  disabled={commandTab !== "install"}
                   onChange={(e) => handleVersionChange(e.target.value)}
                 >
                   {latestVersion && <option value="">Latest</option>}
@@ -333,18 +367,57 @@ export default function AppDetailView({ app }) {
           )}
         </div>
 
-        <div className={styles.cmd}>
+        <div className={styles.cmdTabs} role="tablist" aria-label="Winget command">
+          <button
+            type="button"
+            role="tab"
+            id="winget-install-tab"
+            className={commandTab === "install" ? styles.cmdTabActive : styles.cmdTab}
+            aria-selected={commandTab === "install"}
+            aria-controls="winget-command-panel"
+            onClick={() => selectCommandTab("install")}
+          >
+            Install
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="winget-upgrade-tab"
+            className={commandTab === "upgrade" ? styles.cmdTabActive : styles.cmdTab}
+            aria-selected={commandTab === "upgrade"}
+            aria-controls="winget-command-panel"
+            onClick={() => selectCommandTab("upgrade")}
+          >
+            Upgrade
+          </button>
+        </div>
+
+        <div
+          className={styles.cmd}
+          id="winget-command-panel"
+          role="tabpanel"
+          aria-labelledby={
+            commandTab === "upgrade" ? "winget-upgrade-tab" : "winget-install-tab"
+          }
+        >
           <div className={styles.cmdText}>
-            <span>
-              winget install -e --id{" "}
-              <span className={styles.cmdId}>{app._id}</span>
-              {pinnedVersion && (
-                <>
-                  {" "}
-                  -v <span className={styles.cmdId}>{`"${pinnedVersion}"`}</span>
-                </>
-              )}
-            </span>
+            {commandTab === "upgrade" ? (
+              <span>
+                winget upgrade -e --id{" "}
+                <span className={styles.cmdId}>{app._id}</span>
+              </span>
+            ) : (
+              <span>
+                winget install -e --id{" "}
+                <span className={styles.cmdId}>{app._id}</span>
+                {pinnedVersion && (
+                  <>
+                    {" "}
+                    -v <span className={styles.cmdId}>{`"${pinnedVersion}"`}</span>
+                  </>
+                )}
+              </span>
+            )}
           </div>
           <button
             type="button"
@@ -353,15 +426,6 @@ export default function AppDetailView({ app }) {
           >
             {copied ? "Copied!" : "Copy"}
           </button>
-        </div>
-
-        <div className={styles.cmd} style={{ marginTop: "10px" }}>
-          <div className={styles.cmdText}>
-            <span>
-              winget upgrade -e --id{" "}
-              <span className={styles.cmdId}>{app._id}</span>
-            </span>
-          </div>
         </div>
       </div>
 
