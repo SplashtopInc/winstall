@@ -540,31 +540,44 @@ const Copy = ({ id, version, latestVersion }) => {
   const [showingCheck, setShowingCheck] = useState(false);
 
   let str = `winget install -e --id ${id}${version == latestVersion ? "" : ` -v "${version}"`}`;
+  let upgradeStr = `winget upgrade -e --id ${id}`;
 
   return (
-    <div
-      className={`${styles.copy} ${showingCheck ? styles.active : ""}`}
-      onClick={() => {
-        navigator.clipboard.writeText(str);
-        setShowingCheck(true);
-        setTimeout(() => {
-          setShowingCheck(false);
-        }, 2000);
-      }}
-    >
-      <FiTerminal size={20} />
-      {!showingCheck && (
-        <>
-          <span className={styles.installCommand}>{str}</span>
-          <FiCopy className={styles.clipboard} size={16} />
-        </>
-      )}
-      {showingCheck && (
-        <>
-          <span className={styles.copiedText}>Copied!</span>
-          <FiCheckCircle className={styles.clipboard} size={16} />
-        </>
-      )}
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px", width: "100%" }}>
+      <div
+        className={`${styles.copy} ${showingCheck ? styles.active : ""}`}
+        onClick={() => {
+          navigator.clipboard.writeText(str);
+          setShowingCheck(true);
+          setTimeout(() => {
+            setShowingCheck(false);
+          }, 2000);
+        }}
+      >
+        <FiTerminal size={20} />
+        {!showingCheck && (
+          <>
+            <span className={styles.installCommand}>{str}</span>
+            <FiCopy className={styles.clipboard} size={16} />
+          </>
+        )}
+        {showingCheck && (
+          <>
+            <span className={styles.copiedText}>Copied!</span>
+            <FiCheckCircle className={styles.clipboard} size={16} />
+          </>
+        )}
+      </div>
+      <div
+        className={styles.copy}
+        onClick={() => {
+          navigator.clipboard.writeText(upgradeStr);
+        }}
+      >
+        <FiTerminal size={20} />
+        <span className={styles.installCommand}>{upgradeStr}</span>
+        <FiCopy className={styles.clipboard} size={16} />
+      </div>
     </div>
   );
 };

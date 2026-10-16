@@ -354,6 +354,15 @@ export default function AppDetailView({ app }) {
             {copied ? "Copied!" : "Copy"}
           </button>
         </div>
+
+        <div className={styles.cmd} style={{ marginTop: "10px" }}>
+          <div className={styles.cmdText}>
+            <span>
+              winget upgrade -e --id{" "}
+              <span className={styles.cmdId}>{app._id}</span>
+            </span>
+          </div>
+        </div>
       </div>
 
       <p className={styles.installerTip}>
