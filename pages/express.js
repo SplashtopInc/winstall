@@ -68,7 +68,7 @@ function ExpressSetup({ error, categoryApps }) {
               <CategorySearch
                 onFilter={(q) => setSearchInput(q)}
                 label="Search for apps"
-                placeholder={"Enter you search term here"}
+                placeholder={"Enter your search term here"}
               />
               <ListCategory
                 categories={categoriesList}
