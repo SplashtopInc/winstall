@@ -1,0 +1,37 @@
+.header {
+  margin-bottom: 28px;
+}
+
+.title {
+  margin: 0 0 8px;
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--textColor);
+}
+
+.lead {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+.tabCount {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  opacity: 0.55;
+}
+
+.browse {
+  width: auto;
+  margin-right: 0;
+}
+
+@media (max-width: 590px) {
+  .title {
+    font-size: 32px;
+  }
+}

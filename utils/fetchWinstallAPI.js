@@ -1,4 +1,4 @@
-import { isLikePath } from "./engagementPaths";
+import { isLikePath, isLikedListPath } from "./engagementPaths";
 import { getRuntimeConfig } from "./runtimeConfig";
 import { isTrendingPath } from "./trendingData";
 
@@ -16,6 +16,7 @@ function splitPath(path) {
 function requiresUserJwt(method, pathname) {
   if (method === "POST" && pathname === "/packs") return true;
   if (method === "GET" && pathname === "/packs/me") return true;
+  if (method === "GET" && isLikedListPath(pathname)) return true;
   if ((method === "PATCH" || method === "DELETE") && PACK_RESOURCE.test(pathname)) {
     return true;
   }
