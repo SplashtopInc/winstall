@@ -1,7 +1,7 @@
 import {
   hasCustomScopeInstallOptions,
   normalizeInstallOptions,
-} from "./installOptions";
+} from "./installOptions.js";
 
 const getEffectiveConfig = (defaultFilters = {}, installOptions) => {
   const effective = { ...defaultFilters };

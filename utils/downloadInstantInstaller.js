@@ -1,5 +1,5 @@
-import getEffectiveConfig from "./getEffectiveConfig";
-import { getPinnedInstallVersion } from "./installVersion";
+import getEffectiveConfig from "./getEffectiveConfig.js";
+import { getPinnedInstallVersion } from "./installVersion.js";
 
 export function buildInstallerOptions(sourceFilters = {}) {
   const options = {
@@ -23,17 +23,26 @@ export function buildInstallerOptions(sourceFilters = {}) {
   return options;
 }
 
-export function buildInstallerConfig(apps, filters = {}) {
+export function buildInstallerConfig(apps, filters = {}, command = "install") {
   return {
     version: "0.0.1",
-    apps: (apps || []).map((app) => ({
-      name: app.name,
-      id: app._id,
-      version: getPinnedInstallVersion(app),
-      options: buildInstallerOptions(
-        getEffectiveConfig(filters, app.installOptions)
-      ),
-    })),
+    apps: (apps || []).map((app) => {
+      const entry = {
+        name: app.name,
+        id: app._id,
+        command,
+        options: buildInstallerOptions(
+          getEffectiveConfig(filters, app.installOptions)
+        ),
+      };
+
+      if (command === "install") {
+        const version = getPinnedInstallVersion(app);
+        if (version) entry.version = version;
+      }
+
+      return entry;
+    }),
   };
 }
 
@@ -82,12 +91,12 @@ export function installerFilename(apps) {
   return `winstall-${appSlug}${apps.length > 1 ? "-etc" : ""}.exe`;
 }
 
-export async function downloadInstantInstaller(apps, filters = {}) {
+export async function downloadInstantInstaller(apps, filters = {}, command = "install") {
   if (!apps || apps.length === 0) {
     throw new Error("No apps selected");
   }
 
-  const config = buildInstallerConfig(apps, filters);
+  const config = buildInstallerConfig(apps, filters, command);
   const filename = installerFilename(apps);
 
   if (process.env.NODE_ENV === "development") {

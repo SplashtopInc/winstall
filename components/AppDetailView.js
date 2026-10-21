@@ -198,7 +198,8 @@ export default function AppDetailView({ app }) {
             ...(pinnedVersion ? { appVersion: pinnedVersion } : {}),
           },
         ],
-        DEFAULT_INSTALL_FILTERS
+        DEFAULT_INSTALL_FILTERS,
+        commandTab
       );
       trackAppStats(app._id, "download");
     } catch (error) {
