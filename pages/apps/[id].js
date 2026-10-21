@@ -57,7 +57,7 @@ function AppDetail({ app }) {
         ) : (
           <>
             <MetaTags
-              title={`Install ${app.name} with WinGet | winstall`}
+              title={`${app.name} Download | winstall`}
               desc={`Install ${app.name} via WinGet. Copy the winget install command instantly. ${app.fullDesc || app.desc}`}
               path={`/apps/${app._id}`}
             />
