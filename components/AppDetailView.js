@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
-import { FiPlus, FiShare2, FiExternalLink, FiCode, FiDownload, FiInfo } from "react-icons/fi";
+import { FiPlus, FiShare2, FiExternalLink, FiCode, FiDownload, FiGrid, FiInfo } from "react-icons/fi";
 import { FaFacebook, FaLinkedin } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { IoIosLink } from "react-icons/io";
@@ -19,6 +19,11 @@ import { trackAppStats } from "../utils/trackAppStats";
 import { DEFAULT_INSTALL_FILTERS } from "../utils/defaultInstallOptions";
 import { downloadInstantInstaller } from "../utils/downloadInstantInstaller";
 import { publisherAppsPagePath } from "../utils/parsePublisherQuery";
+import {
+  categoryBrowseLinkLabel,
+  categoryPagePath,
+  detailShelfSlugs,
+} from "../utils/categoryShelfPath";
 
 export default function AppDetailView({ app }) {
   const { selectedApps, setSelectedApps } = useContext(SelectedContext);
@@ -298,6 +303,7 @@ export default function AppDetailView({ app }) {
   };
 
   const copyright = app.copyright || "";
+  const shelfSlugs = detailShelfSlugs(app.categories);
 
   return (
     <div className={styles.page}>
@@ -642,6 +648,14 @@ export default function AppDetailView({ app }) {
               </a>
             </li>
           )}
+          {shelfSlugs.map((slug) => (
+            <li key={slug}>
+              <Link href={categoryPagePath(slug)}>
+                <FiGrid aria-hidden="true" />
+                {categoryBrowseLinkLabel(slug)}
+              </Link>
+            </li>
+          ))}
           <li>
             <a
               href={`https://github.com/microsoft/winget-pkgs/tree/master/manifests/${app._id

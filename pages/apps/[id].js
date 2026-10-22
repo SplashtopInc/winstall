@@ -100,6 +100,7 @@ function slimAppForDetailPage(app) {
     publisher: app.publisher || "",
     copyright: app.copyright || "",
     tags: Array.isArray(app.tags) ? app.tags : [],
+    categories: Array.isArray(app.categories) ? app.categories : [],
     updatedAt: app.updatedAt || null,
     versions: Array.isArray(app.versions)
       ? app.versions.map((v) => ({

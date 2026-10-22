@@ -60,3 +60,18 @@ export function categoryQueryRedirectPath(categoryValue) {
   if (isShelfSlug(categoryValue)) return categoryPagePath(categoryValue);
   return null;
 }
+
+/** Shelf slugs to link from an app detail page, in shelf order. */
+export function detailShelfSlugs(categories) {
+  if (!Array.isArray(categories)) return [];
+  const present = new Set();
+  for (const slug of categories) {
+    if (isShelfSlug(slug)) present.add(slug);
+  }
+  return SHELF_SLUGS.filter((slug) => present.has(slug));
+}
+
+export function categoryBrowseLinkLabel(slug) {
+  if (!isShelfSlug(slug)) return "";
+  return `Browse ${CATEGORY_LABELS[slug]} apps`;
+}

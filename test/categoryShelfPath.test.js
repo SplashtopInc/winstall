@@ -52,3 +52,20 @@ test("known category queries redirect without keeping the category parameter", a
     assert.equal(new URL(path, "https://winstall.app").search, "");
   }
 });
+
+test("detail shelf links keep shelf order and known labels", async () => {
+  const {
+    categoryBrowseLinkLabel,
+    detailShelfSlugs,
+  } = await import("../utils/categoryShelfPath.js");
+
+  assert.deepEqual(
+    detailShelfSlugs(["runtimes", "development", "development", "others", "all"]),
+    ["development", "runtimes"]
+  );
+  assert.deepEqual(detailShelfSlugs(undefined), []);
+  assert.deepEqual(detailShelfSlugs([]), []);
+  assert.equal(categoryBrowseLinkLabel("development"), "Browse Developer Tools apps");
+  assert.equal(categoryBrowseLinkLabel("browser"), "Browse Browsers apps");
+  assert.equal(categoryBrowseLinkLabel("others"), "");
+});
