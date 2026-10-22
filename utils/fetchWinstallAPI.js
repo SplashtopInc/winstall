@@ -1,5 +1,6 @@
 import { isLikePath, isLikedListPath } from "./engagementPaths";
 import { getRuntimeConfig } from "./runtimeConfig";
+import { searchRecordHeaders } from "./searchQueryRecord";
 import { isTrendingPath } from "./trendingData";
 
 const PACK_RESOURCE = /^\/packs\/[^/]+$/;
@@ -92,6 +93,7 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
   const method = (givenOptions?.method || "GET").toUpperCase();
   const { pathname } = splitPath(urlPath);
   const canRetryAuth = typeof window !== "undefined" && requiresUserJwt(method, pathname);
+  const recordSearch = Boolean(givenOptions?.recordSearch);
 
   let additionalOptions = { ...givenOptions };
   let headerOptions;
@@ -99,6 +101,7 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
   if (additionalOptions) {
     headerOptions = { ...givenOptions?.headers };
     delete additionalOptions["headers"];
+    delete additionalOptions.recordSearch;
   }
 
   let response, error, status;
@@ -107,10 +110,27 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
+    let recordHeaders = {};
+    if (recordSearch) {
+      let apiToken;
+      let apiTokenExpires;
+      if (typeof window !== "undefined") {
+        const session = await getBrowserSession();
+        apiToken = session?.apiToken;
+        apiTokenExpires = session?.apiTokenExpires;
+      }
+      recordHeaders = searchRecordHeaders({
+        recordSearch: true,
+        apiToken,
+        apiTokenExpires,
+      });
+    }
+
     for (let attempt = 0; attempt < 2; attempt += 1) {
       const headers = {
         ...headerOptions,
         ...(await authHeaders(method, pathname)),
+        ...recordHeaders,
       };
 
       if (isDebug) {

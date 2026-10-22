@@ -23,6 +23,7 @@ import DonateCard from "../components/DonateCard";
 import SearchEmptyState from "../components/SearchEmptyState";
 import TrySearching from "../components/TrySearching";
 import { useAppsTotal } from "../ctx/appsTotalContext";
+import { consumeSearchRecord } from "../utils/searchQueryRecord";
 
 export const PAGE_SIZE = 60;
 export const FIRST_PAGE_SIZE = PAGE_SIZE - 1;
@@ -143,7 +144,7 @@ function Store({ data, error, buildTime }) {
     total > 0 &&
     apps.length < total;
 
-  const loadApps = useCallback(async ({ parsed, offset, append }) => {
+  const loadApps = useCallback(async ({ parsed, offset, append, recordSearch = false }) => {
     const listQueryArg =
       parsed && parsed.kind ? parsed : parseAppsListQuery(parsed);
     setClientError("");
@@ -154,7 +155,8 @@ function Store({ data, error, buildTime }) {
         limit: offset === 0 && listQueryArg.kind === "list"
           ? FIRST_PAGE_SIZE
           : PAGE_SIZE,
-      })
+      }),
+      recordSearch ? { recordSearch: true } : undefined
     );
 
     if (fetchError) {
@@ -220,6 +222,9 @@ function Store({ data, error, buildTime }) {
         : router.query?.q;
     const q = Array.isArray(qRaw) ? qRaw[0] : qRaw || "";
     const scopeQuery = parseAppsListQuery(q);
+    // Drop the one-shot mark before any await so a second effect run stays unmarked.
+    const matchesPendingSearch = consumeSearchRecord({ pageQuery: q });
+    const recordSearch = scopeQuery.kind === "search" && matchesPendingSearch;
 
     async function loadFirstBatch() {
       if (scopeQuery.kind === "list") {
@@ -259,6 +264,7 @@ function Store({ data, error, buildTime }) {
         parsed: scopeQuery,
         offset: 0,
         append: false,
+        recordSearch,
       });
 
       if (cancelled) return;
@@ -285,6 +291,7 @@ function Store({ data, error, buildTime }) {
     if (isLoading || isLoadingMore || !showLoadMore) return;
 
     setIsLoadingMore(true);
+    consumeSearchRecord({ pageQuery: queryText });
     await loadApps({
       parsed: listQuery,
       offset: nextOffset,

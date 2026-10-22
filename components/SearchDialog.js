@@ -11,6 +11,7 @@ import {
 } from "../utils/recentSearches";
 import styles from "../styles/searchDialog.module.scss";
 import { appsPagePath } from "../utils/parsePublisherQuery";
+import { armSearchRecord } from "../utils/searchQueryRecord";
 
 const DEBOUNCE_MS = 250;
 
@@ -129,8 +130,14 @@ function SearchDialog({ isOpen, onClose }) {
     if (!trimmed) return;
 
     setRecentItems(addRecentQuery(trimmed));
+    const nextPath = appsPagePath(trimmed);
+    armSearchRecord({
+      currentPath: router.asPath,
+      nextPath,
+      text: trimmed,
+    });
     resetAndClose();
-    router.push(appsPagePath(trimmed));
+    router.push(nextPath);
   };
 
   const goToApp = (item) => {
