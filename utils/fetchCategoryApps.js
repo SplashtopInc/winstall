@@ -5,7 +5,7 @@ import { getIconBase } from "./runtimeConfig";
  * Optional slug → API category label map.
  * Leave empty when stored categories use the same slug as the Web tab key.
  * If production stores display labels (e.g. "Web Browser"), set entries here
- * without changing the URL `?category=` slug.
+ * without changing the public shelf slug used in `/category/<slug>`.
  */
 const CATEGORY_API_LABEL_BY_SLUG = Object.freeze({});
 

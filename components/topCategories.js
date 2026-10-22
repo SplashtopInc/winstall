@@ -5,6 +5,7 @@ import {
   CATEGORY_LABELS,
   TOP_CATEGORY_SLUGS,
 } from "../utils/categoryMeta";
+import { categoryPagePath } from "../utils/categoryShelfPath";
 import styles from "../styles/topCategories.module.scss";
 
 const TOP_CATEGORY_TONES = {
@@ -29,7 +30,7 @@ export default function TopCategories() {
           return (
             <Link
               key={slug}
-              href={{ pathname: "/category", query: { category: slug } }}
+              href={categoryPagePath(slug)}
               className={`${styles.card} ${TOP_CATEGORY_TONES[slug] || ""}`}
             >
               <span className={styles.label}>{label}</span>

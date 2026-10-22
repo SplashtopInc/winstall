@@ -1,18 +1,24 @@
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-import PageWrapper from "../components/PageWrapper";
-import MetaTags from "../components/MetaTags";
-import SingleApp from "../components/SingleApp";
-import DonateCard from "../components/DonateCard";
-import Error from "../components/Error";
-import CategoryTabs from "../components/categoryTabs";
-import ShelfListSkeleton from "../components/shelfListSkeleton";
-import useRandomAd from "../hooks/useRandomAd";
-import { fetchCategoryApps } from "../utils/fetchCategoryApps";
-import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
-import { CATEGORY_LABELS, CATEGORY_SLUGS } from "../utils/categoryMeta";
-import styles from "../styles/categoryPage.module.scss";
+import PageWrapper from "../../components/PageWrapper";
+import MetaTags from "../../components/MetaTags";
+import SingleApp from "../../components/SingleApp";
+import DonateCard from "../../components/DonateCard";
+import Error from "../../components/Error";
+import CategoryTabs from "../../components/categoryTabs";
+import ShelfListSkeleton from "../../components/shelfListSkeleton";
+import useRandomAd from "../../hooks/useRandomAd";
+import { fetchCategoryApps } from "../../utils/fetchCategoryApps";
+import { getDocumentShellStaticProps } from "../../utils/documentShellStaticProps";
+import { CATEGORY_LABELS, CATEGORY_SLUGS } from "../../utils/categoryMeta";
+import {
+  SHELF_SLUGS,
+  categoryDocumentTitle,
+  categoryPagePath,
+  isShelfSlug,
+} from "../../utils/categoryShelfPath";
+import styles from "../../styles/categoryPage.module.scss";
 
 export const PAGE_SIZE = 60;
 export const FIRST_PAGE_SIZE = PAGE_SIZE - 1;
@@ -27,13 +33,23 @@ const CATEGORIES = CATEGORY_SLUGS.map((slug) => ({
   label: CATEGORY_LABELS[slug] || slug,
 }));
 
-function isValidCategorySlug(slug) {
-  return typeof slug === "string" && CATEGORY_SLUGS.includes(slug);
+function slugParts(slugParam) {
+  if (slugParam == null || slugParam === false) return [];
+  return Array.isArray(slugParam) ? slugParam : [slugParam];
 }
 
-function CategoryPage() {
+function shelfFromParts(parts) {
+  if (parts.length === 1 && isShelfSlug(parts[0])) return parts[0];
+  return DEFAULT_CATEGORY;
+}
+
+function isShelfPath(parts) {
+  return parts.length === 0 || (parts.length === 1 && isShelfSlug(parts[0]));
+}
+
+function CategoryPage({ categorySlug = DEFAULT_CATEGORY }) {
   const router = useRouter();
-  const [activeSlug, setActiveSlug] = useState(DEFAULT_CATEGORY);
+  const [activeSlug, setActiveSlug] = useState(categorySlug);
   const [expanded, setExpanded] = useState(false);
   const [visibleTabCount, setVisibleTabCount] = useState(CATEGORY_SLUGS.length);
   const [apps, setApps] = useState([]);
@@ -47,31 +63,29 @@ function CategoryPage() {
   const syncCategoryToUrl = useCallback(
     (slug) => {
       if (!router.isReady) return;
-      const current = router.query.category;
-      if (current === slug) return;
-      router.replace(
-        { pathname: "/category", query: { category: slug } },
-        undefined,
-        { shallow: true }
-      );
+      const path = categoryPagePath(slug);
+      const current = router.asPath.split(/[?#]/)[0];
+      if (current === path) return;
+      router.replace(path, undefined, { shallow: true });
     },
     [router]
   );
 
+  const slugKey = slugParts(router.query.slug).join("/");
+
   useEffect(() => {
     if (!router.isReady) return;
 
-    const raw = router.query.category;
-    const fromQuery = Array.isArray(raw) ? raw[0] : raw;
-
-    if (!isValidCategorySlug(fromQuery)) {
-      setActiveSlug(DEFAULT_CATEGORY);
-      syncCategoryToUrl(DEFAULT_CATEGORY);
+    const parts = slugKey ? slugKey.split("/") : [];
+    if (!isShelfPath(parts)) {
+      router.replace(categoryPagePath(DEFAULT_CATEGORY), undefined, {
+        shallow: true,
+      });
       return;
     }
 
-    setActiveSlug(fromQuery);
-  }, [router.isReady, router.query.category, syncCategoryToUrl]);
+    setActiveSlug(shelfFromParts(parts));
+  }, [router, router.isReady, slugKey]);
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -126,7 +140,6 @@ function CategoryPage() {
 
   const handleSelect = (slug) => {
     if (slug === activeSlug) return;
-    setActiveSlug(slug);
     syncCategoryToUrl(slug);
   };
 
@@ -134,7 +147,6 @@ function CategoryPage() {
     if (expanded) {
       const index = CATEGORY_SLUGS.indexOf(activeSlug);
       if (index >= visibleTabCount) {
-        setActiveSlug(DEFAULT_CATEGORY);
         syncCategoryToUrl(DEFAULT_CATEGORY);
       }
       setExpanded(false);
@@ -169,9 +181,9 @@ function CategoryPage() {
   return (
     <PageWrapper>
       <MetaTags
-        title="Apps by Category - winstall"
+        title={categoryDocumentTitle(activeSlug)}
         desc="Browse Windows apps by category and add them to your install list."
-        path="/category"
+        path={categoryPagePath(activeSlug)}
       />
 
       <div className={styles.page}>
@@ -238,6 +250,32 @@ function CategoryPage() {
 
 export default CategoryPage;
 
-export async function getStaticProps() {
-  return getDocumentShellStaticProps();
+export async function getStaticPaths() {
+  return {
+    paths: [
+      { params: { slug: false } },
+      ...SHELF_SLUGS.map((slug) => ({ params: { slug: [slug] } })),
+    ],
+    fallback: "blocking",
+  };
+}
+
+export async function getStaticProps({ params }) {
+  const parts = slugParts(params?.slug);
+  if (!isShelfPath(parts)) {
+    return {
+      redirect: {
+        destination: categoryPagePath(DEFAULT_CATEGORY),
+        permanent: true,
+      },
+    };
+  }
+
+  const shell = await getDocumentShellStaticProps();
+  return {
+    ...shell,
+    props: {
+      categorySlug: shelfFromParts(parts),
+    },
+  };
 }

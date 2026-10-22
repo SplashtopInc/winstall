@@ -2,7 +2,7 @@
 
 约束见仓库根目录 `AGENTS.md` 与 `openspec/config.yaml`。需求见同目录 `spec.md`。
 
-本仓现有 React 组件多为 PascalCase（如 `SingleApp.js`、`Nav.js`）。本能力新增文件按 `AGENTS.md` 使用 lowerCamelCase，不重命名旧文件。页面文件 `pages/category.js` 按产品指定；其 URL 为 `/category`。调用的后端资源为复数 kebab-case：`GET /apps/categories/:id`。
+本仓现有 React 组件多为 PascalCase（如 `SingleApp.js`、`Nav.js`）。本能力新增文件按 `AGENTS.md` 使用 lowerCamelCase，不重命名旧文件。分类页是 `pages/category/[[...slug]].js`：裸路径 `/category` 为 All，货架为 `/category/<slug>`。调用的后端资源为复数 kebab-case：`GET /apps/categories/:id`。
 
 ## Goals / Non-Goals
 
@@ -22,25 +22,25 @@
 
 ## Decisions
 
-### 1. 新页 `pages/category.js`，不改 `pages/apps.js`
+### 1. 可选 catch-all，不改 `pages/apps.js`
 
-**选择：** Next 页 `pages/category.js` → `/category`。深链 `?category=<slug>`。无效或缺失 slug 浅路由纠正为 `all`。
+**选择：** Next 页 `pages/category/[[...slug]].js` 同时服务 `/category` 与 `/category/<slug>`。无段为 All。一段且属于 14 个货架时为该货架。`all`、无法识别的一段或多于一段时，永久重定向到 `/category`。`getStaticPaths` 预生成裸路径和 14 个货架。
 
-**理由：** 产品指定用 `category.js` 而不是 `apps.js`。搜索、发行商、OpenSearch 留在 `/apps`。主导航文案 Apps 与路径解耦。
+**理由：** 标签切换留在同一个页面组件里。`/category` 与 `pages/category/` 目录不能并存。搜索、发行商、OpenSearch 留在 `/apps`。
 
-**备选：** 占用 `/apps` — 已否决。`pages/categories.js`（复数）更贴 API 复数约定，但与「文件名为 category.js」冲突，不采用。
+**备选：** 占用 `/apps` — 已否决。查询参数 `?category=` — 已由路径取代，因为页面路径统计拆不开货架。`index.js` 加 `[slug].js` — 否决：切货架会卸载页面。
 
 ### 2. 固定 slug 与展示名
 
-**选择：** 写死 `all` 加 14 个分类 slug。展示名复用 Express 文案（如 `all` → All，`development` → Developer Tools，`browser` → Web Browsers）。`all` 请求 `GET /apps`；其余请求 `GET /apps/categories/${encodeURIComponent(slug)}`。常量 `CATEGORY_SLUGS`、`CATEGORY_LABELS`。
+**选择：** 货架 slug 与展示名放在不引用图标的 `utils/categoryShelfPath.js`。`categoryMeta.js` 的 `CATEGORY_SLUGS` 为 `all` 加上这 14 个 slug，并再导出 `CATEGORY_LABELS`。展示名如 `development` → Developer Tools，`browser` → Browsers。`all` 请求 `GET /apps`；其余请求 `GET /apps/categories/${encodeURIComponent(slug)}`。文档标题与路径由 `categoryDocumentTitle`、`categoryPagePath` 给出。
 
-**理由：** 接口对 `categories` 数组精确匹配；文档样例为 `browser` 这类 slug。不拉分类器词表。
+**理由：** 接口对 `categories` 数组精确匹配。配置与页面不能各写一份 slug，而 `categoryMeta.js` 依赖图标，不能被重定向入口直接加载。
 
 **备选：** 动态 `model.categories` — 推迟。
 
 ### 3. 分页为 Load more，首屏 59、其后 60
 
-**选择：** 首次 `offset=0&limit=59`。Load more 的 `limit` 为 60，并用响应里的 `offset`、`limit`、`data.length` 算下一 `offset`。URL 不写 offset，只写 `category`。`shown.length >= total` 时隐藏 Load more。`/apps` 目录同一组页大小。
+**选择：** 首次 `offset=0&limit=59`。Load more 的 `limit` 为 60，并用响应里的 `offset`、`limit`、`data.length` 算下一 `offset`。URL 不写 offset，货架写在路径上。`shown.length >= total` 时隐藏 Load more。`/apps` 目录同一组页大小。
 
 **理由：** 首屏 59 个应用加 1 格广告是 60 格，能被 4、3、2 整除。其后不再插广告，每批 60 也是这些列数的倍数，累计行数仍然排满。
 
@@ -66,13 +66,13 @@
 
 ### 7. 导航选中
 
-**选择：** `components/Nav.js`：主链 Apps 的 `href="/category"`，`pathname === "/category"` 时 selected。搜索框后不放置侧栏 Apps。不把 Nav 重命名为 `nav.js`。
+**选择：** `components/Nav.js`：主链 Apps 的 `href="/category"`。地址为 `/category` 或以 `/category/` 开头时 selected。搜索框后不放置侧栏 Apps。不把 Nav 重命名为 `nav.js`。
 
 ### 8. 首页五个常用分类
 
-**选择：** `utils/categoryMeta.js` 持有 `CATEGORY_SLUGS` / `CATEGORY_LABELS` / `TOP_CATEGORY_SLUGS`。首页 `components/topCategories.js` 在轮播与 Trending Apps 之间展示 Top Categories 五张卡片（图标与分类名同一行），链到 `/category?category=<slug>`。五个 slug 为分类页 `all` 之后的前五个，保证落地时标签在收起态可见。板块无副标题。卡片底色按分类用不同色相淡洗，避免五张同色。
+**选择：** `utils/categoryMeta.js` 持有 `CATEGORY_SLUGS` / `CATEGORY_LABELS` / `TOP_CATEGORY_SLUGS`。首页 `components/topCategories.js` 在轮播与 Trending Apps 之间展示 Top Categories 五张卡片（图标与分类名同一行），链到 `/category/<slug>`。五个 slug 为分类页 `all` 之后的前五个，保证落地时标签在收起态可见。板块无副标题。卡片底色按分类用不同色相淡洗，避免五张同色。
 
-**理由：** 复用既有深链，不拉分类发现接口；横向一行更紧，色相区分扫读；图标仍用 Feather 描边。
+**理由：** 深链就是货架路径，不拉分类发现接口；横向一行更紧，色相区分扫读；图标仍用 Feather 描边。
 
 ### 9. 货架广告只跟在第一个应用后面
 
@@ -96,6 +96,20 @@
 
 **理由：** 分类网格靠 `> li` 拉伸子项；广告必须是并列的 `<li>`，而不是塞进应用卡内部。
 
+### 12. 已知旧查询由 proxy 改到路径
+
+**选择：** `proxy.js` 只匹配 `/category`。`category` 为 14 个货架之一时 308 到 `/category/<slug>` 并删除该参数；值为 `all` 时 308 到 `/category` 并删除该参数。其它查询参数保留。无法识别的值不重定向，页面忽略它并显示 All。页面不再写回 `category` 查询。
+
+**理由：** Next 16 的 `redirects` 会把原查询带到目标地址，空的 `category=` 也清不掉。客户端导航不经过 proxy，所以站内链接直接写路径。
+
+**备选：** `next.config.js` 的 `redirects()`。否决：清不掉 `category`。
+
+### 13. 文档标题跟货架走
+
+**选择：** All 的文档标题保持 `Apps by Category - winstall`。其它货架为 `{展示名} - winstall`。`MetaTags` 的 `title` 与 `path` 使用同一组结果，canonical 不带查询。页面上不增加分类标题。
+
+**理由：** 同一字符串进入文档标题、Open Graph 与 Twitter。路径已经能区分货架，不改 `page_loaded` 的推送方式。
+
 ## Risks / Trade-offs
 
 - **[Risk] 库内标签是 `Developer Tools` 而 Web 传 `development` → 空列表。** 缓解：抽检 `GET /apps/categories/browser`；若生产是展示名，只在 helper 内做 slug→label 映射，URL slug 不变。
@@ -104,7 +118,8 @@
 - **[新增 lowerCamelCase 与旧 PascalCase 并存]** 仅约束本能力新文件。
 - **[广告在客户端选出后才插入，网格会后移]** 与 `/apps` 相同；不在服务端随机，以保住会话粘性。
 - **[同一会话只展示一条创意]** 接受；沿用现有挑选。
-- **[分类页与 `/apps` 的 `utm_content` 都是 `apps-list-a`]** 按产品决定合并统计，不新增货位名。
+- **[308 会被浏览器缓存]** 接受。回滚后，缓存过该重定向的客户端仍会跳到路径，直到缓存过期。
+- **[未知的 `?category=` 留在地址栏]** 接受。不为无法识别的值写重定向；页面显示 All。
 
 ## Migration Plan
 

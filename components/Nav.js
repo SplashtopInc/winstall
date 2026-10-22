@@ -45,6 +45,9 @@ function Nav() {
   const navRef = useRef(null);
   const router = useRouter();
   const pathname = router.pathname;
+  const categoryPath = router.asPath.split(/[?#]/)[0];
+  const categorySelected =
+    categoryPath === "/category" || categoryPath.startsWith("/category/");
 
   let handleClickOut = (e) => {
     if (navRef.current && !navRef.current.contains(e.target)) {
@@ -121,7 +124,7 @@ function Nav() {
           <Link
             href="/category"
             className={`${styles.mainLink} ${
-              pathname === "/category" ? styles.selected : ""
+              categorySelected ? styles.selected : ""
             }`}
           >
             Apps
