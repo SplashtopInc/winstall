@@ -1,0 +1,40 @@
+# winstall
+
+> winstall is a free search and script generator for Microsoft's Windows Package Manager (winget). It helps you find a package and copy a winget install command. It does not host or distribute installer binaries.
+
+Pick apps in the browser, then generate a winget script from that selection. An app page is `/apps/` plus the winget package id (Publisher.AppName, for example VideoLAN.VLC). A pack page is `/packs/` plus that pack's own id, which is not a package id. To list every public app and pack URL, read the sitemap index below. This file does not enumerate them.
+
+## Start here
+
+- [Home](https://winstall.app/): Browse the winget repository and start a bulk install.
+- [About](https://winstall.app/about): What winstall is, who maintains it, and how package data stays tied to winget.
+- [Winget, explained](https://winstall.app/eli5): Plain-language answers about winget, package ids, and safety.
+
+## Find apps
+
+- [Apps](https://winstall.app/apps): Search and browse the catalog. Each result opens an app page at `/apps/` plus the package id.
+- [Express](https://winstall.app/express): Pick apps from curated categories for a script.
+- [Categories](https://winstall.app/category): Browse apps by category.
+
+## Packs
+
+- [Packs](https://winstall.app/packs): Browse public collections of apps. A pack page is `/packs/` plus that pack's id.
+
+## Script
+
+- [Generate](https://winstall.app/generate): Turn the apps selected in this browser into a winget script. The selection is not listed here, and this page is not the catalog.
+
+## Comparisons
+
+- [Comparisons](https://winstall.app/compare): How winstall differs from Ninite, UniGetUI, and Chocolatey.
+- [winstall vs Ninite](https://winstall.app/compare-ninite): Comparison with Ninite.
+- [winstall vs Chocolatey](https://winstall.app/compare-chocolatey): Comparison with Chocolatey.
+- [winstall vs UniGetUI](https://winstall.app/compare-unigetui): Comparison with UniGetUI.
+
+## Catalog index
+
+- [Sitemap](https://winstall.app/sitemap.xml): Every public app and pack URL, split across the child sitemaps. Use this to enumerate; this file does not.
+
+## Optional
+
+- [Privacy](https://winstall.app/privacy): What the site stores for packs and analytics.
