@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 
 import styles from "../../styles/home.module.scss";
 
+import AppDetailPacks from "../../components/appDetailPacks";
 import AppDetailView from "../../components/AppDetailView";
 import AppNotFound from "../../components/AppNotFound";
 import DonateCard from "../../components/DonateCard";
@@ -65,6 +66,10 @@ function AppDetail({ app }) {
           </>
         )}
       </div>
+
+      {!router.isFallback && app && (
+        <AppDetailPacks appId={app._id} />
+      )}
 
       {!router.isFallback && app && (
         <MoreByPublisher publisher={app.publisher} currentAppId={app._id} />
