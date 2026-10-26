@@ -115,6 +115,7 @@ export default function PackDetailPage() {
   const [addAppsDialogOpen, setAddAppsDialogOpen] = useState(false);
   const [defaultFilters, setDefaultFilters] = useState(DEFAULT_INSTALL_FILTERS);
   const menuRef = useRef(null);
+  const shareWrapRef = useRef(null);
   const shareCardRef = useRef(null);
   const persistAppsTimerRef = useRef(null);
   const persistDefaultsTimerRef = useRef(null);
@@ -131,6 +132,8 @@ export default function PackDetailPage() {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuOpen(false);
+      }
+      if (shareWrapRef.current && !shareWrapRef.current.contains(event.target)) {
         setShowShareCard(false);
       }
     };
@@ -673,13 +676,41 @@ export default function PackDetailPage() {
             />
 
             {isOwner && (
+              <div
+                className={`${styles.packMenuWrapper} ${styles.shareWrap}`}
+                ref={shareWrapRef}
+              >
+                <button
+                  type="button"
+                  className={styles.actionButton}
+                  aria-expanded={showShareCard}
+                  onClick={handleShareClick}
+                >
+                  <FiShare2 aria-hidden="true" />
+                  Share
+                </button>
+                {showShareCard && (
+                  <PackShareCard
+                    pack={pack}
+                    shareCardRef={shareCardRef}
+                    user={user}
+                    onMadePublic={handlePackMadePublic}
+                  />
+                )}
+              </div>
+            )}
+
+            {isOwner && (
               <div className={styles.packMenuWrapper} ref={menuRef}>
                 <button
                   type="button"
                   className={styles.packMenu}
                   aria-label="Pack options"
                   aria-expanded={menuOpen}
-                  onClick={() => setMenuOpen((open) => !open)}
+                  onClick={() => {
+                    setShowShareCard(false);
+                    setMenuOpen((open) => !open);
+                  }}
                 >
                   <FiMoreVertical aria-hidden="true" />
                 </button>
@@ -701,22 +732,7 @@ export default function PackDetailPage() {
                       <FiTrash2 aria-hidden="true" />{" "}
                       {deletingPack ? "Deleting..." : "Delete"}
                     </button>
-                    <button
-                      type="button"
-                      className={styles.packMenuItem}
-                      onClick={handleShareClick}
-                    >
-                      <FiShare2 aria-hidden="true" /> Share
-                    </button>
                   </div>
-                )}
-                {showShareCard && (
-                  <PackShareCard
-                    pack={pack}
-                    shareCardRef={shareCardRef}
-                    user={user}
-                    onMadePublic={handlePackMadePublic}
-                  />
                 )}
               </div>
             )}

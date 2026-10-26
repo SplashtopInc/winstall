@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaFacebook, FaLinkedin } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { FiCode } from "react-icons/fi";
 import { IoIosLink } from "react-icons/io";
 
 import { fetchMyPacks, updatePack } from "../utils/fetchPackAPI";
@@ -10,6 +11,7 @@ import {
   PUBLIC_PACK_LIMIT_MESSAGE,
 } from "../utils/packLimits";
 import { buildSiteUrl } from "../utils/helpers";
+import { buildPackBadgeMarkdown } from "../utils/packBadgeMarkdown";
 import { syncOwnPacksCacheEntry } from "../utils/packHelpers";
 
 import styles from "../styles/packDetail.module.scss";
@@ -21,6 +23,7 @@ export default function PackShareCard({
   onMadePublic,
 }) {
   const [copyStatus, setCopyStatus] = useState("idle");
+  const [badgeCopyStatus, setBadgeCopyStatus] = useState("idle");
   const [agreeToPublic, setAgreeToPublic] = useState(false);
   const [makingPublic, setMakingPublic] = useState(false);
   const [makePublicError, setMakePublicError] = useState("");
@@ -111,6 +114,21 @@ export default function PackShareCard({
 
     setTimeout(() => {
       setCopyStatus("idle");
+    }, 5000);
+  };
+
+  const handleCopyBadge = async () => {
+    if (shareDisabled) return;
+
+    try {
+      await navigator.clipboard.writeText(buildPackBadgeMarkdown(shareUrl));
+      setBadgeCopyStatus("copied");
+    } catch {
+      setBadgeCopyStatus("failed");
+    }
+
+    setTimeout(() => {
+      setBadgeCopyStatus("idle");
     }, 5000);
   };
 
@@ -229,6 +247,21 @@ export default function PackShareCard({
             : copyStatus === "failed"
               ? "Copy failed"
               : "Copy link"}
+        </span>
+      </button>
+      <button
+        type="button"
+        onClick={handleCopyBadge}
+        disabled={shareDisabled}
+        className={`${styles.shareButton} ${badgeCopyStatus === "failed" ? styles.shareButtonFailed : ""}`}
+      >
+        <FiCode size={24} />
+        <span>
+          {badgeCopyStatus === "copied"
+            ? "Markdown copied"
+            : badgeCopyStatus === "failed"
+              ? "Copy failed"
+              : "Copy Markdown Badge"}
         </span>
       </button>
     </div>

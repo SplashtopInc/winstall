@@ -176,6 +176,11 @@
   flex-shrink: 0;
 }
 
+.shareWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
 .packMenu {
   display: inline-flex;
   align-items: center;
@@ -258,7 +263,7 @@
   flex-direction: column;
   gap: 8px;
   z-index: 110;
-  min-width: 260px;
+  min-width: 280px;
 }
 
 .shareButton {
@@ -764,6 +769,12 @@
     justify-content: center;
   }
 
+  .shareWrap {
+    flex: 1;
+    display: flex;
+    min-width: 0;
+  }
+
   .appGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -778,6 +789,11 @@
     right: auto;
     left: 0;
     min-width: 280px;
+  }
+
+  .shareWrap {
+    width: 100%;
+    flex: none;
   }
 
   .appGrid {
