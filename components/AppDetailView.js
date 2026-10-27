@@ -339,7 +339,9 @@ export default function AppDetailView({ app }) {
 
       <div className={styles.inst}>
         <div className={styles.instHead}>
-          <p className={styles.instLabel}>{app.name} with winget</p>
+          <p className={styles.instLabel}>
+            Install or upgrade {app.name} with winget
+          </p>
           {versions.length > 0 && (
             <div
               className={`${styles.verWrap} ${

@@ -148,7 +148,12 @@ App 详情页 MUST 在与 Add to list 同一操作行上提供 Download installe
 
 ### Requirement: App 详情在安装与升级命令之间切换
 
-App 详情的命令区 MUST 用 Install 与 Upgrade 两个 tab 切换同一条命令框和同一个 Copy。默认 tab MUST 为 Install。该选择 MUST 只存在于当前这次页面查看，MUST NOT 写入持久存储。区块标题 MUST NOT 写成 “Install {name} with winget”。Install tab MUST 展示安装命令，规则与本能力中详情页安装命令一致。Upgrade tab MUST 展示 `winget upgrade -e --id {id}`，MUST NOT 包含 `-v`。切换 tab MUST 清掉复制成功状态。这些 tab MUST NOT 使用生成页导出 tab 的持久化行为。
+App 详情的命令区 MUST 用 Install 与 Upgrade 两个 tab 切换同一条命令框和同一个 Copy。默认 tab MUST 为 Install。该选择 MUST 只存在于当前这次页面查看，MUST NOT 写入持久存储。区块标题 MUST 为 `Install or upgrade {name} with winget`，其中 `{name}` 为该应用的显示名称。区块标题 MUST NOT 写成 `{name} with winget`。Install tab MUST 展示安装命令，规则与本能力中详情页安装命令一致。Upgrade tab MUST 展示 `winget upgrade -e --id {id}`，MUST NOT 包含 `-v`。切换 tab MUST 清掉复制成功状态。这些 tab MUST NOT 使用生成页导出 tab 的持久化行为。
+
+#### Scenario: 命令区标题写明安装与升级
+
+- **WHEN** 用户打开已找到应用的详情页，且该应用显示名称为 `WinBox`
+- **THEN** 命令区标题 MUST 为 `Install or upgrade WinBox with winget`
 
 #### Scenario: 默认展示安装命令
 
