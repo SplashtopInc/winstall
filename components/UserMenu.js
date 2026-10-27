@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { FiMoreVertical, FiLogOut, FiTrash2, FiHeart } from "react-icons/fi";
+import { FiMoreVertical, FiLogOut, FiTrash2 } from "react-icons/fi";
 import styles from "../styles/userMenu.module.scss";
 
 export default function UserMenu({
@@ -52,10 +51,6 @@ export default function UserMenu({
 
   const dropdown = (
     <div className={`${styles.dropdown} ${isNav ? styles.navDropdown : ""}`}>
-      <Link href="/my/favorites" className={styles.menuItem} onClick={closeMenu}>
-        <FiHeart />
-        Favorites
-      </Link>
       <button
         type="button"
         className={styles.menuItem}

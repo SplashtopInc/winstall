@@ -12,6 +12,7 @@ import {
   FiX,
   FiUser,
   FiSearch,
+  FiHeart,
 } from "react-icons/fi";
 
 import UserMenu from "./UserMenu";
@@ -167,6 +168,7 @@ function Nav() {
             <FiSun className="sun" size={18} />
             <p className={styles.ddOnly}>Switch theme</p>
           </span>
+          <NavFavorites />
           <NavUser />
         </div>
 
@@ -180,6 +182,37 @@ function Nav() {
         </span>
       </div>
     </header>
+  );
+}
+
+function NavFavorites() {
+  const { data: session, status } = useSession();
+  const { openLogin } = useAuthGate();
+
+  if (session) {
+    return (
+      <Link
+        href="/my/favorites"
+        className={`${styles.navBtn} ${styles.navBtnIcon}`}
+        aria-label="Favorites"
+      >
+        <FiHeart size={18} />
+      </Link>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      className={`${styles.navBtn} ${styles.navBtnIcon}`}
+      aria-label="Favorites"
+      onClick={() => {
+        if (status === "loading") return;
+        openLogin({ callbackUrl: "/my/favorites" });
+      }}
+    >
+      <FiHeart size={18} />
+    </button>
   );
 }
 

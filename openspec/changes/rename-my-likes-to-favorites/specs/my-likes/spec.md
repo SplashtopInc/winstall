@@ -2,12 +2,17 @@
 
 ### Requirement: Liked page lives at /my/likes
 
-系统 MUST 在 `/my/favorites` 提供当前用户的点赞列表页。请求 `/my/likes` 时 MUST 重定向到 `/my/favorites`，且 MUST 保留原查询字符串。除 `/my/likes` 外，系统 MUST NOT 从其它路径重定向到该页。`/my` MUST NOT 提供页面，请求 `/my` 时 MUST NOT 重定向到 `/my/favorites` 或 `/my/likes`。主导航 MUST NOT 增加指向该页的项。已登录用户的账户菜单 MUST 提供进入 `/my/favorites` 的 Favorites 项。页面文档 MUST 带 `noindex`。静态 sitemap MUST NOT 包含 `/my/favorites` 或 `/my/likes`。系统 MUST NOT 恢复 `/users/:id`。
+系统 MUST 在 `/my/favorites` 提供当前用户的点赞列表页。请求 `/my/likes` 时 MUST 重定向到 `/my/favorites`，且 MUST 保留原查询字符串。除 `/my/likes` 外，系统 MUST NOT 从其它路径重定向到该页。`/my` MUST NOT 提供页面，请求 `/my` 时 MUST NOT 重定向到 `/my/favorites` 或 `/my/likes`。主导航 MUST NOT 增加指向该页的项。主题按钮之后 MUST 有一颗只显示心形图标的 Favorites 控件，MUST NOT 展示可见文案 Favorites，可访问名称 MUST 为 Favorites。已登录时激活该控件 MUST 进入 `/my/favorites`。未登录时激活该控件 MUST 打开登录弹窗，且 MUST NOT 先进入 `/my/favorites`；从该弹窗完成登录后 MUST 回到 `/my/favorites`。账户菜单 MUST NOT 包含 Favorites 项。页面文档 MUST 带 `noindex`。静态 sitemap MUST NOT 包含 `/my/favorites` 或 `/my/likes`。系统 MUST NOT 恢复 `/users/:id`。
 
-#### Scenario: Signed-in menu opens the page
+#### Scenario: Signed-in heart opens the page
 
-- **WHEN** 已登录用户从账户菜单激活 Favorites
-- **THEN** 浏览器打开 `/my/favorites`
+- **WHEN** 已登录用户激活主题按钮后面的 Favorites 图标
+- **THEN** 浏览器打开 `/my/favorites`，且账户菜单 MUST NOT 包含 Favorites 项
+
+#### Scenario: Signed-out heart opens login
+
+- **WHEN** 未登录用户激活主题按钮后面的 Favorites 图标
+- **THEN** 系统 MUST 打开登录弹窗，且 MUST NOT 先进入 `/my/favorites`
 
 #### Scenario: Bare /my is not a page
 
@@ -93,12 +98,12 @@ Apps 标签的每条 MUST 使用与 `/apps` 紧凑货架相同的应用卡，并
 
 ### Requirement: 收藏架文案使用 Favorites
 
-账户菜单项、页面主标题、文档标题，以及标签列表的无障碍名称，MUST 为 Favorites。副标题与文档描述 MUST 为 “Your favorite apps and packs.”。未登录时的登录说明标题 MUST 为 “Sign in to see your favorite apps and packs.”。Apps 空态标题 MUST 为 “No apps yet”，其说明 MUST 为 “Like an app from its page. It will show up here.”。Packs 空态标题 MUST 为 “No packs yet”，其说明 MUST 为 “Like a pack from its page. It will show up here.”。列表加载失败时，Apps 的说明 MUST 为 “Could not load apps.”，Packs 的说明 MUST 为 “Could not load packs.”。上述文案 MUST NOT 包含单词 liked。详情上的 Like 与 Unlike MUST 保持不变。
+导航 Favorites 控件的可访问名称、页面主标题、文档标题，以及标签列表的无障碍名称，MUST 为 Favorites。该控件 MUST NOT 展示可见文字 Favorites。副标题与文档描述 MUST 为 “Your favorite apps and packs.”。未登录时的登录说明标题 MUST 为 “Sign in to see your favorite apps and packs.”。Apps 空态标题 MUST 为 “No apps yet”，其说明 MUST 为 “Like an app from its page. It will show up here.”。Packs 空态标题 MUST 为 “No packs yet”，其说明 MUST 为 “Like a pack from its page. It will show up here.”。列表加载失败时，Apps 的说明 MUST 为 “Could not load apps.”，Packs 的说明 MUST 为 “Could not load packs.”。上述文案 MUST NOT 包含单词 liked。详情上的 Like 与 Unlike MUST 保持不变。
 
 #### Scenario: 菜单与标题叫 Favorites
 
-- **WHEN** 已登录用户打开账户菜单，或打开 `/my/favorites`
-- **THEN** 菜单项与页面主标题都是 Favorites，且副标题是 “Your favorite apps and packs.”
+- **WHEN** 已登录用户打开 `/my/favorites`
+- **THEN** 页面主标题是 Favorites，副标题是 “Your favorite apps and packs.”，且导航上的 Favorites 控件没有可见文字 Favorites
 
 #### Scenario: 未登录说明不说 liked
 
