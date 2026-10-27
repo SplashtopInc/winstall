@@ -119,6 +119,10 @@
 }
 
 .instHead {
+  margin-bottom: 10px;
+}
+
+.cmdRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -135,8 +139,9 @@
 
 .cmdTabs {
   display: flex;
+  align-items: center;
   gap: 16px;
-  margin-bottom: 10px;
+  min-width: 0;
 }
 
 .cmdTab,
@@ -890,8 +895,8 @@
     width: 100%;
   }
 
-  .instHead {
-    flex-wrap: wrap;
+  .cmdRow {
+    flex-wrap: nowrap;
   }
 
   .infoGrid {

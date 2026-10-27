@@ -342,6 +342,33 @@ export default function AppDetailView({ app }) {
           <p className={styles.instLabel}>
             Install or upgrade {app.name} with winget
           </p>
+        </div>
+
+        <div className={styles.cmdRow}>
+          <div className={styles.cmdTabs} role="tablist" aria-label="Winget command">
+            <button
+              type="button"
+              role="tab"
+              id="winget-install-tab"
+              className={commandTab === "install" ? styles.cmdTabActive : styles.cmdTab}
+              aria-selected={commandTab === "install"}
+              aria-controls="winget-command-panel"
+              onClick={() => selectCommandTab("install")}
+            >
+              Install
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="winget-upgrade-tab"
+              className={commandTab === "upgrade" ? styles.cmdTabActive : styles.cmdTab}
+              aria-selected={commandTab === "upgrade"}
+              aria-controls="winget-command-panel"
+              onClick={() => selectCommandTab("upgrade")}
+            >
+              Upgrade
+            </button>
+          </div>
           {versions.length > 0 && (
             <div
               className={`${styles.verWrap} ${
@@ -374,31 +401,6 @@ export default function AppDetailView({ app }) {
               </div>
             </div>
           )}
-        </div>
-
-        <div className={styles.cmdTabs} role="tablist" aria-label="Winget command">
-          <button
-            type="button"
-            role="tab"
-            id="winget-install-tab"
-            className={commandTab === "install" ? styles.cmdTabActive : styles.cmdTab}
-            aria-selected={commandTab === "install"}
-            aria-controls="winget-command-panel"
-            onClick={() => selectCommandTab("install")}
-          >
-            Install
-          </button>
-          <button
-            type="button"
-            role="tab"
-            id="winget-upgrade-tab"
-            className={commandTab === "upgrade" ? styles.cmdTabActive : styles.cmdTab}
-            aria-selected={commandTab === "upgrade"}
-            aria-controls="winget-command-panel"
-            onClick={() => selectCommandTab("upgrade")}
-          >
-            Upgrade
-          </button>
         </div>
 
         <div
