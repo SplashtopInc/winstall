@@ -9,6 +9,15 @@ const withSerwist = require("@serwist/next").default({
 module.exports = withSerwist({
   // For security, hide X-Powered-By header, avoid leak tech stack
   poweredByHeader: false,
+  async redirects() {
+    return [
+      {
+        source: "/my/likes",
+        destination: "/my/favorites",
+        permanent: false,
+      },
+    ];
+  },
   // Enable standalone mode for Docker builds only
   ...(process.env.STANDALONE_BUILD === "true" && { output: "standalone" }),
 });

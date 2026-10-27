@@ -52,9 +52,9 @@ export default function UserMenu({
 
   const dropdown = (
     <div className={`${styles.dropdown} ${isNav ? styles.navDropdown : ""}`}>
-      <Link href="/my/likes" className={styles.menuItem} onClick={closeMenu}>
+      <Link href="/my/favorites" className={styles.menuItem} onClick={closeMenu}>
         <FiHeart />
-        Liked
+        Favorites
       </Link>
       <button
         type="button"

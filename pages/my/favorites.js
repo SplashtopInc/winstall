@@ -15,7 +15,7 @@ import { getDocumentShellStaticProps } from "../../utils/documentShellStaticProp
 import fetchWinstallAPI from "../../utils/fetchWinstallAPI";
 import { setLastLoginProvider } from "../../utils/lastLoginProvider";
 import { getIconBase } from "../../utils/runtimeConfig";
-import styles from "../../styles/myLikes.module.scss";
+import styles from "../../styles/myFavorites.module.scss";
 import packStyles from "../../styles/packsIndex.module.scss";
 
 const LIKED_PAGE_LIMIT = 24;
@@ -61,7 +61,7 @@ function likedPath(kind, offset) {
   return `/${kind}/liked?offset=${offset}&limit=${LIKED_PAGE_LIMIT}`;
 }
 
-export default function MyLikesPage() {
+export default function MyFavoritesPage() {
   const router = useRouter();
   const { data: session, status: sessionStatus } = useSession();
   const userId = session?.user?.id;
@@ -106,7 +106,7 @@ export default function MyLikesPage() {
     if (gen !== requestGen.current) return;
 
     if (appsResult.error || !appsResult.response) {
-      setAppsError(appsResult.error || "Could not load liked apps.");
+      setAppsError(appsResult.error || "Could not load apps.");
     } else {
       const normalized = readEnvelope(appsResult.response);
       setApps(withIconUrls(normalized.data));
@@ -115,7 +115,7 @@ export default function MyLikesPage() {
     setAppsLoaded(true);
 
     if (packsResult.error || !packsResult.response) {
-      setPacksError(packsResult.error || "Could not load liked packs.");
+      setPacksError(packsResult.error || "Could not load packs.");
     } else {
       const normalized = readEnvelope(packsResult.response);
       setPacks(transformPackIcons(normalized.data));
@@ -181,7 +181,7 @@ export default function MyLikesPage() {
 
   const handleLogin = (provider) => {
     setLastLoginProvider(provider);
-    signIn(provider, { callbackUrl: "/my/likes" });
+    signIn(provider, { callbackUrl: "/my/favorites" });
   };
 
   const renderList = () => {
@@ -210,7 +210,7 @@ export default function MyLikesPage() {
       return (
         <div className={packStyles.emptyState}>
           <h2 className={packStyles.emptyTitle}>
-            {isApps ? "No liked apps yet" : "No liked packs yet"}
+            {isApps ? "No apps yet" : "No packs yet"}
           </h2>
           <p className={packStyles.emptyDescription}>
             {isApps
@@ -264,9 +264,9 @@ export default function MyLikesPage() {
   return (
     <PageWrapper>
       <MetaTags
-        title="Liked"
-        desc="Apps and packs you've liked."
-        path="/my/likes"
+        title="Favorites"
+        desc="Your favorite apps and packs."
+        path="/my/favorites"
       />
       <Head>
         <meta name="robots" content="noindex" />
@@ -274,8 +274,8 @@ export default function MyLikesPage() {
 
       <div className={packStyles.page}>
         <header className={styles.header}>
-          <h1 className={styles.title}>Liked</h1>
-          <p className={styles.lead}>Apps and packs you've liked.</p>
+          <h1 className={styles.title}>Favorites</h1>
+          <p className={styles.lead}>Your favorite apps and packs.</p>
         </header>
 
         {!sessionReady && (
@@ -289,7 +289,7 @@ export default function MyLikesPage() {
         {sessionReady && !userId && (
           <section className={packStyles.signInSection}>
             <h2 className={packStyles.signInTitle}>
-              Sign in to see the apps and packs you've liked.
+              Sign in to see your favorite apps and packs.
             </h2>
             {authError && (
               <p className={packStyles.authError}>
@@ -306,7 +306,7 @@ export default function MyLikesPage() {
 
         {sessionReady && userId && (
           <>
-            <div className={packStyles.tabs} role="tablist" aria-label="Liked">
+            <div className={packStyles.tabs} role="tablist" aria-label="Favorites">
               <button
                 type="button"
                 role="tab"

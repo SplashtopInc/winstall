@@ -2,7 +2,7 @@
 
 ## Purpose
 
-让已登录用户在 `/my/likes` 查看自己点赞过、且现在仍可访问的 App 与 Pack，并在每次进入该页时重新拉取列表。
+让已登录用户在 `/my/favorites` 查看自己点赞过、且现在仍可访问的 App 与 Pack，并在每次进入该页时重新拉取列表。`/my/likes` 只重定向到该页。
 
 ## Requirements
 
