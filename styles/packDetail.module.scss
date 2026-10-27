@@ -181,7 +181,8 @@
   flex-shrink: 0;
 }
 
-.packMenu {
+.packMenu,
+.shareTrigger {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -201,6 +202,11 @@
     background: var(--nav-hover-bg, #f7f6f9);
     color: var(--textColor);
   }
+}
+
+.shareTrigger svg {
+  width: 18px;
+  height: 18px;
 }
 
 .packMenuDropdown {
@@ -737,6 +743,7 @@
 
   .actionButton,
   .packMenu,
+  .shareTrigger,
   .likeBtn {
     --detail-brd-strong: #3a3b3e;
     --detail-muted: rgba(255, 255, 255, 0.7);
@@ -769,12 +776,6 @@
     justify-content: center;
   }
 
-  .shareWrap {
-    flex: 1;
-    display: flex;
-    min-width: 0;
-  }
-
   .appGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -789,11 +790,6 @@
     right: auto;
     left: 0;
     min-width: 280px;
-  }
-
-  .shareWrap {
-    width: 100%;
-    flex: none;
   }
 
   .appGrid {

@@ -682,12 +682,12 @@ export default function PackDetailPage() {
               >
                 <button
                   type="button"
-                  className={styles.actionButton}
+                  className={styles.shareTrigger}
+                  aria-label="Share"
                   aria-expanded={showShareCard}
                   onClick={handleShareClick}
                 >
                   <FiShare2 aria-hidden="true" />
-                  Share
                 </button>
                 {showShareCard && (
                   <PackShareCard

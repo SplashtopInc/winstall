@@ -8,12 +8,12 @@
 
 ### Requirement: 主人的 Share 紧跟在点赞后面
 
-已登录且为该 Pack 主人时，Pack 详情操作行 MUST 按此顺序展示：Install、Add App、点赞、Share、More。Share MUST 是带可见文案 `Share` 的按钮，MUST NOT 放在 More 菜单里。激活 Share MUST 打开分享面板，且 MUST NOT 要求 More 菜单处于打开状态。打开 Share 时 More 菜单 MUST 关闭。打开 More 时分享面板 MUST 关闭。
+已登录且为该 Pack 主人时，Pack 详情操作行 MUST 按此顺序展示：Install、Add App、点赞、Share、More。Share MUST 只展示分享图标，MUST NOT 展示可见文案 `Share`，且 MUST 提供可访问名称 `Share`。Share MUST NOT 放在 More 菜单里。激活 Share MUST 打开分享面板，且 MUST NOT 要求 More 菜单处于打开状态。打开 Share 时 More 菜单 MUST 关闭。打开 More 时分享面板 MUST 关闭。
 
 #### Scenario: 主人在点赞右侧看到 Share
 
 - **WHEN** Pack 主人打开该 Pack 详情
-- **THEN** 操作行 MUST 依次为 Install、Add App、点赞、Share、More，且 Share 的可见文案 MUST 为 `Share`
+- **THEN** 操作行 MUST 依次为 Install、Add App、点赞、Share、More，且 Share MUST 只展示图标，可访问名称 MUST 为 `Share`
 
 #### Scenario: 打开 Share 不经过 More
 
