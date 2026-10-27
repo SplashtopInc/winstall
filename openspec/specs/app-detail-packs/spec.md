@@ -60,12 +60,12 @@
 
 ### Requirement: 区块位置、空结果与失败
 
-有卡片可展示时，该区块 MUST 出现在 App 正文之下。若同发行商区块也出现，热门 Pack 区块 MUST 在其之上。若相关应用区块也出现，热门 Pack 区块 MUST 在其之上。区块标题 MUST 为 `Packs with this app`。请求尚未返回时 MAY 只展示该标题。`data` 为空、`total` 为 0，或请求失败时，MUST NOT 留下该标题、空网格或错误文案，且 App 正文、同发行商区块与相关应用区块 MUST 仍按各自既有规则展示。
+有卡片可展示时，该区块 MUST 出现在 App 正文之下。若同发行商区块也出现，热门 Pack 区块 MUST 在其之下。若相关应用区块也出现，热门 Pack 区块 MUST 在其之下。区块标题 MUST 为 `Packs with this app`。请求尚未返回时 MAY 只展示该标题。`data` 为空、`total` 为 0，或请求失败时，MUST NOT 留下该标题、空网格或错误文案，且 App 正文、同发行商区块与相关应用区块 MUST 仍按各自既有规则展示。
 
-#### Scenario: 有结果时位于正文之下、其它推荐之上
+#### Scenario: 有结果时位于正文之下、其它推荐之后
 
 - **WHEN** 热门 Pack、同发行商应用和相关应用都有可展示条目
-- **THEN** 热门 Pack 区块 MUST 在 App 正文之下，且 MUST 在同发行商区块和相关应用区块之上
+- **THEN** 热门 Pack 区块 MUST 在 App 正文之下，且 MUST 在同发行商区块和相关应用区块之下
 
 #### Scenario: 没有 Pack 时整块消失
 

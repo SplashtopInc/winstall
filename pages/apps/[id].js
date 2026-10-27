@@ -68,15 +68,15 @@ function AppDetail({ app }) {
       </div>
 
       {!router.isFallback && app && (
-        <AppDetailPacks appId={app._id} />
-      )}
-
-      {!router.isFallback && app && (
         <MoreByPublisher publisher={app.publisher} currentAppId={app._id} />
       )}
 
       {!router.isFallback && app && (
         <RelatedApps appId={app._id} />
+      )}
+
+      {!router.isFallback && app && (
+        <AppDetailPacks appId={app._id} />
       )}
 
       <Footer />

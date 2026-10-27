@@ -4,7 +4,7 @@
 
 `GET /apps/:id/packs` 已由 winstall-api 提供。匿名，无登录中间件。成功体为 `{ total, offset, limit, data }`。每条只有 `_id`、`name`、`description`、`appCount`。过滤为 `apps.appId` 命中且 `visibility` 为 `public`。顺序为 `sortBoost`、`popularityScore`、`createdAt`，分数不出现在响应里。未传 `limit` 时默认 100。`sort` 被忽略。未知 App 返回 200 且 `data` 为空。
 
-网站侧：`pages/apps/[id].js` 在正文下先挂同发行商，再挂相关应用。两者都在浏览器里请求，失败或为空则整块不留。`fetchWinstallAPI` 对 `GET /apps/:id/packs` 既不强制也不可选地附 session JWT。`PackCard` 在有快照时画图标条，footer 画相对时间，统计开关打开时把缺失计数画成 0。详情静态数据会裁字段，避免超过页面数据体积上限。
+网站侧：`pages/apps/[id].js` 在正文下先挂同发行商，再挂相关应用，最后挂包含该应用的热门 Pack。同发行商与相关应用都在浏览器里请求，失败或为空则整块不留。`fetchWinstallAPI` 对 `GET /apps/:id/packs` 既不强制也不可选地附 session JWT。`PackCard` 在有快照时画图标条，footer 画相对时间，统计开关打开时把缺失计数画成 0。详情静态数据会裁字段，避免超过页面数据体积上限。
 
 ## Goals / Non-Goals
 
@@ -25,7 +25,7 @@
 
 ### 1. 浏览器在应用就绪后请求
 
-区块组件在 `pages/apps/[id].js` 里放在 `AppDetailView` 之后、`MoreByPublisher` 之前，且只在非骨架且应用已找到时挂上。组件内 `useEffect` 调用 `fetchWinstallAPI('/apps/${id}/packs?limit=4')`。不传 `sort`，不传 `offset`。不把该路径加入 `requiresUserJwt` 或 `prefersOptionalUserJwt`。
+区块组件在 `pages/apps/[id].js` 里放在 `RelatedApps` 之后，且只在非骨架且应用已找到时挂上。组件内 `useEffect` 调用 `fetchWinstallAPI('/apps/${id}/packs?limit=4')`。不传 `sort`，不传 `offset`。不把该路径加入 `requiresUserJwt` 或 `prefersOptionalUserJwt`。
 
 路径段使用应用 `_id`。需要编码时用 `encodeURIComponent`，让 API 收到解码后的公开标识。
 
