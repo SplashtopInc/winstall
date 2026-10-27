@@ -298,37 +298,38 @@
 .loginButtons {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
   width: 100%;
   max-width: 420px;
 }
 
 .loginCard {
   background-color: var(--main-bg);
-  border: 2px solid var(--card-bg);
-  border-radius: 10px;
-  height: 72px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  height: 52px;
   width: 100%;
-  padding: 0 25px;
+  padding: 0 20px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   cursor: pointer;
   font-family: "Nunito", sans-serif;
-  font-size: 18.7px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--textColor);
-  transition: 0.3s all ease-in-out;
+  transition: 0.2s all ease-in-out;
   position: relative;
 
   &:hover,
   &:focus {
-    opacity: 0.75;
+    background-color: rgba(0, 0, 0, 0.03);
   }
 
   svg {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     flex-shrink: 0;
   }
 }
@@ -518,6 +519,15 @@
 
   .createLabel {
     color: var(--textColor);
+  }
+
+  .loginCard {
+    border-color: rgba(255, 255, 255, 0.12);
+
+    &:hover,
+    &:focus {
+      background-color: rgba(255, 255, 255, 0.06);
+    }
   }
 
   .loadMore {
