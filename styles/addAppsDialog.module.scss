@@ -32,13 +32,28 @@
   }
 }
 
+// Toolbar and grid share this scroller so a classic scrollbar (Windows)
+// insets both edges by the same width.
+.scroller {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .topControls {
+  position: sticky;
+  top: 0;
+  z-index: 3;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
   padding: 24px 48px 0;
+  background-color: var(--main-bg);
 }
 
 .header {
@@ -116,10 +131,8 @@
 }
 
 .content {
-  flex: 1;
-  overflow-y: auto;
+  flex: 1 0 auto;
   padding: 24px 48px;
-  min-height: 0;
 
   &.hasSelectionBar {
     padding-bottom: 100px;
@@ -344,15 +357,14 @@
 }
 
 .selectionBar {
-  position: absolute;
-  left: 0;
-  right: 0;
+  position: sticky;
   bottom: 0;
+  flex-shrink: 0;
+  z-index: 2;
   height: 70px;
   background-color: #9b2eff;
   color: #fff;
   box-shadow: none;
-  z-index: 2;
 
   .inner {
     max-width: 1400px;

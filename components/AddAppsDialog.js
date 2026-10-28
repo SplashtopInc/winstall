@@ -494,122 +494,124 @@ export default function AddAppsDialog({
           </h2>
         </header>
 
-        <div className={dialogStyles.topControls}>
-          <div className={dialogStyles.searchSection}>
-            <label htmlFor="add-apps-search" className={searchStyles.searchLabel}>
-              Search for apps
-            </label>
-            <div className={`${searchStyles.searchBox} ${dialogStyles.searchBoxFull}`}>
-              <div className={searchStyles.searchInner}>
-                <FiSearch />
-                <input
-                  type="text"
-                  id="add-apps-search"
-                  minLength={2}
-                  value={searchInput}
-                  autoComplete="off"
-                  placeholder="Enter your search term here"
-                  aria-label="Search for apps"
-                  onChange={(event) => setSearchInput(event.target.value)}
-                />
+        <div className={dialogStyles.scroller}>
+          <div className={dialogStyles.topControls}>
+            <div className={dialogStyles.searchSection}>
+              <label htmlFor="add-apps-search" className={searchStyles.searchLabel}>
+                Search for apps
+              </label>
+              <div className={`${searchStyles.searchBox} ${dialogStyles.searchBoxFull}`}>
+                <div className={searchStyles.searchInner}>
+                  <FiSearch />
+                  <input
+                    type="text"
+                    id="add-apps-search"
+                    minLength={2}
+                    value={searchInput}
+                    autoComplete="off"
+                    placeholder="Enter your search term here"
+                    aria-label="Search for apps"
+                    onChange={(event) => setSearchInput(event.target.value)}
+                  />
+                </div>
+                {showSearching && (
+                  <span className={searchStyles.searchingLabel}>Searching...</span>
+                )}
               </div>
-              {showSearching && (
-                <span className={searchStyles.searchingLabel}>Searching...</span>
-              )}
             </div>
-          </div>
-          <CategoryFilterSelect
-            categories={CATEGORIES}
-            activeSlug={hasSearchOverlay ? DEFAULT_CATEGORY : activeSlug}
-            onSelect={handleSelectCategory}
-          />
-        </div>
-
-        <div
-          ref={contentRef}
-          className={`${dialogStyles.content} ${hasSelection ? dialogStyles.hasSelectionBar : ""}`}
-        >
-          {clientError && <p className={dialogStyles.error}>{clientError}</p>}
-
-          {!clientError && listLoading && displayApps.length === 0 && (
-            <ShelfListSkeleton
-              variant="app"
-              gridClassName={dialogStyles.grid}
-              label={
-                hasSearchOverlay || isKeywordSearch
-                  ? "Searching apps"
-                  : "Loading apps"
-              }
+            <CategoryFilterSelect
+              categories={CATEGORIES}
+              activeSlug={hasSearchOverlay ? DEFAULT_CATEGORY : activeSlug}
+              onSelect={handleSelectCategory}
             />
-          )}
+          </div>
 
-          {!clientError &&
-            !listLoading &&
-            displayApps.length === 0 && (
-              <p className={dialogStyles.empty}>{emptyMessage}</p>
+          <div
+            ref={contentRef}
+            className={`${dialogStyles.content} ${hasSelection ? dialogStyles.hasSelectionBar : ""}`}
+          >
+            {clientError && <p className={dialogStyles.error}>{clientError}</p>}
+
+            {!clientError && listLoading && displayApps.length === 0 && (
+              <ShelfListSkeleton
+                variant="app"
+                gridClassName={dialogStyles.grid}
+                label={
+                  hasSearchOverlay || isKeywordSearch
+                    ? "Searching apps"
+                    : "Loading apps"
+                }
+              />
             )}
 
-          {!clientError && displayApps.length > 0 && (
-            <>
-              <ul className={dialogStyles.grid}>
-                {displayApps.map((app) => (
-                  <li key={app._id}>
-                    <AddAppPickerCard
-                      app={app}
-                      selected={isAppSelected(app)}
-                      alreadyAdded={isAppInPack(app)}
-                      onToggle={handleToggleApp}
-                    />
-                  </li>
-                ))}
-              </ul>
+            {!clientError &&
+              !listLoading &&
+              displayApps.length === 0 && (
+                <p className={dialogStyles.empty}>{emptyMessage}</p>
+              )}
 
-              {showLoadMore && (
-                <div className={dialogStyles.loadMoreWrap}>
+            {!clientError && displayApps.length > 0 && (
+              <>
+                <ul className={dialogStyles.grid}>
+                  {displayApps.map((app) => (
+                    <li key={app._id}>
+                      <AddAppPickerCard
+                        app={app}
+                        selected={isAppSelected(app)}
+                        alreadyAdded={isAppInPack(app)}
+                        onToggle={handleToggleApp}
+                      />
+                    </li>
+                  ))}
+                </ul>
+
+                {showLoadMore && (
+                  <div className={dialogStyles.loadMoreWrap}>
+                    <button
+                      type="button"
+                      className={dialogStyles.loadMore}
+                      onClick={handleLoadMore}
+                      disabled={isLoadingMore}
+                    >
+                      {isLoadingMore ? "Loading…" : "Load more"}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {hasSelection && (
+            <div className={dialogStyles.selectionBar}>
+              <div className={dialogStyles.inner}>
+                <p>
+                  Selected {selectedApps.length}{" "}
+                  {selectedApps.length === 1 ? "app" : "apps"} so far
+                </p>
+                <div className={dialogStyles.selectionBarControls}>
                   <button
                     type="button"
-                    className={dialogStyles.loadMore}
-                    onClick={handleLoadMore}
-                    disabled={isLoadingMore}
+                    className={dialogStyles.clearButton}
+                    onClick={handleClearSelection}
+                    title="Clear selections"
+                    disabled={adding}
                   >
-                    {isLoadingMore ? "Loading…" : "Load more"}
+                    <FiTrash />
+                  </button>
+                  <button
+                    type="button"
+                    className={dialogStyles.addButton}
+                    onClick={handleAddToPack}
+                    disabled={adding}
+                  >
+                    <FiPlus aria-hidden="true" />
+                    {adding ? "Adding..." : "Add to Pack"}
                   </button>
                 </div>
-              )}
-            </>
-          )}
-        </div>
-
-        {hasSelection && (
-          <div className={dialogStyles.selectionBar}>
-            <div className={dialogStyles.inner}>
-              <p>
-                Selected {selectedApps.length}{" "}
-                {selectedApps.length === 1 ? "app" : "apps"} so far
-              </p>
-              <div className={dialogStyles.selectionBarControls}>
-                <button
-                  type="button"
-                  className={dialogStyles.clearButton}
-                  onClick={handleClearSelection}
-                  title="Clear selections"
-                  disabled={adding}
-                >
-                  <FiTrash />
-                </button>
-                <button
-                  type="button"
-                  className={dialogStyles.addButton}
-                  onClick={handleAddToPack}
-                  disabled={adding}
-                >
-                  <FiPlus aria-hidden="true" />
-                  {adding ? "Adding..." : "Add to Pack"}
-                </button>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </>
   );
