@@ -16,7 +16,7 @@ export default function Privacy() {
 
             <p>If you sign in with Google, GitHub, or Microsoft, we get your name, email address, and profile picture from that account so we know who you are. We never see or store your password — that stays with whichever provider you signed in with.</p>
 
-            <p>Signing in lets you create App Packs: named lists of apps you can save and come back to later. Packs are private by default. If you share a pack's link or make it public, its name, apps, and description become visible to anyone with the link, or anyone browsing Public Packs — so don't put anything personal in a pack's name or description if you're going to share it.</p>
+            <p>Signing in lets you create App Packs: named lists of apps you can save and come back to later. You can also save apps and public packs shared by others. Packs are private by default, and the apps and packs you save are always private, so no one else can see what you've saved. If you share a pack's link or make it public, its name, apps, and description become visible to anyone with the link, or anyone browsing Public Packs. Don't put anything personal in a pack's name or description if you're going to share it.</p>
 
             <p>You can delete your account any time from the profile menu. This wipes your name, email, avatar, and every App Pack you've made, right away — nothing is kept afterward.</p>
 
@@ -28,7 +28,7 @@ export default function Privacy() {
 
             <p>winstall is not associated with Microsoft, Windows, Windows Package Manager, Google, or GitHub.</p>
             <br/>
-            <em>This policy is effective as of July 12, 2026.</em>
+            <em>This policy is effective as of October 28, 2026.</em>
         </section>
 
       </article>
