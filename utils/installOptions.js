@@ -1,4 +1,9 @@
 const ALLOWED_SCOPES = new Set(["", "user", "machine"]);
+const OVERRIDE_MAX_LENGTH = 512;
+const PATH_MAX_LENGTH = 260;
+// Quote breakout, command separators, redirection, cmd escape, env expansion,
+// PowerShell subexpression/escape, and control characters. Parentheses stay.
+const SHELL_META = /["&|<>^%;`$]|[\u0000-\u001F\u007F]/;
 
 export const INSTALL_OPTION_KEYS = [
   "scope",
@@ -9,6 +14,53 @@ export const INSTALL_OPTION_KEYS = [
   "log",
   "location",
 ];
+
+function trimmedText(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function isPathSegment(segment) {
+  return segment.length > 0 && !/[<>:"|?*]/.test(segment);
+}
+
+function isPathRemainder(remainder) {
+  if (remainder === "") return true;
+
+  const segments = remainder.split(/[\\/]/);
+  return segments.every((segment, index) => {
+    if (segment === "" && index === segments.length - 1) return true;
+    return isPathSegment(segment);
+  });
+}
+
+function isWindowsAbsolutePath(value) {
+  const drive = /^[A-Za-z]:[\\/](.*)$/.exec(value);
+  if (drive) return isPathRemainder(drive[1]);
+
+  const unc = /^(?:\\\\|\/\/)([^\\/]+)[\\/]([^\\/].*)$/.exec(value);
+  if (!unc) return false;
+  return isPathSegment(unc[1]) && isPathRemainder(unc[2]);
+}
+
+export function isSafeOverride(value) {
+  const text = trimmedText(value);
+  if (!text || text.length > OVERRIDE_MAX_LENGTH) return false;
+  return !SHELL_META.test(text);
+}
+
+export function isSafeInstallPath(value) {
+  const text = trimmedText(value);
+  if (!text || text.length > PATH_MAX_LENGTH) return false;
+  if (SHELL_META.test(text)) return false;
+  return isWindowsAbsolutePath(text);
+}
+
+export function quoteWingetValue(flag, value, { path = false } = {}) {
+  const text = trimmedText(value);
+  const safe = path ? isSafeInstallPath(text) : isSafeOverride(text);
+  if (!safe) return "";
+  return `${flag} "${text}"`;
+}
 
 export function normalizeInstallOptions(raw) {
   if (!raw || typeof raw !== "object") {
@@ -36,15 +88,15 @@ export function normalizeInstallOptions(raw) {
     normalized.force = true;
   }
 
-  if (typeof raw.override === "string" && raw.override.trim()) {
+  if (isSafeOverride(raw.override)) {
     normalized.override = raw.override.trim();
   }
 
-  if (typeof raw.log === "string" && raw.log.trim()) {
+  if (isSafeInstallPath(raw.log)) {
     normalized.log = raw.log.trim();
   }
 
-  if (typeof raw.location === "string" && raw.location.trim()) {
+  if (isSafeInstallPath(raw.location)) {
     normalized.location = raw.location.trim();
   }
 

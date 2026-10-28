@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import styles from "../../styles/exportApps.module.scss";
 import generateWingetImport from "../../utils/generateWingetImport";
 import getEffectiveConfig from "../../utils/getEffectiveConfig";
+import { quoteWingetValue } from "../../utils/installOptions";
 import { DEFAULT_INSTALL_FILTERS } from "../../utils/defaultInstallOptions";
 import { getPinnedInstallVersion } from "../../utils/installVersion";
 import GenericExport from "./GenericExport";
@@ -96,11 +97,14 @@ const ExportApps = ({
             if (f["--force"]) parts.push("--force");
             if (f["--ignore-unavailable"]) parts.push("--ignore-unavailable");
 
-            // Value flags
-            if (f["--log"]) parts.push(`--log "${f["--log"]}"`);
-            if (f["--location"]) parts.push(`--location "${f["--location"]}"`);
+            // Value flags. Unsafe free-text values are omitted; quoting stays shared.
+            const log = quoteWingetValue("--log", f["--log"], { path: true });
+            const location = quoteWingetValue("--location", f["--location"], { path: true });
+            const override = quoteWingetValue("--override", f["--override"]);
+            if (log) parts.push(log);
+            if (location) parts.push(location);
             if (f["--scope"]) parts.push(`--scope "${f["--scope"]}"`);
-            if (f["--override"] && f["--override"].trim()) parts.push(`--override "${f["--override"]}"`);
+            if (override) parts.push(override);
 
             return parts.join(" ");
         }
