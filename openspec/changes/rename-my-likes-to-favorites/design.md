@@ -27,7 +27,7 @@
 
 ### 2. 文案只改货架，不改放入动作
 
-主标题、`MetaTags` 标题、标签列表 `aria-label` 改为 Favorites。副标题与描述为 “Your favorite apps and packs.”。未登录标题为 “Sign in to see your favorite apps and packs.”。空态标题改为 “No apps yet” / “No packs yet”，说明仍是 “Like an app from its page. It will show up here.” 与对应的 pack 句子。失败说明改为 “Could not load apps.” / “Could not load packs.”。收藏架入口是导航里主题按钮后面的心形图标，不展示 Favorites 文字，可访问名称是 Favorites。已登录进入 `/my/favorites`；未登录打开登录弹窗，登录 `callbackUrl` 为 `/my/favorites`。账户菜单不再包含这一项。
+主标题、`MetaTags` 标题、标签列表 `aria-label` 改为 Favorites。副标题与描述为 “Your favorite apps and packs.”。未登录标题为 “Sign in to see your favorite apps and packs.”。空态标题为 “No favorite apps yet” / “No favorite packs yet”，说明为 “Like an app from its page to save it here for quick access later.” 与 “Like a pack from its page to bookmark it here for quick access.”，并分别提供 Browse Apps 与 Browse Packs。失败说明改为 “Could not load apps.” / “Could not load packs.”。收藏架入口是导航里主题按钮后面的心形图标，不展示 Favorites 文字，可访问名称是 Favorites。已登录进入 `/my/favorites`；未登录打开登录弹窗，登录 `callbackUrl` 为 `/my/favorites`。账户菜单不再包含这一项。
 
 样式文件从 `styles/myLikes.module.scss` 改名为 `styles/myFavorites.module.scss`，类名不动。
 

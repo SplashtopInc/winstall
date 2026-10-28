@@ -25,9 +25,72 @@
   opacity: 0.55;
 }
 
-.browse {
-  width: auto;
-  margin-right: 0;
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 72px 24px 80px;
+}
+
+.emptyMark {
+  display: block;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 8px;
+}
+
+.emptyTitle {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  color: var(--textColor);
+}
+
+.emptyText {
+  margin: 0 0 22px;
+  max-width: 420px;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--textColor);
+  opacity: 0.45;
+}
+
+.emptyBrowse {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  &:hover,
+  &:focus {
+    background: var(--altAccent);
+    color: #fff;
+  }
 }
 
 @media (max-width: 590px) {

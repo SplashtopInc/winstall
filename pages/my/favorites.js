@@ -4,6 +4,8 @@ import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
+import { FiGrid } from "react-icons/fi";
+
 import Error from "../../components/Error";
 import { LoginButtons } from "../../components/LoginPanel";
 import MetaTags from "../../components/MetaTags";
@@ -207,24 +209,7 @@ export default function MyFavoritesPage() {
     }
 
     if (total === 0) {
-      return (
-        <div className={packStyles.emptyState}>
-          <h2 className={packStyles.emptyTitle}>
-            {isApps ? "No apps yet" : "No packs yet"}
-          </h2>
-          <p className={packStyles.emptyDescription}>
-            {isApps
-              ? "Like an app from its page. It will show up here."
-              : "Like a pack from its page. It will show up here."}
-          </p>
-          <Link
-            href={isApps ? "/category" : "/packs"}
-            className={`button accent ${styles.browse}`}
-          >
-            {isApps ? "Browse apps" : "Browse packs"}
-          </Link>
-        </div>
-      );
+      return <FavoritesEmpty kind={isApps ? "apps" : "packs"} />;
     }
 
     const showLoadMore = items.length > 0 && items.length < total;
@@ -353,6 +338,51 @@ export default function MyFavoritesPage() {
         )}
       </div>
     </PageWrapper>
+  );
+}
+
+function FavoritesEmpty({ kind }) {
+  const isApps = kind === "apps";
+
+  return (
+    <div className={styles.empty}>
+      <img
+        className={styles.emptyMark}
+        src={
+          isApps
+            ? "/assets/favorite_app_empty.svg"
+            : "/assets/favorite_pack_empty.svg"
+        }
+        alt=""
+        aria-hidden="true"
+      />
+      <h2 className={styles.emptyTitle}>
+        {isApps ? "No favorite apps yet" : "No favorite packs yet"}
+      </h2>
+      <p className={styles.emptyText}>
+        {isApps
+          ? "Like an app from its page to save it here for quick access later."
+          : "Like a pack from its page to bookmark it here for quick access."}
+      </p>
+      <Link
+        href={isApps ? "/category" : "/packs"}
+        className={styles.emptyBrowse}
+      >
+        {isApps ? <FiGrid aria-hidden="true" /> : <PackBoxIcon />}
+        {isApps ? "Browse Apps" : "Browse Packs"}
+      </Link>
+    </div>
+  );
+}
+
+function PackBoxIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 3.5 20.5 8v8L12 20.5 3.5 16V8L12 3.5z" />
+      <path d="M12 12.2 20.5 8" />
+      <path d="M12 12.2 3.5 8" />
+      <path d="M12 12.2V20.5" />
+    </svg>
   );
 }
 

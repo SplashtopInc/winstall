@@ -98,7 +98,7 @@ Apps 标签的每条 MUST 使用与 `/apps` 紧凑货架相同的应用卡，并
 
 ### Requirement: 收藏架文案使用 Favorites
 
-导航 Favorites 控件的可访问名称、页面主标题、文档标题，以及标签列表的无障碍名称，MUST 为 Favorites。该控件 MUST NOT 展示可见文字 Favorites。副标题与文档描述 MUST 为 “Your favorite apps and packs.”。未登录时的登录说明标题 MUST 为 “Sign in to see your favorite apps and packs.”。Apps 空态标题 MUST 为 “No apps yet”，其说明 MUST 为 “Like an app from its page. It will show up here.”。Packs 空态标题 MUST 为 “No packs yet”，其说明 MUST 为 “Like a pack from its page. It will show up here.”。列表加载失败时，Apps 的说明 MUST 为 “Could not load apps.”，Packs 的说明 MUST 为 “Could not load packs.”。上述文案 MUST NOT 包含单词 liked。详情上的 Like 与 Unlike MUST 保持不变。
+导航 Favorites 控件的可访问名称、页面主标题、文档标题，以及标签列表的无障碍名称，MUST 为 Favorites。该控件 MUST NOT 展示可见文字 Favorites。副标题与文档描述 MUST 为 “Your favorite apps and packs.”。未登录时的登录说明标题 MUST 为 “Sign in to see your favorite apps and packs.”。Apps 空态标题 MUST 为 “No favorite apps yet”，其说明 MUST 为 “Like an app from its page to save it here for quick access later.”，并 MUST 提供 “Browse Apps”。Packs 空态标题 MUST 为 “No favorite packs yet”，其说明 MUST 为 “Like a pack from its page to bookmark it here for quick access.”，并 MUST 提供 “Browse Packs”。列表加载失败时，Apps 的说明 MUST 为 “Could not load apps.”，Packs 的说明 MUST 为 “Could not load packs.”。上述文案 MUST NOT 包含单词 liked。详情上的 Like 与 Unlike MUST 保持不变。
 
 #### Scenario: 菜单与标题叫 Favorites
 
@@ -113,4 +113,4 @@ Apps 标签的每条 MUST 使用与 `/apps` 紧凑货架相同的应用卡，并
 #### Scenario: 空态仍用 Like 说明放入方式
 
 - **WHEN** 已登录用户的 `GET /apps/liked` 返回 200，且 `total` 为 0
-- **THEN** Apps 空态标题是 “No apps yet”，说明是 “Like an app from its page. It will show up here.”
+- **THEN** Apps 空态标题是 “No favorite apps yet”，说明是 “Like an app from its page to save it here for quick access later.”，并有 “Browse Apps”
