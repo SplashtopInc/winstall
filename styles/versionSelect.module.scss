@@ -1,0 +1,106 @@
+.wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 50px;
+  padding: 5px 12px;
+  background: var(--card-bg);
+  color: var(--textColor);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  cursor: pointer;
+
+  &:hover:not(:disabled),
+  &:focus-visible {
+    background: color-mix(in srgb, var(--textColor) 8%, var(--card-bg));
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.triggerOpen {
+  background: color-mix(in srgb, var(--textColor) 8%, var(--card-bg));
+}
+
+.value {
+  white-space: nowrap;
+}
+
+.chevron {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  margin: 0;
+  padding: 8px;
+  list-style: none;
+  min-width: 100%;
+  max-height: min(360px, 50vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 14px;
+  background: var(--main-bg);
+  border: 1px solid var(--detail-brd, #edecf0);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+}
+
+.option {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: transparent;
+  color: var(--textColor);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--card-bg);
+  }
+}
+
+.optionActive {
+  background: var(--card-bg);
+  color: var(--accent);
+}
+
+:global(.dark) {
+  .menu {
+    background: var(--card-bg);
+    border-color: var(--detail-brd, #333438);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  }
+
+  .option:hover,
+  .option:focus-visible,
+  .optionActive {
+    background: var(--main-bg);
+  }
+}

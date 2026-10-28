@@ -8,6 +8,7 @@ import { IoIosLink } from "react-icons/io";
 import styles from "../styles/appDetail.module.scss";
 import SelectedContext from "../ctx/SelectedContext";
 import AppIcon from "./AppIcon";
+import VersionSelect from "./versionSelect";
 import DonateCard from "./DonateCard";
 import Toast from "./Toast";
 import { buildSiteUrl, compareVersion, timeAgo } from "../utils/helpers";
@@ -376,29 +377,18 @@ export default function AppDetailView({ app }) {
               }`}
               aria-hidden={commandTab !== "install"}
             >
-              <label className={styles.verLabel} htmlFor="app-version-select">
+              <label className={styles.verLabel} id="app-version-label" htmlFor="app-version-select">
                 Version
               </label>
-              <div className={styles.verSelectWrap}>
-                <span className={styles.verFace} aria-hidden="true">
-                  {pinnedVersion || `${latestVersion}(latest)`}
-                </span>
-                <select
-                  id="app-version-select"
-                  className={styles.verSel}
-                  value={pinnedVersion}
-                  aria-label="Select app version"
-                  disabled={commandTab !== "install"}
-                  onChange={(e) => handleVersionChange(e.target.value)}
-                >
-                  {latestVersion && <option value="">Latest</option>}
-                  {versions.map((v) => (
-                    <option key={v.version} value={v.version}>
-                      {v.version}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <VersionSelect
+                key={app._id}
+                labelId="app-version-label"
+                value={pinnedVersion}
+                latestVersion={latestVersion}
+                versions={versions}
+                disabled={commandTab !== "install"}
+                onChange={handleVersionChange}
+              />
             </div>
           )}
         </div>
