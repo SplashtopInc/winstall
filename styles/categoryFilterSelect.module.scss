@@ -13,8 +13,7 @@
   transform: translateY(-50%);
   padding: 0 6px;
   background: var(--main-bg);
-  color: var(--textColor);
-  opacity: 0.55;
+  color: color-mix(in srgb, var(--textColor) 55%, transparent);
   font-size: 12px;
   font-weight: 600;
   line-height: 1;
