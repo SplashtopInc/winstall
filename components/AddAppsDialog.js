@@ -119,8 +119,10 @@ export default function AddAppsDialog({
   const [selectedApps, setSelectedApps] = useState([]);
   const [adding, setAdding] = useState(false);
   const contentRef = useRef(null);
+  const scrollerRef = useRef(null);
   const hideSearchingTimerRef = useRef(null);
   const loadGenerationRef = useRef(0);
+  const [scrollbarGutter, setScrollbarGutter] = useState(0);
 
   const parsedInput = parseAppsListQuery(searchInput);
   const isPublisherMode = parsedInput.kind === "publisher";
@@ -296,6 +298,23 @@ export default function AddAppsDialog({
     loadSearchFirstPage,
     loadCategoryFirstPage,
   ]);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller || !isOpen) return undefined;
+
+    // Classic scrollbars shrink the list only. Mirror that inset on the toolbar,
+    // which stays outside the scroller so its menu is not clipped.
+    const measure = () => {
+      const next = scroller.offsetWidth - scroller.clientWidth;
+      setScrollbarGutter((current) => (current === next ? current : next));
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(scroller);
+    return () => observer.disconnect();
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -494,7 +513,7 @@ export default function AddAppsDialog({
           </h2>
         </header>
 
-        <div className={dialogStyles.scroller}>
+        <div className={dialogStyles.toolbarRow}>
           <div className={dialogStyles.topControls}>
             <div className={dialogStyles.searchSection}>
               <label htmlFor="add-apps-search" className={searchStyles.searchLabel}>
@@ -525,7 +544,14 @@ export default function AddAppsDialog({
               onSelect={handleSelectCategory}
             />
           </div>
+          <div
+            className={dialogStyles.scrollbarSpacer}
+            style={{ width: scrollbarGutter }}
+            aria-hidden="true"
+          />
+        </div>
 
+        <div className={dialogStyles.scroller} ref={scrollerRef}>
           <div
             ref={contentRef}
             className={`${dialogStyles.content} ${hasSelection ? dialogStyles.hasSelectionBar : ""}`}

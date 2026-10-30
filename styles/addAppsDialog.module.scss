@@ -32,8 +32,21 @@
   }
 }
 
-// Toolbar and grid share this scroller so a classic scrollbar (Windows)
-// insets both edges by the same width.
+// List scrolls on its own. The toolbar stays outside so a classic scrollbar
+// cannot stretch a sticky bar across the scrollbar column. The spacer copies
+// the scroller's used gutter (0 for overlay scrollbars).
+.toolbarRow {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-shrink: 0;
+  align-items: stretch;
+}
+
+.scrollbarSpacer {
+  flex: 0 0 auto;
+}
+
 .scroller {
   flex: 1;
   min-height: 0;
@@ -41,13 +54,12 @@
   flex-direction: column;
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 
 .topControls {
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
