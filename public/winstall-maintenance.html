@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>winstall · Maintenance</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--brand:#9B2EFF;--brand-h:#8A1FEE;--t1:#1A1A2E;--t3:#8E8E9F;--bg:#fff;--bg2:#F0EFF1;--brand-l:#F3EAFF;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;}
+
+.wrap{text-align:center;max-width:420px;}
+.logo{height:32px;margin-bottom:48px;}
+
+/* Illustration */
+.illo{width:200px;height:160px;margin:0 auto 32px;position:relative;}
+
+/* Terminal window */
+.term{position:absolute;left:24px;top:20px;width:152px;height:100px;background:#1A1A2E;border-radius:10px;box-shadow:0 8px 32px rgba(26,26,46,.15);}
+.term-bar{height:20px;background:#2A2A40;border-radius:10px 10px 0 0;display:flex;align-items:center;padding:0 8px;gap:4px;}
+.term-dot{width:6px;height:6px;border-radius:50%;}
+.term-dot.r{background:#FF6B6B;}.term-dot.y{background:#FFD93D;}.term-dot.g{background:#6BCB77;}
+.term-lines{padding:8px 10px;}
+.term-line{height:4px;border-radius:2px;margin-bottom:5px;}
+.term-l1{width:70%;background:#9B2EFF;opacity:.6;}
+.term-l2{width:50%;background:#555;opacity:.4;}
+.term-l3{width:85%;background:#555;opacity:.3;}
+.term-l4{width:40%;background:#9B2EFF;opacity:.4;animation:blink 1.2s ease infinite;}
+@keyframes blink{0%,100%{opacity:.4}50%{opacity:.1}}
+
+/* Wrench gear overlay */
+.gear{position:absolute;right:20px;bottom:10px;width:64px;height:64px;animation:spin 8s linear infinite;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* Package boxes */
+.pkg{position:absolute;}
+.pkg1{left:0;bottom:0;opacity:.5;}
+.pkg2{right:50px;top:0;opacity:.35;}
+
+h1{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-bottom:10px;}
+.desc{font-size:15px;color:var(--t3);line-height:1.6;margin-bottom:20px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:999px;border:none;background:var(--brand);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s;}
+.btn:hover{background:var(--brand-h);}
+.btn svg{width:16px;height:16px;}
+.hint{font-size:13px;color:var(--t3);margin-top:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="illo">
+    <!-- Small package top-right -->
+    <svg class="pkg pkg2" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9B2EFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity=".3">
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+      <path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/>
+    </svg>
+
+    <!-- Terminal window -->
+    <div class="term">
+      <div class="term-bar">
+        <span class="term-dot r"></span>
+        <span class="term-dot y"></span>
+        <span class="term-dot g"></span>
+      </div>
+      <div class="term-lines">
+        <div class="term-line term-l1"></div>
+        <div class="term-line term-l2"></div>
+        <div class="term-line term-l3"></div>
+        <div class="term-line term-l4"></div>
+      </div>
+    </div>
+
+    <!-- Spinning gear -->
+    <svg class="gear" viewBox="0 0 24 24" fill="none" stroke="#9B2EFF" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity=".5">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+
+    <!-- Small package bottom-left -->
+    <svg class="pkg pkg1" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#9B2EFF" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".25">
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+      <path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/>
+    </svg>
+  </div>
+
+  <h1>We'll be right back</h1>
+  <p class="desc">winstall is offline for scheduled maintenance while we update the catalog.</p>
+  <button class="btn" onclick="location.reload()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+    Refresh
+  </button>
+  <p class="hint">or check back in a few minutes</p>
+</div>
+</body>
+</html>
