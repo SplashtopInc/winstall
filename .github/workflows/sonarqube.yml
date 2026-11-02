@@ -2,8 +2,6 @@ on:
   workflow_dispatch:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ '**' ]
 
 name: Sonarqube SAST Scan
 jobs:
