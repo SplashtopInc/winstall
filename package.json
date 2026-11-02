@@ -10,7 +10,6 @@
     "@serwist/next": "^9.5.7",
     "@serwist/precaching": "^9.5.7",
     "@serwist/sw": "^9.5.7",
-    "bad-words": "^4.0.0",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^5.9.2",
     "nanoid": "^5.1.11",
@@ -25,12 +24,10 @@
     "react-modal": "^3.16.3",
     "redis": "^4.7.0",
     "tunnel": "^0.0.6",
-    "undici": "^7.29.1",
-    "uuid": "^11.1.0"
+    "undici": "^7.29.1"
   },
   "overrides": {
     "serialize-javascript": "^7.0.3",
-    "uuid": "^11.1.0",
     "browserslist": "^4.28.7",
     "sharp": "0.35.5",
     "ip-address": "10.7.1",
@@ -50,7 +47,6 @@
     "clean:sw": "rm -f public/sw.js public/sw.js.map public/swe-worker-*.js"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('node:crypto');
 const { initRedisClient, getClient } = require('../../utils/redisClient');
 const { initS3Client, generatePutPresignedUrl } = require('../../utils/s3Client');
 
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
 
 	await ensureClientsInitialized();
 
-	const taskId = uuidv4();
+	const taskId = randomUUID();
 	const redisClient = getClient();
 	const cacheKey = `installer:task:${taskId}`;
 	console.log('[Installer] TaskId:', taskId);
