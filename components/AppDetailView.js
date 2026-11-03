@@ -12,6 +12,7 @@ import VersionSelect from "./versionSelect";
 import DonateCard from "./DonateCard";
 import Toast from "./Toast";
 import { buildSiteUrl, compareVersion, timeAgo } from "../utils/helpers";
+import { buildPackBadgeMarkdown } from "../utils/packBadgeMarkdown";
 import LikeButton from "./LikeButton";
 import useResourceEngagement from "../hooks/useResourceEngagement";
 import { formatCount } from "../utils/engagementStats";
@@ -303,6 +304,16 @@ export default function AppDetailView({ app }) {
     setTimeout(() => setCopyStatus("idle"), 2000);
   };
 
+  const handleCopyBadge = async () => {
+    setShareOpen(false);
+    try {
+      await navigator.clipboard.writeText(buildPackBadgeMarkdown(shareUrl));
+      setToast("Markdown copied");
+    } catch {
+      setToast("Copy failed");
+    }
+  };
+
   const copyright = app.copyright || "";
   const shelfSlugs = detailShelfSlugs(app.categories);
 
@@ -523,6 +534,15 @@ export default function AppDetailView({ app }) {
                       ? "Copy failed"
                       : "Copy link"}
                 </span>
+              </button>
+              <button
+                type="button"
+                className={styles.shareItem}
+                onClick={handleCopyBadge}
+                role="menuitem"
+              >
+                <FiCode size={20} />
+                <span>Copy Markdown Badge</span>
               </button>
             </div>
           )}

@@ -20,3 +20,13 @@ test("buildPackBadgeMarkdown uses the same origin as the pack link", async () =>
     "[![Open in winstall](https://example.test/badge.svg)](https://example.test/packs/abc)"
   );
 });
+
+test("buildPackBadgeMarkdown points an app link at the same origin", async () => {
+  const { buildPackBadgeMarkdown } = await import("../utils/packBadgeMarkdown.js");
+  const shareUrl = "https://winstall.app/apps/Git.Git";
+
+  assert.equal(
+    buildPackBadgeMarkdown(shareUrl),
+    "[![Open in winstall](https://winstall.app/badge.svg)](https://winstall.app/apps/Git.Git)"
+  );
+});

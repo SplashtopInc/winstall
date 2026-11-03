@@ -390,9 +390,9 @@
 .shareMenu {
   position: absolute;
   top: calc(100% + 8px);
-  left: 0;
+  right: 0;
   z-index: 40;
-  min-width: 200px;
+  min-width: 260px;
   padding: 8px;
   background: var(--main-bg);
   border: 1px solid var(--detail-brd-strong, #e5e4e8);
@@ -417,6 +417,7 @@
   font-weight: 700;
   cursor: pointer;
   text-align: left;
+  white-space: nowrap;
   transition: background 0.15s ease;
 
   &:hover {
