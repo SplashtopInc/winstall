@@ -16,12 +16,10 @@ import {
   parseAppsListQuery,
   appsListPath,
   listScopeKey,
-  suggestionQueryFromListQuery,
 } from "../utils/parsePublisherQuery";
 import Error from "../components/Error";
 import DonateCard from "../components/DonateCard";
 import SearchEmptyState from "../components/SearchEmptyState";
-import TrySearching from "../components/TrySearching";
 import { useAppsTotal } from "../ctx/appsTotalContext";
 import { consumeSearchRecord } from "../utils/searchQueryRecord";
 
@@ -347,10 +345,6 @@ function Store({ data, error, buildTime }) {
       ) : showEmptySearch ? (
         <div className={searchStyles.emptyWrap}>
           <SearchEmptyState query={queryText} />
-          <TrySearching
-            query={suggestionQueryFromListQuery(queryText)}
-            className={searchStyles.suggestions}
-          />
         </div>
       ) : showEmptyList ? (
         <p className={styles.status}>No apps to show</p>

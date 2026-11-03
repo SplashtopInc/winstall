@@ -16,7 +16,7 @@ function SearchEmptyState({ query }) {
         No apps found for "<span className={styles.emptyQuery}>{query}</span>"
       </h2>
       <p className={styles.emptyDesc}>
-        We couldn't find any apps matching your search. Try a different keyword or browse these suggestions.
+        We couldn't find any apps matching your search. Try a different keyword.
       </p>
     </div>
   );

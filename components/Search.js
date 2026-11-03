@@ -1,12 +1,11 @@
 import { useRouter } from "next/router";
 import { useState, useEffect, useRef } from "react";
-import { FiSearch, FiHelpCircle } from "react-icons/fi";
+import { FiSearch } from "react-icons/fi";
 
 import styles from "../styles/search.module.scss";
 
 import SingleApp from "../components/SingleApp";
 import ListPackages from "../components/ListPackages";
-import TrySearching from "../components/TrySearching";
 import fetchWinstallAPI from "../utils/fetchWinstallAPI";
 import { useSearchDialog } from "../ctx/SearchDialogContext";
 import { getIconBase } from "../utils/runtimeConfig";
@@ -14,7 +13,6 @@ import {
   parseAppsListQuery,
   appsListPath,
   appsPagePath,
-  suggestionQueryFromListQuery,
 } from "../utils/parsePublisherQuery";
 
 function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView, alreadySelected=[], limit=-1, hideInput=false, onEmptyChange, asGlobalTrigger=false}) {
@@ -222,18 +220,6 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
               />
             </div>
 
-            <div className={styles.tip}>
-              <a href="#" title="Search tips"><FiHelpCircle /></a>
-              <div className={styles.tipData}>
-                <p>Use search prefixes to target a specific field in searches!</p>
-                <ul>
-                  <li><code>name:</code> search for an app's name</li>
-                  <li><code>publisher:</code> search for apps by a publisher</li>
-                  <li><code>tags:</code> search for apps by a tag</li>
-                  <li><code>desc:</code> search the description of apps</li>
-                </ul>
-              </div>
-            </div>
             {showSearching && (
               <span className={styles.searchingLabel}>Searching...</span>
             )}
@@ -288,16 +274,12 @@ function Search({ onSearch, label, placeholder, preventGlobalSelect, isPackView,
                       No apps found for "<span className={styles.emptyQuery}>{searchInput}</span>"
                     </h2>
                     <p className={styles.emptyDesc}>
-                      We couldn't find any apps matching your search. Try a different keyword or browse these suggestions.
+                      We couldn't find any apps matching your search. Try a different keyword.
                     </p>
                   </div>
                 ) : (
                   <p className={styles.noresults}>Could not find any apps.</p>
                 )}
-                <TrySearching
-                  query={suggestionQueryFromListQuery(searchInput)}
-                  className={styles.suggestions}
-                />
               </div>
             ) : ""}
           </>

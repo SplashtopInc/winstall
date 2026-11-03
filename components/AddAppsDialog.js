@@ -125,14 +125,15 @@ export default function AddAppsDialog({
   const [scrollbarGutter, setScrollbarGutter] = useState(0);
 
   const parsedInput = parseAppsListQuery(searchInput);
-  const isPublisherMode = parsedInput.kind === "publisher";
+  const isPrefixMode =
+    parsedInput.kind === "publisher" || parsedInput.kind === "tag";
   const isKeywordSearch =
     parsedInput.kind === "search" && searchInput.trim().length >= 3;
   const searchPending =
     isKeywordSearch && committedSearch !== searchInput.trim();
   const hasSearchOverlay =
-    isPublisherMode || (isKeywordSearch && Boolean(committedSearch));
-  const searchQuery = isPublisherMode
+    isPrefixMode || (isKeywordSearch && Boolean(committedSearch));
+  const searchQuery = isPrefixMode
     ? parsedInput
     : hasSearchOverlay
     ? parseAppsListQuery(committedSearch)
@@ -277,7 +278,7 @@ export default function AddAppsDialog({
     if (loadedScope === currentScope) return;
 
     if (hasSearchOverlay) {
-      const parsed = isPublisherMode
+      const parsed = isPrefixMode
         ? parseAppsListQuery(searchInput)
         : parseAppsListQuery(committedSearch);
       loadSearchFirstPage(parsed);
@@ -291,7 +292,7 @@ export default function AddAppsDialog({
     currentScope,
     loadedScope,
     hasSearchOverlay,
-    isPublisherMode,
+    isPrefixMode,
     searchInput,
     committedSearch,
     activeSlug,
@@ -328,7 +329,7 @@ export default function AddAppsDialog({
   }, [isOpen]);
 
   useEffect(() => {
-    const canSearch = isKeywordSearch || isPublisherMode;
+    const canSearch = isKeywordSearch || isPrefixMode;
 
     if (!canSearch) {
       if (hideSearchingTimerRef.current) {
@@ -359,7 +360,7 @@ export default function AddAppsDialog({
         hideSearchingTimerRef.current = null;
       }
     };
-  }, [isLoading, isKeywordSearch, isPublisherMode, searchPending]);
+  }, [isLoading, isKeywordSearch, isPrefixMode, searchPending]);
 
   const handleClose = () => {
     if (adding) return;
