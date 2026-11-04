@@ -150,14 +150,18 @@ export default async function handler(req, res) {
 			message: 'Installer generation in progress',
 		});
 	} catch (error) {
-		console.error('[Installer] Error:', error);
+		const correlationId = randomUUID();
+		console.error(`[Installer][Error ID: ${correlationId}] Route Error:`, error);
 
 		try {
 			await redisClient.del(cacheKey);
 		} catch (cleanupError) {
-			console.error('[Installer] Cleanup error:', cleanupError);
+			console.error(`[Installer][Error ID: ${correlationId}] Cleanup error:`, cleanupError);
 		}
 
-		return res.status(500).json({ error: error.message });
+		return res.status(500).json({
+			error: 'An unexpected error occurred while processing your request.',
+			correlationId,
+		});
 	}
 }

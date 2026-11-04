@@ -1,3 +1,4 @@
+const { randomUUID } = require('node:crypto');
 const { initRedisClient, getClient } = require('../../../utils/redisClient');
 const { initS3Client, generateGetPresignedUrl } = require('../../../utils/s3Client');
 
@@ -62,7 +63,11 @@ export default async function handler(req, res) {
 			uploadedAt: parseInt(uploaded, 10),
 		});
 	} catch (error) {
-		console.error('[Installer] Status Error:', error);
-		return res.status(500).json({ error: error.message });
+		const correlationId = randomUUID();
+		console.error(`[Installer][Error ID: ${correlationId}] Status Error:`, error);
+		return res.status(500).json({
+			error: 'Failed to retrieve installer status.',
+			correlationId,
+		});
 	}
 }

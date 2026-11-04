@@ -1,3 +1,4 @@
+const { randomUUID } = require('node:crypto');
 const { initRedisClient, getClient } = require('../../../utils/redisClient');
 
 let redisInitialized = false;
@@ -39,7 +40,11 @@ export default async function handler(req, res) {
 
 		return res.status(200).json({ success: true });
 	} catch (error) {
-		console.error('[Installer] Callback Error:', error);
-		return res.status(500).json({ error: error.message });
+		const correlationId = randomUUID();
+		console.error(`[Installer][Error ID: ${correlationId}] Callback Error:`, error);
+		return res.status(500).json({
+			error: 'Callback processing failed.',
+			correlationId,
+		});
 	}
 }

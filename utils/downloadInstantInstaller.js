@@ -99,10 +99,6 @@ export async function downloadInstantInstaller(apps, filters = {}, command = "in
   const config = buildInstallerConfig(apps, filters, command);
   const filename = installerFilename(apps);
 
-  if (process.env.NODE_ENV === "development") {
-    console.log("Installer config:", JSON.stringify(config, null, 2));
-  }
-
   const response = await fetch("/api/installer", {
     method: "POST",
     headers: {
