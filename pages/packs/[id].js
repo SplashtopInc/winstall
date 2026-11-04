@@ -127,6 +127,7 @@ export default function PackDetailPage() {
   });
 
   const isOwner = Boolean(user && pack && user.id === pack.userId);
+  const canShare = isOwner || pack?.visibility === "public";
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -675,7 +676,7 @@ export default function PackDetailPage() {
               className={`${styles.likeBtn} ${stats?.liked ? styles.likeBtnOn : ""}`}
             />
 
-            {isOwner && (
+            {canShare && (
               <div
                 className={`${styles.packMenuWrapper} ${styles.shareWrap}`}
                 ref={shareWrapRef}
@@ -694,6 +695,7 @@ export default function PackDetailPage() {
                     pack={pack}
                     shareCardRef={shareCardRef}
                     user={user}
+                    isOwner={isOwner}
                     onMadePublic={handlePackMadePublic}
                   />
                 )}

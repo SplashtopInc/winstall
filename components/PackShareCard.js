@@ -20,6 +20,7 @@ export default function PackShareCard({
   pack,
   shareCardRef,
   user,
+  isOwner,
   onMadePublic,
 }) {
   const [copyStatus, setCopyStatus] = useState("idle");
@@ -32,6 +33,7 @@ export default function PackShareCard({
 
   const shareUrl = buildSiteUrl(`/packs/${pack._id}`);
   const isAlreadyPublic = pack.visibility === "public";
+  const showPublicGate = Boolean(isOwner) && !isPublic;
   const publicLimitReached =
     publicPackCount >= MAX_PUBLIC_PACKS_PER_USER && !isAlreadyPublic && !isPublic;
   const publicCheckboxDisabled = makingPublic || publicLimitReached;
@@ -53,7 +55,7 @@ export default function PackShareCard({
   }, [pack._id, pack.visibility]);
 
   useEffect(() => {
-    if (!user) {
+    if (!showPublicGate || !user) {
       setPublicPackCount(0);
       return;
     }
@@ -68,9 +70,11 @@ export default function PackShareCard({
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [showPublicGate, user]);
 
   const handleAgreeChange = async (event) => {
+    if (!isOwner) return;
+
     const checked = event.target.checked;
 
     if (!checked || isPublic) {
@@ -169,7 +173,7 @@ export default function PackShareCard({
 
   return (
     <div className={styles.shareCard} ref={shareCardRef}>
-      {!isPublic && (
+      {showPublicGate && (
         <div className={styles.sharePublicNotice}>
           <label className={styles.shareCheckboxLabel}>
             <span className={styles.shareCheckbox}>
