@@ -10,6 +10,7 @@ import tunnel from "tunnel";
 import clientPromise from "../../../lib/mongodb";
 import { createAuthAdapter } from "../../../lib/authAdapter";
 import { signJwt } from "../../../utils/signJwt";
+import { isProviderEmailVerified } from "../../../utils/authVerification";
 import jwt from "jsonwebtoken";
 
 const API_TOKEN_REFRESH_SKEW_SEC = 30;
@@ -181,6 +182,43 @@ export const authOptions = {
   },
 
   callbacks: {
+    signIn: async ({ user, account, profile }) => {
+      if (!account) return true;
+
+      const adapter = createAuthAdapter(clientPromise);
+
+      // If user account is already linked to this provider, allow sign in directly
+      if (account.providerAccountId && account.provider) {
+        const existingAccountUser = await adapter.getUserByAccount({
+          provider: account.provider,
+          providerAccountId: account.providerAccountId,
+        });
+        if (existingAccountUser) {
+          return true;
+        }
+      }
+
+      // Check if this sign in is attempting to link to an existing user by email
+      const targetEmail = (profile?.email || user?.email || "")
+        .toLowerCase()
+        .trim();
+
+      if (targetEmail) {
+        const existingUserByEmail = await adapter.getUserByEmail(targetEmail);
+        if (existingUserByEmail) {
+          const verified = await isProviderEmailVerified(account, profile);
+          if (!verified) {
+            console.warn(
+              `[Security Alert] Blocked unverified email account linking from provider '${account.provider}' for email '${targetEmail}'.`
+            );
+            return false;
+          }
+        }
+      }
+
+      return true;
+    },
+
     session: async ({ session, token }) => {
       if (session?.user && token) {
         session.user.id = token.id;
@@ -238,6 +276,14 @@ export const authOptions = {
               2
             )
           );
+
+          if (account.provider === "azure-ad" && account.id_token) {
+            const decodedIdToken = jwt.decode(account.id_token);
+            console.log("[NextAuth Azure AD ID Token Debug]");
+            console.log("email:", decodedIdToken?.email);
+            console.log("xms_edov:", decodedIdToken?.xms_edov);
+            console.log("All Claims:", JSON.stringify(decodedIdToken, null, 2));
+          }
         }
         console.log("[NextAuth JWT Debug End]\n");
       }
