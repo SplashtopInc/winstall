@@ -1,0 +1,296 @@
+.page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  color: var(--textColor);
+  --muted: #5c5c70;
+  --faint: #8e8e9f;
+  --field: #fff;
+  --field-line: #e5e4e8;
+  --pick: #f6efff;
+  --line: #edecf0;
+}
+
+:global(.dark) .page {
+  --muted: rgba(255, 255, 255, 0.72);
+  --faint: rgba(255, 255, 255, 0.5);
+  --field: #1c1c1f;
+  --field-line: #3a3a40;
+  --pick: rgba(155, 46, 255, 0.16);
+  --line: #2a2b2e;
+}
+
+.column {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: min(760px, 100%);
+  min-height: 0;
+  margin: 28px auto 0;
+}
+
+.page > .pageFooter {
+  margin-top: 0;
+}
+
+.column form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.column h1 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.lead {
+  max-width: 38em;
+  margin: 12px auto 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--muted);
+}
+
+.rule {
+  margin: 22px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.ask,
+.fieldLabel {
+  margin: 22px 0 0;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.fieldLabel {
+  margin-bottom: 10px;
+}
+
+.kinds {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 14px 0 0;
+}
+
+.kind,
+.kindOn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 100%;
+  min-height: 92px;
+  margin: 0;
+  padding: 12px 10px 10px;
+  border: 1px solid var(--field-line);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--textColor);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.kind:hover {
+  background: rgba(155, 46, 255, 0.06);
+}
+
+.kindOn,
+.kindOn:hover {
+  border-color: var(--accent);
+  background: var(--pick);
+}
+
+.kind:focus-visible,
+.kindOn:focus-visible,
+.send:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.kindIcon {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  margin-bottom: 6px;
+  color: var(--muted);
+}
+
+.kindIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.kindOn .kindIcon {
+  color: var(--accent);
+}
+
+.kindCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kindName {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.kindHint {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--faint);
+}
+
+.field {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 280px;
+  border: 1px solid var(--field-line);
+  border-radius: 10px;
+  background: var(--field);
+}
+
+.field:focus-within {
+  border-color: var(--accent);
+}
+
+.note {
+  display: block;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 280px;
+  height: 100%;
+  margin: 0;
+  padding: 14px 14px 32px;
+  border: 0;
+  border-radius: 10px;
+  resize: none;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  background: transparent;
+  color: var(--textColor);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.note:focus {
+  outline: none;
+}
+
+.note::placeholder {
+  color: var(--faint);
+  font-weight: 700;
+}
+
+.meter {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  margin: 0;
+  padding: 0 4px;
+  background: var(--field);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--faint);
+  pointer-events: none;
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.send {
+  flex-shrink: 0;
+  height: 44px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.send:hover:not(:disabled) {
+  background: var(--altAccent);
+}
+
+.send:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 590px) {
+  .column h1 {
+    font-size: 32px;
+  }
+
+  .kinds {
+    gap: 8px;
+  }
+
+  .kind,
+  .kindOn {
+    min-height: 88px;
+    padding: 10px 6px;
+  }
+
+  .kindIcon {
+    width: 18px;
+    height: 18px;
+    margin-bottom: 4px;
+  }
+
+  .kindIcon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .kindName {
+    font-size: 13px;
+  }
+
+  .kindHint {
+    font-size: 11px;
+  }
+
+  .foot {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .send {
+    width: 100%;
+    height: 48px;
+  }
+}

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FiChevronUp } from "react-icons/fi";
 import SelectedContext from "../ctx/SelectedContext";
 
-export default function Footer() {
+export default function Footer({ className = "" }) {
   const { selectedApps, setSelectedApps } = useContext(SelectedContext);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export default function Footer() {
 
   return (
     <div
-      className={`${styles.footer} ${
+      className={`${styles.footer} ${className} ${
         selectedApps.length !== 0 ? styles.selectionOpen : ""
       }`}
     >
@@ -81,6 +81,9 @@ export default function Footer() {
         </li>
         <li>
           <Link href="/eli5">Help</Link>
+        </li>
+        <li>
+          <Link href="/feedback">Feedback</Link>
         </li>
       </ul>
 

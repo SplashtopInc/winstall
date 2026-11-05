@@ -1,4 +1,5 @@
 import { isLikePath, isLikedListPath } from "./engagementPaths";
+import { authorizationFromSession, isOptionalUserJwtRequest } from "./optionalUserJwt";
 import { getRuntimeConfig } from "./runtimeConfig";
 import { searchRecordHeaders } from "./searchQueryRecord";
 import { isTrendingPath } from "./trendingData";
@@ -32,6 +33,7 @@ function requiresUserJwt(method, pathname) {
 }
 
 function prefersOptionalUserJwt(method, pathname) {
+  if (isOptionalUserJwtRequest(method, pathname)) return true;
   if (
     method === "GET" &&
     PACK_RESOURCE.test(pathname) &&
@@ -40,12 +42,6 @@ function prefersOptionalUserJwt(method, pathname) {
     return true;
   }
   return false;
-}
-
-function isApiTokenFresh(session) {
-  if (!session?.apiToken) return false;
-  const exp = Number(session.apiTokenExpires) || 0;
-  return exp - Math.floor(Date.now() / 1000) > 0;
 }
 
 async function getBrowserSession() {
@@ -61,13 +57,7 @@ async function authHeaders(method, pathname) {
   if (!required && !optional) return {};
 
   const session = await getBrowserSession();
-  if (required && session?.apiToken) {
-    return { Authorization: `Bearer ${session.apiToken}` };
-  }
-  if (optional && isApiTokenFresh(session)) {
-    return { Authorization: `Bearer ${session.apiToken}` };
-  }
-  return {};
+  return authorizationFromSession(session, { required, optional });
 }
 
 /**
