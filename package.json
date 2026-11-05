@@ -34,7 +34,8 @@
     "source-map-js": "1.2.2",
     "next-auth": {
       "next": "$next"
-    }
+    },
+    "zod": "^4.6.7"
   },
   "scripts": {
     "dev": "npm run clean:sw && next dev --turbopack",
