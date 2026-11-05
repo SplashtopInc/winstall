@@ -6,11 +6,12 @@ import { createPack, fetchMyPacks, updatePack } from "../utils/fetchPackAPI";
 import { syncOwnPacksCacheEntry } from "../utils/packHelpers";
 import {
   countPublicPacksInList,
-  MAX_PUBLIC_PACKS_PER_USER,
   PACK_DESCRIPTION_MAX_LENGTH,
   PACK_NAME_MAX_LENGTH,
-  PUBLIC_PACK_LIMIT_MESSAGE,
+  publicPackLimitForUser,
+  publicPackLimitMessage,
 } from "../utils/packLimits";
+import { readPackTrendingOwnerUserId } from "../utils/packTrendingOwner";
 import styles from "../styles/createPackModal.module.scss";
 
 Modal.setAppElement("#__next");
@@ -50,8 +51,12 @@ export default function CreatePackModal({ isOpen, onClose, user, onCreated, pack
   const description = watch("description");
   const isPublicRegister = register("isPublic");
   const isAlreadyPublic = isEditMode && pack.visibility === "public";
+  const publicPackLimit = publicPackLimitForUser(
+    user?.id,
+    readPackTrendingOwnerUserId()
+  );
   const publicLimitReached =
-    publicPackCount >= MAX_PUBLIC_PACKS_PER_USER && !isAlreadyPublic;
+    publicPackCount >= publicPackLimit && !isAlreadyPublic;
   const publicCheckboxDisabled = submitting || publicLimitReached;
 
   const checkboxIcon = submitting || publicLimitReached
@@ -218,7 +223,7 @@ export default function CreatePackModal({ isOpen, onClose, user, onCreated, pack
           </label>
           <em>
             {publicLimitReached
-              ? PUBLIC_PACK_LIMIT_MESSAGE
+              ? publicPackLimitMessage(publicPackLimit)
               : "Appears in the public App Packs directory for anyone to discover."}
           </em>
         </div>

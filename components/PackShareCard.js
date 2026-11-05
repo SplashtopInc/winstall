@@ -7,9 +7,10 @@ import { IoIosLink } from "react-icons/io";
 import { fetchMyPacks, updatePack } from "../utils/fetchPackAPI";
 import {
   countPublicPacksInList,
-  MAX_PUBLIC_PACKS_PER_USER,
-  PUBLIC_PACK_LIMIT_MESSAGE,
+  publicPackLimitForUser,
+  publicPackLimitMessage,
 } from "../utils/packLimits";
+import { readPackTrendingOwnerUserId } from "../utils/packTrendingOwner";
 import { buildSiteUrl } from "../utils/helpers";
 import { buildPackBadgeMarkdown } from "../utils/packBadgeMarkdown";
 import { syncOwnPacksCacheEntry } from "../utils/packHelpers";
@@ -34,8 +35,12 @@ export default function PackShareCard({
   const shareUrl = buildSiteUrl(`/packs/${pack._id}`);
   const isAlreadyPublic = pack.visibility === "public";
   const showPublicGate = Boolean(isOwner) && !isPublic;
+  const publicPackLimit = publicPackLimitForUser(
+    user?.id,
+    readPackTrendingOwnerUserId()
+  );
   const publicLimitReached =
-    publicPackCount >= MAX_PUBLIC_PACKS_PER_USER && !isAlreadyPublic && !isPublic;
+    publicPackCount >= publicPackLimit && !isAlreadyPublic && !isPublic;
   const publicCheckboxDisabled = makingPublic || publicLimitReached;
   const shareDisabled = !isPublic;
 
@@ -197,7 +202,7 @@ export default function PackShareCard({
           </label>
           <p className={styles.sharePublicHint}>
             {publicLimitReached
-              ? PUBLIC_PACK_LIMIT_MESSAGE
+              ? publicPackLimitMessage(publicPackLimit)
               : "Anyone with the link will be able to view this pack."}
           </p>
           {makePublicError && (
