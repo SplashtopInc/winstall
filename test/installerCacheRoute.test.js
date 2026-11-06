@@ -230,3 +230,101 @@ test('installer route ignores untrusted host and proto headers for builder callb
     assert.equal(callbackUrl.includes('gopher'), false);
   }
 });
+
+test('installer route sends webhook request with urlencoded UTF-8 body preserving non-ASCII characters', async (t) => {
+  const origWebhook = process.env.WINSTALL_BUILDER_WEBHOOK;
+  const origBase = process.env.WINSTALL_BUILDER_BASE;
+  const origPublicUrl = process.env.WINSTALL_PUBLIC_URL;
+  const origAuthId = process.env.WINSTALL_BUILDER_WEBHOOK_AUTH_ID;
+  const origAuthSecret = process.env.WINSTALL_BUILDER_WEBHOOK_AUTH_SECRET;
+
+  process.env.WINSTALL_PUBLIC_URL = 'https://canonical.winstall.app/';
+  process.env.WINSTALL_BUILDER_WEBHOOK = 'https://jenkins.example.com/job/CreateBuild_Winstall_Installer_Builder/buildWithParameters';
+  delete process.env.WINSTALL_BUILDER_BASE;
+  process.env.WINSTALL_BUILDER_WEBHOOK_AUTH_ID = 'test-user';
+  process.env.WINSTALL_BUILDER_WEBHOOK_AUTH_SECRET = 'test-secret';
+
+  let capturedUrl = null;
+  let capturedOptions = null;
+  const originalFetch = global.fetch;
+  global.fetch = async (url, options) => {
+    if (url.includes('jenkins.example.com')) {
+      capturedUrl = url;
+      capturedOptions = options;
+      return {
+        ok: true,
+        status: 200,
+        text: async () => 'Build scheduled',
+      };
+    }
+    return originalFetch(url, options);
+  };
+
+  t.after(() => {
+    global.fetch = originalFetch;
+    if (origWebhook === undefined) delete process.env.WINSTALL_BUILDER_WEBHOOK;
+    else process.env.WINSTALL_BUILDER_WEBHOOK = origWebhook;
+    if (origBase === undefined) delete process.env.WINSTALL_BUILDER_BASE;
+    else process.env.WINSTALL_BUILDER_BASE = origBase;
+    if (origPublicUrl === undefined) delete process.env.WINSTALL_PUBLIC_URL;
+    else process.env.WINSTALL_PUBLIC_URL = origPublicUrl;
+    if (origAuthId === undefined) delete process.env.WINSTALL_BUILDER_WEBHOOK_AUTH_ID;
+    else process.env.WINSTALL_BUILDER_WEBHOOK_AUTH_ID = origAuthId;
+    if (origAuthSecret === undefined) delete process.env.WINSTALL_BUILDER_WEBHOOK_AUTH_SECRET;
+    else process.env.WINSTALL_BUILDER_WEBHOOK_AUTH_SECRET = origAuthSecret;
+  });
+
+  const { initRedisClient, getClient } = require('../utils/redisClient');
+  await initRedisClient();
+  const redis = getClient();
+
+  const { computeInstallerHash } = require('../utils/installerHash');
+  const config = {
+    version: '0.0.1',
+    apps: [
+      {
+        id: 'NetEase.CloudMusic',
+        name: '网易云音乐',
+        command: 'install',
+        options: { silent: true },
+        version: '3.1.37.205354',
+      },
+    ],
+  };
+  const taskId = computeInstallerHash({ config });
+  await redis.del(`installer:task:${taskId}`);
+
+  const installerHandler = loadNextApiRoute(require.resolve('../pages/api/installer.js'));
+
+  const req = {
+    method: 'POST',
+    headers: { host: 'localhost:3000' },
+    body: {
+      config,
+      filename: 'winstall-NetEase_CloudMusic.exe',
+    },
+  };
+  const res = createMockRes();
+
+  await installerHandler(req, res);
+
+  assert.equal(res.statusCode, 202);
+  assert.equal(capturedUrl, 'https://jenkins.example.com/job/CreateBuild_Winstall_Installer_Builder/buildWithParameters');
+  assert.equal(capturedOptions.method, 'POST');
+
+  // Verify the body is a URLSearchParams instance
+  assert.equal(capturedOptions.body instanceof URLSearchParams, true);
+
+  const rawSerializedBody = capturedOptions.body.toString();
+  // Ensure the body is percent-encoded and contains encoded Chinese characters for 网易云音乐
+  assert.equal(rawSerializedBody.includes('%E7%BD%91%E6%98%93%E4%BA%91%E9%9F%B3%E4%B9%90'), true);
+  // Ensure no unencoded UTF-8 characters exist directly in raw form body string
+  assert.equal(/[\u4e00-\u9fa5]/.test(rawSerializedBody), false);
+
+  // Verify that URLSearchParams decodes it back to the exact JSON configuration
+  const parsedParams = new URLSearchParams(rawSerializedBody);
+  const parsedConfig = JSON.parse(parsedParams.get('installer_config'));
+  assert.deepEqual(parsedConfig, config);
+  assert.equal(parsedConfig.apps[0].name, '网易云音乐');
+});
+
