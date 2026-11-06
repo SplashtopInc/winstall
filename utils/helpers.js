@@ -121,8 +121,9 @@ export const getSiteOrigin = () => {
     return window.location.origin;
   }
 
-  if (process.env.NEXTAUTH_URL) {
-    return process.env.NEXTAUTH_URL.replace(/\/$/, "");
+  const rawOrigin = process.env.WINSTALL_PUBLIC_URL || process.env.NEXTAUTH_URL;
+  if (rawOrigin) {
+    return rawOrigin.trim().replace(/\/+$/, "");
   }
 
   return "";

@@ -2,6 +2,7 @@ const { randomUUID } = require('node:crypto');
 const { initRedisClient, getClient } = require('../../utils/redisClient');
 const { initS3Client, generatePutPresignedUrl, generateGetPresignedUrl, checkS3FileExists } = require('../../utils/s3Client');
 const { computeInstallerHash } = require('../../utils/installerHash');
+const { getSiteOrigin } = require('../../utils/helpers');
 
 let redisInitialized = false;
 let s3Initialized = false;
@@ -48,12 +49,11 @@ export default async function handler(req, res) {
 
 		const redisClient = getClient();
 		cacheKey = `installer:task:${taskId}`;
-		const protocol = req.headers['x-forwarded-proto'] || (req.connection?.encrypted ? 'https' : 'http');
-		const host = req.headers.host;
-		const statusUrlObj = new URL(`${protocol}://${host}/api/installer/status`);
+		const siteOrigin = getSiteOrigin();
+		const statusUrlObj = siteOrigin ? new URL('/api/installer/status', siteOrigin) : new URL('/api/installer/status', 'http://localhost');
 		statusUrlObj.searchParams.set('taskId', taskId);
 		if (filename) statusUrlObj.searchParams.set('fileName', filename);
-		const statusUrl = statusUrlObj.toString();
+		const statusUrl = siteOrigin ? statusUrlObj.toString() : statusUrlObj.pathname + statusUrlObj.search;
 
 		console.log('[Installer] TaskId (Hash):', taskId);
 
@@ -83,7 +83,12 @@ export default async function handler(req, res) {
 		}
 
 		await redisClient.setEx(cacheKey, 3600, '0');
-		const callbackUrl = `${protocol}://${host}/api/installer/callback?taskId=${taskId}`;
+		if (!siteOrigin) {
+			return res.status(500).json({ error: 'Public origin not configured' });
+		}
+		const callbackUrlObj = new URL('/api/installer/callback', siteOrigin);
+		callbackUrlObj.searchParams.set('taskId', taskId);
+		const callbackUrl = callbackUrlObj.toString();
 		const uploadUrl = await generatePutPresignedUrl(taskId, 900);
 		if (uploadUrl) {
 			console.log('[Installer] S3 PutPresignUrl:', uploadUrl);

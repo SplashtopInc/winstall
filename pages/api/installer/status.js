@@ -1,6 +1,7 @@
 const { randomUUID } = require('node:crypto');
 const { initRedisClient, getClient } = require('../../../utils/redisClient');
 const { initS3Client, generateGetPresignedUrl } = require('../../../utils/s3Client');
+const { getSiteOrigin } = require('../../../utils/helpers');
 
 let redisInitialized = false;
 let s3Initialized = false;
@@ -40,15 +41,15 @@ export default async function handler(req, res) {
 		}
 
 		if (uploaded === '0') {
-			const protocol = req.headers['x-forwarded-proto'] || (req.connection?.encrypted ? 'https' : 'http');
-			const host = req.headers.host;
-			const statusUrl = new URL(`${protocol}://${host}/api/installer/status`);
-			statusUrl.searchParams.set('taskId', taskId);
-			if (fileName) statusUrl.searchParams.set('fileName', fileName);
+			const siteOrigin = getSiteOrigin();
+			const statusUrlObj = siteOrigin ? new URL('/api/installer/status', siteOrigin) : new URL('/api/installer/status', 'http://localhost');
+			statusUrlObj.searchParams.set('taskId', taskId);
+			if (fileName) statusUrlObj.searchParams.set('fileName', fileName);
+			const statusUrl = siteOrigin ? statusUrlObj.toString() : statusUrlObj.pathname + statusUrlObj.search;
 
 			return res.status(202).json({
 				message: 'Processing',
-				statusUrl: statusUrl.toString(),
+				statusUrl,
 			});
 		}
 

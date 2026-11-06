@@ -265,7 +265,7 @@ When triggering an instant installer download, the client MUST derive the execut
 
 ### Requirement: Instant installer content-addressable cache and client dispatch
 
-The instant installer request MUST identify installer builds by a deterministic content hash of the embedded configuration and binary version. If a matching executable already exists in storage, the system MUST return a direct download location without invoking the builder. If not cached, it MUST queue build generation. The client MUST inspect successful responses by `Content-Type` to trigger immediate download, initiate polling, or save binary directly.
+The instant installer request MUST identify installer builds by a deterministic content hash of the embedded configuration and binary version. If a matching executable already exists in storage, the system MUST return a direct download location without invoking the builder. If not cached, it MUST queue build generation. The client MUST inspect successful responses by `Content-Type` to trigger immediate download, initiate polling, or save binary directly. Any external callback URL passed to builders and any absolute status URL returned for polling MUST be constructed strictly from the server-configured canonical public origin (`WINSTALL_PUBLIC_URL` falling back to `NEXTAUTH_URL`) and MUST NOT be derived from client-controlled request headers.
 
 #### Scenario: Cached installer returns immediate download URL
 - **GIVEN** an installer matching the requested configuration hash already exists in storage
@@ -278,6 +278,12 @@ The instant installer request MUST identify installer builds by a deterministic 
 - **WHEN** a client submits a POST request to `/api/installer`
 - **THEN** the response MUST be HTTP 202 with `Content-Type: application/json` containing `statusUrl`
 - **AND** the client MUST initiate polling on `statusUrl`
+
+#### Scenario: Builder callback and status URLs ignore untrusted request headers
+- **GIVEN** a client submits a request to `/api/installer` or `/api/installer/status` with forged `Host` or `X-Forwarded-Proto` headers (such as private cloud metadata addresses or non-HTTP schemes)
+- **WHEN** the server constructs the builder callback URL or the task status URL
+- **THEN** the URL origin MUST strictly match the server-configured `WINSTALL_PUBLIC_URL` (or `NEXTAUTH_URL` fallback)
+- **AND** the server MUST NOT use the client-supplied `Host` or `X-Forwarded-Proto` values in the callback or status URLs
 
 #### Scenario: Synchronous stream builder fallback
 - **GIVEN** the builder operates in synchronous stream mode (such as early prototype or validation environments)
