@@ -265,7 +265,7 @@ When triggering an instant installer download, the client MUST derive the execut
 
 ### Requirement: Instant installer content-addressable cache and client dispatch
 
-The instant installer request MUST identify installer builds by a deterministic content hash of the embedded configuration and binary version. If a matching executable already exists in storage, the system MUST return a direct download location without invoking the builder. If not cached, it MUST queue build generation. The client MUST inspect successful responses by `Content-Type` to trigger immediate download, initiate polling, or save binary directly. Any external callback URL passed to builders and any absolute status URL returned for polling MUST be constructed strictly from the server-configured canonical public origin (`WINSTALL_PUBLIC_URL` falling back to `NEXTAUTH_URL`) and MUST NOT be derived from client-controlled request headers.
+The instant installer request MUST identify installer builds by a deterministic content hash of the embedded configuration and binary version. If a matching executable already exists in storage, the system MUST return a direct download location without invoking the builder. If not cached, it MUST queue build generation. The client MUST inspect successful responses by `Content-Type` to trigger immediate download, initiate polling, or save binary directly. Any external callback URL passed to builders and any absolute status URL returned for polling MUST be constructed strictly from the server-configured canonical public origin (`WINSTALL_PUBLIC_URL` falling back to `NEXTAUTH_URL`) and MUST NOT be derived from client-controlled request headers. When configured to dispatch builds via Jenkins webhook, the server MUST encode the parameters using UTF-8 percent-encoded `application/x-www-form-urlencoded` rather than unannotated multipart payloads, ensuring multi-byte characters such as Chinese or Japanese package display names are decoded accurately without Latin-1 corruption.
 
 #### Scenario: Cached installer returns immediate download URL
 - **GIVEN** an installer matching the requested configuration hash already exists in storage
@@ -299,6 +299,13 @@ The instant installer request MUST identify installer builds by a deterministic 
 - **GIVEN** an upstream builder reverse proxy or load balancer that redirects requests
 - **WHEN** forwarding POST build requests
 - **THEN** it MUST use HTTP 307 or 308 to preserve the HTTP method and request body, and MUST NOT use 301 or 302
+
+#### Scenario: Jenkins webhook uses UTF-8 application/x-www-form-urlencoded
+- **GIVEN** the server is configured with `WINSTALL_BUILDER_WEBHOOK`
+- **WHEN** the server dispatches a build task for an application list containing non-ASCII names (such as "网易云音乐")
+- **THEN** the outgoing HTTP request body MUST be serialized as `application/x-www-form-urlencoded`
+- **AND** the `installer_config` parameter value MUST be percent-encoded UTF-8
+- **AND** the payload MUST NOT be dispatched as multipart/form-data without charset
 
 ## References
 
