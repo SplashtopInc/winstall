@@ -51,7 +51,7 @@ export default async function handler(req, res) {
 		}
 
 		if (builderWebhook) {
-			const formData = new FormData();
+			const webhookParams = new URLSearchParams();
 
 			const webhookAuthId = process.env.WINSTALL_BUILDER_WEBHOOK_AUTH_ID;
 			const webhookAuthSecret = process.env.WINSTALL_BUILDER_WEBHOOK_AUTH_SECRET;
@@ -60,21 +60,20 @@ export default async function handler(req, res) {
 			const webhookVersion = process.env.WINSTALL_BUILDER_VERSION || "v0.9.1.0";
 			const webhookRcUpdateId = process.env.WINSTALL_BUILDER_RC_UPDATE_ID || "129";
 
-			if (webhookAuthId) formData.append('user_id', webhookAuthId);
-			if (webhookAuthSecret) formData.append('token', webhookAuthSecret);
-			if (webhookSleepTime) formData.append('sleep_time', webhookSleepTime);
-			if (webhookProjectName) formData.append('project_name', webhookProjectName);
-			if (webhookVersion) formData.append('version', webhookVersion);
-			if (webhookRcUpdateId) formData.append('rc_update_id', webhookRcUpdateId);
+			if (webhookAuthId) webhookParams.append('user_id', webhookAuthId);
+			if (webhookAuthSecret) webhookParams.append('token', webhookAuthSecret);
+			if (webhookSleepTime) webhookParams.append('sleep_time', webhookSleepTime);
+			if (webhookProjectName) webhookParams.append('project_name', webhookProjectName);
+			if (webhookVersion) webhookParams.append('version', webhookVersion);
+			if (webhookRcUpdateId) webhookParams.append('rc_update_id', webhookRcUpdateId);
 
-			formData.set('Content-Type', 'application/json');
-			formData.append('filename', filename || `winstall-${taskId}.exe`);
+			webhookParams.append('filename', filename || `winstall-${taskId}.exe`);
 
 			if (uploadUrl) {
-				formData.append('url_upload', uploadUrl);
+				webhookParams.append('url_upload', uploadUrl);
 			}
-			formData.append('url_callback', callbackUrl);
-			formData.append('installer_config', JSON.stringify(config));
+			webhookParams.append('url_callback', callbackUrl);
+			webhookParams.append('installer_config', JSON.stringify(config));
 
 			const webhookHeaders = {};
 			if (webhookAuthId && webhookAuthSecret) {
@@ -91,7 +90,7 @@ export default async function handler(req, res) {
 			const webhookResponse = await fetch(builderWebhook, {
 				method: 'POST',
 				headers: webhookHeaders,
-				body: formData,
+				body: webhookParams,
 			});
 
 			if (!webhookResponse.ok) {
