@@ -1,6 +1,6 @@
 // S3 client utilities for generating pre-signed URLs
 
-const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, PutObjectCommand, GetObjectCommand, HeadObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 let s3Client = null;
@@ -80,9 +80,31 @@ async function generateGetPresignedUrl(taskId, filename = 'installer.exe', expir
   return url;
 }
 
+async function checkS3FileExists(taskId) {
+  if (!s3Client || !s3Bucket) {
+    return false;
+  }
+
+  const key = `installers/${taskId}.exe`;
+
+  try {
+    await s3Client.send(new HeadObjectCommand({
+      Bucket: s3Bucket,
+      Key: key,
+    }));
+    return true;
+  } catch (err) {
+    if (err.name === 'NotFound' || err.$metadata?.httpStatusCode === 404) {
+      return false;
+    }
+    throw err;
+  }
+}
+
 module.exports = {
   initS3Client,
   isS3Configured,
   generatePutPresignedUrl,
   generateGetPresignedUrl,
+  checkS3FileExists,
 };

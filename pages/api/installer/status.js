@@ -40,7 +40,7 @@ export default async function handler(req, res) {
 		}
 
 		if (uploaded === '0') {
-			const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
+			const protocol = req.headers['x-forwarded-proto'] || (req.connection?.encrypted ? 'https' : 'http');
 			const host = req.headers.host;
 			const statusUrl = new URL(`${protocol}://${host}/api/installer/status`);
 			statusUrl.searchParams.set('taskId', taskId);

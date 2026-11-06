@@ -110,20 +110,28 @@ export async function downloadInstantInstaller(apps, filters = {}, command = "in
     }),
   });
 
-  if (response.status === 200) {
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    downloadFile(url, filename);
-    window.URL.revokeObjectURL(url);
-    return;
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `Request failed with status ${response.status}`);
   }
 
-  if (response.status === 202) {
+  const contentType = response.headers.get("content-type") || "";
+
+  if (contentType.includes("application/json")) {
     const data = await response.json();
-    await pollStatus(data.statusUrl);
-    return;
+    if (data.downloadUrl) {
+      downloadFile(data.downloadUrl);
+      return;
+    }
+    if (data.statusUrl) {
+      await pollStatus(data.statusUrl);
+      return;
+    }
+    throw new Error(data.error || "Invalid response: missing downloadUrl or statusUrl");
   }
 
-  const errorData = await response.json();
-  throw new Error(errorData.error || "Unknown error");
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+  downloadFile(url, filename);
+  window.URL.revokeObjectURL(url);
 }

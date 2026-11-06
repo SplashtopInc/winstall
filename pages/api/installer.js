@@ -1,6 +1,7 @@
 const { randomUUID } = require('node:crypto');
 const { initRedisClient, getClient } = require('../../utils/redisClient');
-const { initS3Client, generatePutPresignedUrl } = require('../../utils/s3Client');
+const { initS3Client, generatePutPresignedUrl, generateGetPresignedUrl, checkS3FileExists } = require('../../utils/s3Client');
+const { computeInstallerHash } = require('../../utils/installerHash');
 
 let redisInitialized = false;
 let s3Initialized = false;
@@ -30,16 +31,58 @@ export default async function handler(req, res) {
 
 	await ensureClientsInitialized();
 
-	const taskId = randomUUID();
-	const redisClient = getClient();
-	const cacheKey = `installer:task:${taskId}`;
-	console.log('[Installer] TaskId:', taskId);
+	let cacheKey = null;
 
 	try {
-		await redisClient.setEx(cacheKey, 3600, '0');
-		const protocol = req.headers['x-forwarded-proto'] || (req.connection.encrypted ? 'https' : 'http');
+		const { config, filename } = req.body || {};
+		const webhookProjectName = process.env.WINSTALL_BUILDER_PROJECT_NAME || "Winstall_Installer_Builder";
+		const webhookVersion = process.env.WINSTALL_BUILDER_VERSION || "v0.9.1.0";
+		const webhookRcUpdateId = process.env.WINSTALL_BUILDER_RC_UPDATE_ID || "129";
+
+		const taskId = computeInstallerHash({
+			projectName: webhookProjectName,
+			version: webhookVersion,
+			rcUpdateId: webhookRcUpdateId,
+			config,
+		});
+
+		const redisClient = getClient();
+		cacheKey = `installer:task:${taskId}`;
+		const protocol = req.headers['x-forwarded-proto'] || (req.connection?.encrypted ? 'https' : 'http');
 		const host = req.headers.host;
-		const { config, filename } = req.body;
+		const statusUrlObj = new URL(`${protocol}://${host}/api/installer/status`);
+		statusUrlObj.searchParams.set('taskId', taskId);
+		if (filename) statusUrlObj.searchParams.set('fileName', filename);
+		const statusUrl = statusUrlObj.toString();
+
+		console.log('[Installer] TaskId (Hash):', taskId);
+
+		// 1. S3 content cache check
+		const cachedFileExists = await checkS3FileExists(taskId);
+		if (cachedFileExists) {
+			console.log('[Installer] Cache Hit for TaskId:', taskId);
+			const downloadUrl = await generateGetPresignedUrl(taskId, filename || `winstall-${taskId}.exe`, 3600);
+			if (downloadUrl) {
+				return res.status(200).json({
+					taskId,
+					downloadUrl,
+					cached: true,
+				});
+			}
+		}
+
+		// 2. Request coalescing: check if this hash is already being built
+		const currentTaskStatus = await redisClient.get(cacheKey);
+		if (currentTaskStatus === '0') {
+			console.log('[Installer] Task already in progress for TaskId:', taskId);
+			return res.status(202).json({
+				taskId,
+				statusUrl,
+				message: 'Installer generation in progress',
+			});
+		}
+
+		await redisClient.setEx(cacheKey, 3600, '0');
 		const callbackUrl = `${protocol}://${host}/api/installer/callback?taskId=${taskId}`;
 		const uploadUrl = await generatePutPresignedUrl(taskId, 900);
 		if (uploadUrl) {
@@ -56,9 +99,6 @@ export default async function handler(req, res) {
 			const webhookAuthId = process.env.WINSTALL_BUILDER_WEBHOOK_AUTH_ID;
 			const webhookAuthSecret = process.env.WINSTALL_BUILDER_WEBHOOK_AUTH_SECRET;
 			const webhookSleepTime = process.env.WINSTALL_BUILDER_SLEEP_TIME || "0";
-			const webhookProjectName = process.env.WINSTALL_BUILDER_PROJECT_NAME || "Winstall_Installer_Builder";
-			const webhookVersion = process.env.WINSTALL_BUILDER_VERSION || "v0.9.1.0";
-			const webhookRcUpdateId = process.env.WINSTALL_BUILDER_RC_UPDATE_ID || "129";
 
 			if (webhookAuthId) formData.append('user_id', webhookAuthId);
 			if (webhookAuthSecret) formData.append('token', webhookAuthSecret);
@@ -138,10 +178,6 @@ export default async function handler(req, res) {
 			}
 		}
 
-		const statusUrlObj = new URL(`${protocol}://${host}/api/installer/status`);
-		statusUrlObj.searchParams.set('taskId', taskId);
-		if (filename) statusUrlObj.searchParams.set('fileName', filename);
-		const statusUrl = statusUrlObj.toString();
 		console.log('[Installer] StatusUrl:', statusUrl);
 
 		return res.status(202).json({
@@ -153,10 +189,13 @@ export default async function handler(req, res) {
 		const correlationId = randomUUID();
 		console.error(`[Installer][Error ID: ${correlationId}] Route Error:`, error);
 
-		try {
-			await redisClient.del(cacheKey);
-		} catch (cleanupError) {
-			console.error(`[Installer][Error ID: ${correlationId}] Cleanup error:`, cleanupError);
+		if (cacheKey) {
+			try {
+				const redisClient = getClient();
+				await redisClient.del(cacheKey);
+			} catch (cleanupError) {
+				console.error(`[Installer][Error ID: ${correlationId}] Cleanup error:`, cleanupError);
+			}
 		}
 
 		return res.status(500).json({
