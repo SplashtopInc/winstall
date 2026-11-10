@@ -4,13 +4,11 @@ import { FaXTwitter } from "react-icons/fa6";
 import { FiCode } from "react-icons/fi";
 import { IoIosLink } from "react-icons/io";
 
-import { fetchMyPacks, updatePack } from "../utils/fetchPackAPI";
+import { fetchMyPublicPackQuota, updatePack } from "../utils/fetchPackAPI";
 import {
-  countPublicPacksInList,
-  publicPackLimitForUser,
   publicPackLimitMessage,
+  readPublicPackQuota,
 } from "../utils/packLimits";
-import { readPackTrendingOwnerUserId } from "../utils/packTrendingOwner";
 import { buildSiteUrl } from "../utils/helpers";
 import { buildPackBadgeMarkdown } from "../utils/packBadgeMarkdown";
 import { syncOwnPacksCacheEntry } from "../utils/packHelpers";
@@ -29,18 +27,17 @@ export default function PackShareCard({
   const [agreeToPublic, setAgreeToPublic] = useState(false);
   const [makingPublic, setMakingPublic] = useState(false);
   const [makePublicError, setMakePublicError] = useState("");
-  const [publicPackCount, setPublicPackCount] = useState(0);
+  const [publicQuota, setPublicQuota] = useState(null);
   const [isPublic, setIsPublic] = useState(pack.visibility === "public");
 
   const shareUrl = buildSiteUrl(`/packs/${pack._id}`);
   const isAlreadyPublic = pack.visibility === "public";
   const showPublicGate = Boolean(isOwner) && !isPublic;
-  const publicPackLimit = publicPackLimitForUser(
-    user?.id,
-    readPackTrendingOwnerUserId()
-  );
   const publicLimitReached =
-    publicPackCount >= publicPackLimit && !isAlreadyPublic && !isPublic;
+    publicQuota != null &&
+    publicQuota.publicCount >= publicQuota.maxPublic &&
+    !isAlreadyPublic &&
+    !isPublic;
   const publicCheckboxDisabled = makingPublic || publicLimitReached;
   const shareDisabled = !isPublic;
 
@@ -61,15 +58,15 @@ export default function PackShareCard({
 
   useEffect(() => {
     if (!showPublicGate || !user) {
-      setPublicPackCount(0);
+      setPublicQuota(null);
       return;
     }
 
     let cancelled = false;
 
-    fetchMyPacks().then(({ response }) => {
+    fetchMyPublicPackQuota().then(({ response, error: quotaError }) => {
       if (cancelled) return;
-      setPublicPackCount(countPublicPacksInList(response));
+      setPublicQuota(quotaError ? null : readPublicPackQuota(response));
     });
 
     return () => {
@@ -202,7 +199,7 @@ export default function PackShareCard({
           </label>
           <p className={styles.sharePublicHint}>
             {publicLimitReached
-              ? publicPackLimitMessage(publicPackLimit)
+              ? publicPackLimitMessage(publicQuota.maxPublic)
               : "Anyone with the link will be able to view this pack."}
           </p>
           {makePublicError && (

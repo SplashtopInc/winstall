@@ -3,6 +3,7 @@ import { authorizationFromSession, isOptionalUserJwtRequest } from "./optionalUs
 import { getRuntimeConfig } from "./runtimeConfig";
 import { searchRecordHeaders } from "./searchQueryRecord";
 import { isTrendingPath } from "./trendingData";
+import { requiresUserPackReadJwt } from "./userPackReads";
 
 const PACK_RESOURCE = /^\/packs\/[^/]+$/;
 const PACK_COPY = /^\/packs\/[^/]+\/copy$/;
@@ -17,7 +18,7 @@ function splitPath(path) {
 
 function requiresUserJwt(method, pathname) {
   if (method === "POST" && pathname === "/packs") return true;
-  if (method === "GET" && pathname === "/packs/me") return true;
+  if (requiresUserPackReadJwt(method, pathname)) return true;
   if (method === "GET" && isLikedListPath(pathname)) return true;
   if ((method === "PATCH" || method === "DELETE") && PACK_RESOURCE.test(pathname)) {
     return true;
@@ -122,6 +123,21 @@ const fetchWinstallAPI = async (path, givenOptions, throwErr) => {
         ...(await authHeaders(method, pathname)),
         ...recordHeaders,
       };
+
+      // Quota is user-specific. Do not send it anonymously when the JWT is missing.
+      if (
+        method === "GET" &&
+        pathname === "/packs/me/quota" &&
+        !headers.Authorization
+      ) {
+        if (canRetryAuth && attempt === 0) {
+          await getBrowserSession();
+          continue;
+        }
+        error = "Authentication required";
+        status = 401;
+        break;
+      }
 
       if (isDebug) {
         console.log(`[fetchWinstallAPI] request ${method} ${url} (timeout ${timeoutMs}ms)`);

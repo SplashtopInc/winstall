@@ -2,16 +2,14 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 
-import { createPack, fetchMyPacks, updatePack } from "../utils/fetchPackAPI";
+import { createPack, fetchMyPublicPackQuota, updatePack } from "../utils/fetchPackAPI";
 import { syncOwnPacksCacheEntry } from "../utils/packHelpers";
 import {
-  countPublicPacksInList,
   PACK_DESCRIPTION_MAX_LENGTH,
   PACK_NAME_MAX_LENGTH,
-  publicPackLimitForUser,
   publicPackLimitMessage,
+  readPublicPackQuota,
 } from "../utils/packLimits";
-import { readPackTrendingOwnerUserId } from "../utils/packTrendingOwner";
 import styles from "../styles/createPackModal.module.scss";
 
 Modal.setAppElement("#__next");
@@ -45,18 +43,16 @@ export default function CreatePackModal({ isOpen, onClose, user, onCreated, pack
   } = useForm({ defaultValues });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [publicPackCount, setPublicPackCount] = useState(0);
+  const [publicQuota, setPublicQuota] = useState(null);
   const isPublic = watch("isPublic");
   const title = watch("title");
   const description = watch("description");
   const isPublicRegister = register("isPublic");
   const isAlreadyPublic = isEditMode && pack.visibility === "public";
-  const publicPackLimit = publicPackLimitForUser(
-    user?.id,
-    readPackTrendingOwnerUserId()
-  );
   const publicLimitReached =
-    publicPackCount >= publicPackLimit && !isAlreadyPublic;
+    publicQuota != null &&
+    publicQuota.publicCount >= publicQuota.maxPublic &&
+    !isAlreadyPublic;
   const publicCheckboxDisabled = submitting || publicLimitReached;
 
   const checkboxIcon = submitting || publicLimitReached
@@ -81,15 +77,15 @@ export default function CreatePackModal({ isOpen, onClose, user, onCreated, pack
 
   useEffect(() => {
     if (!isOpen || !user) {
-      setPublicPackCount(0);
+      setPublicQuota(null);
       return;
     }
 
     let cancelled = false;
 
-    fetchMyPacks().then(({ response }) => {
+    fetchMyPublicPackQuota().then(({ response, error: quotaError }) => {
       if (cancelled) return;
-      setPublicPackCount(countPublicPacksInList(response));
+      setPublicQuota(quotaError ? null : readPublicPackQuota(response));
     });
 
     return () => {
@@ -223,7 +219,7 @@ export default function CreatePackModal({ isOpen, onClose, user, onCreated, pack
           </label>
           <em>
             {publicLimitReached
-              ? publicPackLimitMessage(publicPackLimit)
+              ? publicPackLimitMessage(publicQuota.maxPublic)
               : "Appears in the public App Packs directory for anyone to discover."}
           </em>
         </div>

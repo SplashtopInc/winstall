@@ -30,6 +30,10 @@ export async function fetchMyPacks() {
   return fetchPackAPI("/me");
 }
 
+export async function fetchMyPublicPackQuota() {
+  return fetchPackAPI("/me/quota");
+}
+
 export async function fetchPublicPacks({ offset, limit, sort, q } = {}) {
   const params = new URLSearchParams();
   if (offset !== undefined) params.set("offset", String(offset));
