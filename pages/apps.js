@@ -84,44 +84,34 @@ function withIconUrls(items) {
   return items;
 }
 
-function pathHasSearchQuery(asPath, queryQ) {
-  if (queryQ) return true;
-  const path = String(asPath || "");
-  const qIndex = path.indexOf("?");
-  if (qIndex === -1) return false;
-  return new URLSearchParams(path.slice(qIndex)).has("q");
-}
-
 function Store({ data, error, buildTime }) {
   const router = useRouter();
   const { setAppsTotal } = useAppsTotal();
   const initialNormalized = normalizeAppsPayload(data);
-  const canHydrateList =
-    !pathHasSearchQuery(router.asPath, router.query?.q) &&
-    initialNormalized.items.length > 0;
+  const hasInitialItems = initialNormalized.items.length > 0;
 
   const [apps, setApps] = useState(() =>
-    canHydrateList ? withIconUrls(initialNormalized.items) : []
+    hasInitialItems ? withIconUrls(initialNormalized.items) : []
   );
   const [searchInput, setSearchInput] = useState();
   const [total, setTotal] = useState(() =>
-    canHydrateList ? initialNormalized.total : 0
+    hasInitialItems ? initialNormalized.total : 0
   );
   const [totalKnown, setTotalKnown] = useState(() =>
-    canHydrateList ? initialNormalized.totalKnown : false
+    hasInitialItems ? initialNormalized.totalKnown : false
   );
   const [nextOffset, setNextOffset] = useState(() =>
-    canHydrateList
+    hasInitialItems
       ? initialNormalized.offset + initialNormalized.items.length
       : 0
   );
   const [clientError, setClientError] = useState("");
   const [loadedScope, setLoadedScope] = useState(() =>
-    canHydrateList ? "list" : null
+    hasInitialItems ? "list" : null
   );
-  const [isLoading, setIsLoading] = useState(() => !canHydrateList);
+  const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const listSessionRef = useRef(canHydrateList);
+  const listSessionRef = useRef(hasInitialItems);
 
   const queryFromRouter = Array.isArray(router.query?.q)
     ? router.query.q[0]
