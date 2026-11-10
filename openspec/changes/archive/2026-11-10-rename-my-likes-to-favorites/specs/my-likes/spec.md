@@ -4,6 +4,11 @@
 
 系统 MUST 在 `/my/favorites` 提供当前用户的点赞列表页。请求 `/my/likes` 时 MUST 重定向到 `/my/favorites`，且 MUST 保留原查询字符串。除 `/my/likes` 外，系统 MUST NOT 从其它路径重定向到该页。`/my` MUST NOT 提供页面，请求 `/my` 时 MUST NOT 重定向到 `/my/favorites` 或 `/my/likes`。主导航 MUST NOT 增加指向该页的项。主题按钮之后 MUST 有一颗只显示心形图标的 Favorites 控件，MUST NOT 展示可见文案 Favorites，可访问名称 MUST 为 Favorites。已登录时激活该控件 MUST 进入 `/my/favorites`。未登录时激活该控件 MUST 打开登录弹窗，且 MUST NOT 先进入 `/my/favorites`；从该弹窗完成登录后 MUST 回到 `/my/favorites`。账户菜单 MUST NOT 包含 Favorites 项。页面文档 MUST 带 `noindex`。静态 sitemap MUST NOT 包含 `/my/favorites` 或 `/my/likes`。系统 MUST NOT 恢复 `/users/:id`。
 
+#### Scenario: Signed-in menu opens the page
+
+- **WHEN** 已登录用户打开账户菜单
+- **THEN** 菜单中没有进入收藏架的项，进入 `/my/favorites` 的控件是主题按钮后面的心形图标
+
 #### Scenario: Signed-in heart opens the page
 
 - **WHEN** 已登录用户激活主题按钮后面的 Favorites 图标
