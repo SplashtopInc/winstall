@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { FiCopy, FiDownload, FiInfo } from "react-icons/fi";
 import styles from "../../styles/exportApps.module.scss";
+import { GTM_VALUE } from "../../utils/gtm";
 
 function copyText(text, onDone) {
     navigator.clipboard.writeText(text).then(() => {
@@ -77,7 +78,9 @@ const GenericExport = ({
     fileExtension,
     prioritiseDownload = false,
     tip,
+    installFormat,
     onExportDownload,
+    onInstallTracked,
 }) => {
     const [copyTextLabel, setCopyTextLabel] = useState("Copy");
     const [copyCommand, setCopyCommand] = useState("");
@@ -100,9 +103,14 @@ const GenericExport = ({
         if (typeof onExportDownload === "function") onExportDownload();
     };
 
+    const reportInstall = (installAction) => {
+        if (typeof onInstallTracked === "function") onInstallTracked(installAction, installFormat);
+    };
+
     const handleCopy = () => {
         copyText(copyCommand, () => {
             setCopyTextLabel("Copied!");
+            reportInstall(GTM_VALUE.installAction.copy);
             setTimeout(() => {
                 setCopyTextLabel(prioritiseDownload ? "Download .json + Copy to clipboard" : "Copy");
             }, 1600);
@@ -116,6 +124,7 @@ const GenericExport = ({
             copyText(copyCommand);
         }
         reportExport();
+        reportInstall(GTM_VALUE.installAction.download);
     };
 
     return (

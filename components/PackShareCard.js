@@ -12,6 +12,7 @@ import {
 import { buildSiteUrl } from "../utils/helpers";
 import { buildPackBadgeMarkdown } from "../utils/packBadgeMarkdown";
 import { syncOwnPacksCacheEntry } from "../utils/packHelpers";
+import { GTM_VALUE, trackShare } from "../utils/gtm";
 
 import styles from "../styles/packDetail.module.scss";
 
@@ -114,6 +115,11 @@ export default function PackShareCard({
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopyStatus("copied");
+      trackShare({
+        shareType: GTM_VALUE.shareType.pack,
+        targetId: pack._id,
+        shareChannel: GTM_VALUE.shareChannel.link,
+      });
     } catch {
       setCopyStatus("failed");
     }
@@ -129,6 +135,11 @@ export default function PackShareCard({
     try {
       await navigator.clipboard.writeText(buildPackBadgeMarkdown(shareUrl));
       setBadgeCopyStatus("copied");
+      trackShare({
+        shareType: GTM_VALUE.shareType.pack,
+        targetId: pack._id,
+        shareChannel: GTM_VALUE.shareChannel.badge,
+      });
     } catch {
       setBadgeCopyStatus("failed");
     }
@@ -148,6 +159,11 @@ export default function PackShareCard({
       "_blank",
       "width=640,height=480,resizable=yes,scrollbars=yes,status=yes"
     );
+    trackShare({
+      shareType: GTM_VALUE.shareType.pack,
+      targetId: pack._id,
+      shareChannel: GTM_VALUE.shareChannel.x,
+    });
   };
 
   const shareToFacebook = () => {
@@ -160,6 +176,11 @@ export default function PackShareCard({
       "_blank",
       "width=640,height=480,resizable=yes,scrollbars=yes,status=yes"
     );
+    trackShare({
+      shareType: GTM_VALUE.shareType.pack,
+      targetId: pack._id,
+      shareChannel: GTM_VALUE.shareChannel.facebook,
+    });
   };
 
   const shareToLinkedIn = () => {
@@ -171,6 +192,11 @@ export default function PackShareCard({
       "_blank",
       "width=640,height=480,resizable=yes,scrollbars=yes,status=yes"
     );
+    trackShare({
+      shareType: GTM_VALUE.shareType.pack,
+      targetId: pack._id,
+      shareChannel: GTM_VALUE.shareChannel.linkedin,
+    });
   };
 
   return (

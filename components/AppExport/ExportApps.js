@@ -9,6 +9,7 @@ import GenericExport from "./GenericExport";
 import InstallerExport from "./InstallerExport";
 import AdvancedConfig from "./AdvancedConfig";
 import { reportExportDownload } from "../../utils/trackExportDownload";
+import { GTM_VALUE, trackPackInstall } from "../../utils/gtm";
 
 const ExportApps = ({
     apps,
@@ -18,6 +19,7 @@ const ExportApps = ({
     onDefaultFiltersChange,
     persistHint,
     packId,
+    gtmPackId,
     onPackDownload,
     allowDefaultOptions = true,
 }) => {
@@ -39,6 +41,16 @@ const ExportApps = ({
         });
     }, [packId, apps, onPackDownload]);
 
+    const reportGtmInstall = useCallback((installAction, installFormat) => {
+        const id = gtmPackId || packId;
+        trackPackInstall({
+            installAction,
+            installFormat,
+            appCount: Array.isArray(apps) ? apps.length : 0,
+            packId: typeof id === "string" ? id : "",
+        });
+    }, [gtmPackId, packId, apps]);
+
     const resolvedInitialFilters = useMemo(
         () => ({
             ...DEFAULT_INSTALL_FILTERS,
@@ -52,17 +64,17 @@ const ExportApps = ({
             {
                 title: "Download installer",
                 key: ".installer",
-                element: <InstallerExport apps={apps} filters={filters} onExportDownload={handleExportDownload} />
+                element: <InstallerExport apps={apps} filters={filters} onExportDownload={handleExportDownload} onInstallTracked={reportGtmInstall} />
             },
             {
                 title: "Batch",
                 key: ".bat",
-                element: <GenericExport fileContent={batScript} fileExtension=".bat" onExportDownload={handleExportDownload}/>
+                element: <GenericExport fileContent={batScript} fileExtension=".bat" installFormat={GTM_VALUE.installFormat.bat} onExportDownload={handleExportDownload} onInstallTracked={reportGtmInstall}/>
             },
             {
                 title: "PowerShell",
                 key: ".ps1",
-                element: <GenericExport fileContent={psScript} fileExtension=".ps1" onExportDownload={handleExportDownload}/>
+                element: <GenericExport fileContent={psScript} fileExtension=".ps1" installFormat={GTM_VALUE.installFormat.ps1} onExportDownload={handleExportDownload} onInstallTracked={reportGtmInstall}/>
             },
             {
                 title: "Winget Import",
@@ -71,13 +83,15 @@ const ExportApps = ({
                             fileContent={wingetScript}
                             displayedCommand={wingetImportCommand}
                             fileExtension=".json"
+                            installFormat={GTM_VALUE.installFormat.json}
                             prioritiseDownload={true}
                             tip="To install your apps, press the button below. Then, open a terminal window in the same folder as the downloaded .json file, paste the command into the terminal window and hit enter."
                             onExportDownload={handleExportDownload}
+                            onInstallTracked={reportGtmInstall}
                         />
             }
         ]
-    }, [ batScript, psScript, wingetScript, wingetImportCommand, apps, filters, handleExportDownload ])
+    }, [ batScript, psScript, wingetScript, wingetImportCommand, apps, filters, handleExportDownload, reportGtmInstall ])
 
     const handleScriptChange = useCallback(async () => {
         if (!apps) return;

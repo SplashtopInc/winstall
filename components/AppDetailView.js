@@ -18,6 +18,7 @@ import useResourceEngagement from "../hooks/useResourceEngagement";
 import { formatCount } from "../utils/engagementStats";
 import { isStatsDisplayEnabled } from "../utils/statsDisplay";
 import { trackAppStats } from "../utils/trackAppStats";
+import { GTM_VALUE, trackAppInstall, trackShare } from "../utils/gtm";
 import { DEFAULT_INSTALL_FILTERS } from "../utils/defaultInstallOptions";
 import { downloadInstantInstaller } from "../utils/downloadInstantInstaller";
 import { publisherAppsPagePath } from "../utils/parsePublisherQuery";
@@ -209,6 +210,12 @@ export default function AppDetailView({ app }) {
         commandTab
       );
       trackAppStats(app._id, "download");
+      trackAppInstall({
+        installAction: GTM_VALUE.installAction.download,
+        installFormat: GTM_VALUE.installFormat.installer,
+        commandType: GTM_VALUE.commandType.install,
+        appId: app._id,
+      });
     } catch (error) {
       if (error.message === "timeout") {
         setToast("Download timeout");
@@ -248,6 +255,16 @@ export default function AppDetailView({ app }) {
       setCopied(true);
       setToast("Command copied");
       trackAppStats(app._id, "download");
+      trackAppInstall({
+        installAction: GTM_VALUE.installAction.copy,
+        installFormat: GTM_VALUE.installFormat.command,
+        commandType:
+          commandTab === "upgrade"
+            ? GTM_VALUE.commandType.upgrade
+            : GTM_VALUE.commandType.install,
+        appId: app._id,
+        hasVersion: commandTab !== "upgrade" && Boolean(pinnedVersion),
+      });
       if (copyResetTimerRef.current) clearTimeout(copyResetTimerRef.current);
       copyResetTimerRef.current = setTimeout(() => {
         setCopied(false);
@@ -266,11 +283,20 @@ export default function AppDetailView({ app }) {
     );
   };
 
+  const trackAppShare = (shareChannel) => {
+    trackShare({
+      shareType: GTM_VALUE.shareType.app,
+      targetId: app._id,
+      shareChannel,
+    });
+  };
+
   const shareToTwitter = () => {
     setShareOpen(false);
     openShareWindow(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`
     );
+    trackAppShare(GTM_VALUE.shareChannel.x);
   };
 
   const shareToFacebook = () => {
@@ -280,6 +306,7 @@ export default function AppDetailView({ app }) {
         shareUrl
       )}&quote=${encodeURIComponent(shareText)}`
     );
+    trackAppShare(GTM_VALUE.shareChannel.facebook);
   };
 
   const shareToLinkedIn = () => {
@@ -289,6 +316,7 @@ export default function AppDetailView({ app }) {
         shareUrl
       )}&mini=true`
     );
+    trackAppShare(GTM_VALUE.shareChannel.linkedin);
   };
 
   const handleCopyLink = async () => {
@@ -297,6 +325,7 @@ export default function AppDetailView({ app }) {
       await navigator.clipboard.writeText(shareUrl);
       setCopyStatus("copied");
       setToast("Link copied");
+      trackAppShare(GTM_VALUE.shareChannel.link);
     } catch {
       setCopyStatus("failed");
       setToast("Copy failed");
@@ -309,6 +338,7 @@ export default function AppDetailView({ app }) {
     try {
       await navigator.clipboard.writeText(buildPackBadgeMarkdown(shareUrl));
       setToast("Markdown copied");
+      trackAppShare(GTM_VALUE.shareChannel.badge);
     } catch {
       setToast("Copy failed");
     }

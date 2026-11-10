@@ -50,6 +50,7 @@ export default function InstallDrawer({
             onDefaultFiltersChange={onDefaultFiltersChange}
             persistHint={persistHint}
             packId={packId}
+            gtmPackId={packId}
             onPackDownload={onPackDownload}
             allowDefaultOptions={allowDefaultOptions}
           />

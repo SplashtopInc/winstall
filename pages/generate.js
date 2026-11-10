@@ -13,6 +13,7 @@ import Footer from "../components/Footer";
 
 import MetaTags from "../components/MetaTags";
 import ExportApps from "../components/AppExport/ExportApps";
+import { GTM_VALUE } from "../utils/gtm";
 import {
   ensureAppsBasics,
   ensureAppsWithVersions,
@@ -210,6 +211,7 @@ function Generate() {
             apps={apps}
             initialFilters={filters}
             onDefaultFiltersChange={setDefaultInstallOptions}
+            gtmPackId={GTM_VALUE.packId.generate}
           />
         </div>
 

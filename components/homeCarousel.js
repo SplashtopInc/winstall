@@ -3,6 +3,7 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 import useHomeBannerAds from "../hooks/useHomeBannerAds";
 import styles from "../styles/homeCarousel.module.scss";
+import { GTM_VALUE, trackAdClick } from "../utils/gtm";
 
 const AUTOPLAY_INTERVAL_MS = 6500;
 const IMAGE_RETRY_DELAY_MS = 400;
@@ -144,6 +145,13 @@ export default function HomeCarousel() {
                 href={ad.href}
                 rel="sponsored noopener"
                 target="_blank"
+                onClick={() =>
+                  trackAdClick({
+                    adId: ad.id,
+                    adPlacement: GTM_VALUE.adPlacement.homeCarousel,
+                    adProduct: ad.product,
+                  })
+                }
               >
                 {ad.cta}
               </a>

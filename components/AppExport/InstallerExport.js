@@ -5,8 +5,9 @@ import {
     buildInstallerConfig,
     downloadInstantInstaller,
 } from "../../utils/downloadInstantInstaller";
+import { GTM_VALUE } from "../../utils/gtm";
 
-const InstallerExport = ({ apps, filters = {}, onExportDownload }) => {
+const InstallerExport = ({ apps, filters = {}, onExportDownload, onInstallTracked }) => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [countdown, setCountdown] = useState(10);
     const countdownTimerRef = useRef(null);
@@ -37,6 +38,12 @@ const InstallerExport = ({ apps, filters = {}, onExportDownload }) => {
             await downloadInstantInstaller(apps, filters);
 
             if (typeof onExportDownload === "function") onExportDownload();
+            if (typeof onInstallTracked === "function") {
+                onInstallTracked(
+                    GTM_VALUE.installAction.download,
+                    GTM_VALUE.installFormat.installer
+                );
+            }
         } catch (error) {
             console.error('Install error:', error);
             if (error.message === 'timeout') {

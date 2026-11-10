@@ -1,6 +1,7 @@
 import styles from "../styles/donateCard.module.scss";
 import { FiPlus } from "react-icons/fi";
 import useRandomAd from "../hooks/useRandomAd";
+import { GTM_VALUE, trackAdClick } from "../utils/gtm";
 
 const SHELF_PLACEMENTS = new Set(["apps-list", "pack-list"]);
 
@@ -29,6 +30,14 @@ const DonateCard = ({ addMargin = "both", placement = "home" }) => {
           href={ad.href}
           rel="sponsored noopener"
           target="_blank"
+          onClick={() => {
+            if (!Object.values(GTM_VALUE.adPlacement).includes(placement)) return;
+            trackAdClick({
+              adId: ad.id,
+              adPlacement: placement,
+              adProduct: ad.product,
+            });
+          }}
         >
           <FiPlus aria-hidden="true" />
           {ad.cta}

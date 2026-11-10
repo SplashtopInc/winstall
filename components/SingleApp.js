@@ -27,6 +27,7 @@ import AppIcon from "./AppIcon";
 import AppListCounts from "./appListCounts";
 import { buildSiteUrl, compareVersion, timeAgo } from "../utils/helpers";
 import { publisherAppsPagePath } from "../utils/parsePublisherQuery";
+import { GTM_VALUE, trackShare } from "../utils/gtm";
 import countStyles from "../styles/appListCounts.module.scss";
 
 
@@ -464,6 +465,11 @@ const ShareCard = ({ app, shareCardRef }) => {
     try {
       await navigator.clipboard.writeText(shareUrl);
       setCopyStatus('copied');
+      trackShare({
+        shareType: GTM_VALUE.shareType.app,
+        targetId: app._id,
+        shareChannel: GTM_VALUE.shareChannel.link,
+      });
     } catch (error) {
       setCopyStatus('failed');
     }
@@ -477,6 +483,11 @@ const ShareCard = ({ app, shareCardRef }) => {
     const text = `Install ${app.name} instantly with winget.\nGet it on Winstall:\n${shareUrl}\n#winget #winstall`;
     const link = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
     window.open(link, '_blank', 'width=640,height=480,resizable=yes,scrollbars=yes,status=yes');
+    trackShare({
+      shareType: GTM_VALUE.shareType.app,
+      targetId: app._id,
+      shareChannel: GTM_VALUE.shareChannel.x,
+    });
   };
 
   const shareToFacebook = () => {
@@ -484,6 +495,11 @@ const ShareCard = ({ app, shareCardRef }) => {
     const link = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(quote)}`;
     // const link = `https://www.facebook.com/share.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(quote)}`;
     window.open(link, '_blank', 'width=640,height=480,resizable=yes,scrollbars=yes,status=yes');
+    trackShare({
+      shareType: GTM_VALUE.shareType.app,
+      targetId: app._id,
+      shareChannel: GTM_VALUE.shareChannel.facebook,
+    });
   };
 
   const shareToLinkedIn = () => {
@@ -491,6 +507,11 @@ const ShareCard = ({ app, shareCardRef }) => {
     // const link = `https://www.linkedin.com/shareArticle/?url=${encodeURIComponent(shareUrl)}&summary=${encodeURIComponent(quote)}&mini=true`;
     const link = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&mini=true`;
     window.open(link, '_blank', 'width=640,height=480,resizable=yes,scrollbars=yes,status=yes');
+    trackShare({
+      shareType: GTM_VALUE.shareType.app,
+      targetId: app._id,
+      shareChannel: GTM_VALUE.shareChannel.linkedin,
+    });
   };
 
   return (

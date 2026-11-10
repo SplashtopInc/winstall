@@ -22,6 +22,7 @@ import DonateCard from "../components/DonateCard";
 import SearchEmptyState from "../components/SearchEmptyState";
 import { useAppsTotal } from "../ctx/appsTotalContext";
 import { consumeSearchRecord } from "../utils/searchQueryRecord";
+import { trackSearch } from "../utils/gtm";
 
 export const PAGE_SIZE = 60;
 export const FIRST_PAGE_SIZE = PAGE_SIZE - 1;
@@ -171,7 +172,7 @@ function Store({ data, error, buildTime }) {
     setTotalKnown(normalized.totalKnown);
     setNextOffset(normalized.offset + normalized.items.length);
     setLoadedScope(listScopeKey(listQueryArg));
-    return { ok: true };
+    return { ok: true, total: normalized.total };
   }, []);
 
   useEffect(() => {
@@ -254,6 +255,14 @@ function Store({ data, error, buildTime }) {
         append: false,
         recordSearch,
       });
+
+      if (recordSearch) {
+        if (result.ok) {
+          trackSearch({ searchTerm: scopeQuery.q, resultCount: result.total });
+        } else {
+          trackSearch({ searchTerm: scopeQuery.q });
+        }
+      }
 
       if (cancelled) return;
       if (result.ok && scopeQuery.kind === "list") {
