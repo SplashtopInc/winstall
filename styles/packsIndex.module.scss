@@ -471,8 +471,8 @@
   padding: 0 28px;
   border: 0;
   border-radius: 50px;
-  background: #e8eaf6;
-  color: #5c6bc0;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
   font: inherit;
   font-size: 16px;
   font-weight: 700;
@@ -481,8 +481,8 @@
 }
 
 .loadMore:hover:not(:disabled) {
-  background: #dce0f5;
-  color: #4a58b0;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--altAccent);
 }
 
 .loadMore:disabled {
@@ -531,13 +531,13 @@
   }
 
   .loadMore {
-    background: rgba(92, 107, 192, 0.22);
-    color: #a5b4fc;
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+    color: var(--accent);
   }
 
   .loadMore:hover:not(:disabled) {
-    background: rgba(92, 107, 192, 0.32);
-    color: #c7d2fe;
+    background: color-mix(in srgb, var(--accent) 32%, transparent);
+    color: var(--accent);
   }
 }
 
