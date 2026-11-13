@@ -1,6 +1,9 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
+import GtmSnippet from "../components/gtmSnippet";
 import { getPublicApiBase } from "../utils/runtimeConfig";
 import { statsDisplayMetaContent } from "../utils/statsDisplay";
+
+const GTM_CODE = "GTM-5JF42TD";
 
 class MyDocument extends Document {
   render() {
@@ -11,28 +14,10 @@ class MyDocument extends Document {
           <meta name="winstall-api-base" content={getPublicApiBase()} />
           <meta name="winstall-show-stats" content={statsDisplayMetaContent()} />
           <script src="https://cmp.osano.com/169nu5TMub7Nk2Epy/7c82a576-285f-4b1c-8d4b-a1a4da5b7346/osano.js"></script>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                window.dataLayer = window.dataLayer || [];
-                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','GTM-5JF42TD');
-              `,
-            }}
-          />
+          <GtmSnippet gtmCode={GTM_CODE} part="script" />
         </Head>
         <body>
-          <noscript>
-            <iframe
-              src="https://www.googletagmanager.com/ns.html?id=GTM-5JF42TD"
-              height="0"
-              width="0"
-              style={{ display: "none", visibility: "hidden" }}
-            ></iframe>
-          </noscript>
+          <GtmSnippet gtmCode={GTM_CODE} part="noscript" />
           <Main />
           <NextScript />
         </body>
