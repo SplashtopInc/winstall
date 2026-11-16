@@ -3,7 +3,8 @@ import GtmSnippet from "../components/gtmSnippet";
 import { getPublicApiBase } from "../utils/runtimeConfig";
 import { statsDisplayMetaContent } from "../utils/statsDisplay";
 
-const GTM_CODE = "GTM-5JF42TD";
+const WIN_GTM_CODE = "GTM-5JF42TD";
+const GTM_CODE = "GTM-TLKLCX4J";
 
 class MyDocument extends Document {
   render() {
@@ -14,9 +15,11 @@ class MyDocument extends Document {
           <meta name="winstall-api-base" content={getPublicApiBase()} />
           <meta name="winstall-show-stats" content={statsDisplayMetaContent()} />
           <script src="https://cmp.osano.com/169nu5TMub7Nk2Epy/7c82a576-285f-4b1c-8d4b-a1a4da5b7346/osano.js"></script>
+          <GtmSnippet gtmCode={WIN_GTM_CODE} part="script" />
           <GtmSnippet gtmCode={GTM_CODE} part="script" />
         </Head>
         <body>
+          <GtmSnippet gtmCode={WIN_GTM_CODE} part="noscript" />
           <GtmSnippet gtmCode={GTM_CODE} part="noscript" />
           <Main />
           <NextScript />
