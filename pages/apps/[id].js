@@ -5,6 +5,7 @@ import styles from "../../styles/home.module.scss";
 
 import AppDetailPacks from "../../components/appDetailPacks";
 import AppDetailView from "../../components/AppDetailView";
+import AppJsonLd from "../../components/appJsonLd";
 import AppNotFound from "../../components/AppNotFound";
 import DonateCard from "../../components/DonateCard";
 import Footer from "../../components/Footer";
@@ -62,6 +63,7 @@ function AppDetail({ app }) {
               desc={`Install ${app.name} via WinGet. Copy the winget install command instantly. ${app.fullDesc || app.desc}`}
               path={`/apps/${app._id}`}
             />
+            <AppJsonLd app={app} />
             <AppDetailView app={app} />
           </>
         )}
