@@ -1,4 +1,5 @@
 import { fetchMyPacks, updatePack } from "./fetchPackAPI";
+import { packAppAvailability } from "./isAppRemoved";
 import {
   hasInstallOptions,
   normalizeInstallOptions,
@@ -27,7 +28,7 @@ export function normalizePackDetailApps(apps = []) {
     return {
       ...rest,
       _id: appId || app._id,
-      unavailable: app.available === false || Boolean(app.unavailable),
+      ...packAppAvailability(app),
       appVersion: rawPin,
       selectedVersion: displayVersion,
       latestVersion: catalogLatest,

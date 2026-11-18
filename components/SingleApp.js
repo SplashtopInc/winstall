@@ -26,6 +26,7 @@ import { IoIosLink } from "react-icons/io";
 import AppIcon from "./AppIcon";
 import AppListCounts from "./appListCounts";
 import { buildSiteUrl, compareVersion, timeAgo } from "../utils/helpers";
+import { isAppRemoved } from "../utils/isAppRemoved";
 import { publisherAppsPagePath } from "../utils/parsePublisherQuery";
 import { GTM_VALUE, trackShare } from "../utils/gtm";
 import countStyles from "../styles/appListCounts.module.scss";
@@ -95,6 +96,10 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
 
 
   if (!app || !app.name) return <></>;
+
+  const removed = isAppRemoved(app);
+  const allowSelect = showSelectCheckbox && !removed;
+  const allowPlus = displaySelect && !removed;
 
   let VersionSelector = () => {
     console.assert(app.versions);
@@ -184,12 +189,12 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
       key={app._id}
       // onClick={handleAppSelect}
       className={`${hideBorder ? styles.noBorder: "" }${large ? styles.large : styles.compact} ${pack ? styles.pack : ""} ${styles.single} ${
-        showSelectCheckbox ? styles.selectable : ""
+        allowSelect ? styles.selectable : ""
       } ${
         selected && !disableSelectedStyle ? styles.selected : ""
       }`}
     >
-      {showSelectCheckbox && (
+      {allowSelect && (
         <button
           type="button"
           className={`${styles.checkbox} ${selected ? styles.checkboxSelected : ""}`}
@@ -218,7 +223,7 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
                 <FiSettings />
               </button>
             )}
-            {displaySelect && (
+            {allowPlus && (
               <button
                 className={styles.selectApp}
                 onClick={handleAppSelect}
@@ -240,7 +245,14 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
                 <AppIcon id={app._id} name={app.name} icon={app.icon} iconUrl={app.iconUrl} iconPng={app.iconPng} />
               </span>
               <span className={styles.identityText}>
-                <strong>{app.name}</strong>
+                {removed ? (
+                  <span className={styles.nameRow}>
+                    <strong>{app.name}</strong>
+                    <span className={styles.removedPill}>Removed</span>
+                  </span>
+                ) : (
+                  <strong>{app.name}</strong>
+                )}
                 <small>{app.publisher || "\u00a0"}</small>
               </span>
             </Link>
@@ -256,7 +268,7 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
                 <FiSettings />
               </button>
             )}
-            {displaySelect && (
+            {allowPlus && (
               <button
                 className={styles.selectApp}
                 onClick={handleAppSelect}

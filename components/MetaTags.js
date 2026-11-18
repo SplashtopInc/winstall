@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { buildSiteUrl, getSiteOrigin } from "../utils/helpers";
 
-const MetaTags = ({ title, desc="Bulk install Windows apps quickly with Windows Package Manager.", path = "/" }) => {
+const MetaTags = ({ title, desc="Bulk install Windows apps quickly with Windows Package Manager.", path = "/", noindex = false }) => {
   const siteOrigin = getSiteOrigin();
   const coverUrl = siteOrigin ? buildSiteUrl("/cover.png") : undefined;
   const appleTouchIcon = buildSiteUrl("/logo192.png") || "/logo192.png";
@@ -22,6 +22,7 @@ const MetaTags = ({ title, desc="Bulk install Windows apps quickly with Windows 
           name="description"
           content={desc}
         ></meta>
+        {noindex ? <meta name="robots" content="noindex" /> : null}
 
         <link rel="icon" href="/favicon.ico" />
         {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}

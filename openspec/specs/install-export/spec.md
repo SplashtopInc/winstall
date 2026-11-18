@@ -118,6 +118,15 @@ When the generate page has no selected apps, it MUST show a title, a short lead,
 - **WHEN** a user opens the generate page with an empty selection
 - **THEN** the page MUST show an empty-state title and a browse-apps action, and MUST NOT show a download illustration
 
+### Requirement: Soft-deleted app detail omits install export actions
+
+已找到但已软删除（`deletedAt` 非空）的 App 详情 MUST NOT 提供 Download installer、Add to list、winget 安装 / 升级命令框或其 Copy。本要求优先于本能力中「已找到可安装详情」的安装导出要求。未软删除的可安装详情行为 MUST 保持不变。
+
+#### Scenario: Soft-deleted detail has no installer actions
+
+- **WHEN** 用户打开已找到且 `deletedAt` 非空的应用详情
+- **THEN** 页面 MUST NOT 出现 Download installer、Add to list，也 MUST NOT 出现可复制的 winget 安装或升级命令
+
 ### Requirement: App detail offers instant installer download as the primary action
 
 App 详情页 MUST 在与 Add to list 同一操作行上提供 Download installer。该控件 MUST 是这一行的主操作。Add to list MUST 仍作为次要操作可用。Copy MUST 留在 winget 命令框上，MUST NOT 挪到操作行。版本下拉 MUST 把 Latest 与每一个目录版本（含当前 tip）分开列出。在用户选出某个目录版本之前，以及用户再次选择 Latest 之后，可见版本 MUST 为 `{目录 tip}(latest)`，安装命令、安装命令的 Copy，以及当前命令为安装时的 Download installer MUST 省略钉选版本。用户选出某个目录版本（含当前 tip）之后，可见版本 MUST 为该版本且不带 `(latest)`，安装命令、安装命令的 Copy，以及当前命令为安装时的 Download installer MUST 带上该版本。切到升级命令时，版本下拉 MUST 隐藏，但已选版本 MUST 保留。此时 Download installer 中该 app 的 `command` MUST 为 `upgrade`，并且 MUST 省略包版本。切回安装命令且钉选仍在时，Download installer MUST 再次带上该版本。页面 MUST NOT 打开安装抽屉，也 MUST NOT 展示生成页那套导出 tab。

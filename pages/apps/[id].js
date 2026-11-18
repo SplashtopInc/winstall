@@ -6,14 +6,19 @@ import styles from "../../styles/home.module.scss";
 import AppDetailPacks from "../../components/appDetailPacks";
 import AppDetailView from "../../components/AppDetailView";
 import AppJsonLd from "../../components/appJsonLd";
+import AppRemovedView from "../../components/appRemovedView";
 import BreadcrumbJsonLd from "../../components/breadcrumbJsonLd";
 import AppNotFound from "../../components/AppNotFound";
-import DonateCard from "../../components/DonateCard";
 import Footer from "../../components/Footer";
 import MetaTags from "../../components/MetaTags";
 import MoreByPublisher from "../../components/MoreByPublisher";
 import RelatedApps from "../../components/RelatedApps";
 import fetchWinstallAPI from "../../utils/fetchWinstallAPI";
+import {
+  isAppRemoved,
+  removedAppDocumentDescription,
+  removedAppDocumentTitle,
+} from "../../utils/isAppRemoved";
 
 function AppSkeleton() {
   return (
@@ -52,11 +57,24 @@ function AppDetail({ app }) {
     );
   }
 
+  const removed = !router.isFallback && isAppRemoved(app);
+
   return (
     <div>
       <div className={styles.introDetail}>
         {router.isFallback ? (
           <AppSkeleton />
+        ) : removed ? (
+          <>
+            <MetaTags
+              title={removedAppDocumentTitle(app.name)}
+              desc={removedAppDocumentDescription(app.name)}
+              path={`/apps/${app._id}`}
+              noindex
+            />
+            <BreadcrumbJsonLd app={app} />
+            <AppRemovedView app={app} />
+          </>
         ) : (
           <>
             <MetaTags
@@ -111,6 +129,7 @@ function slimAppForDetailPage(app) {
     tags: Array.isArray(app.tags) ? app.tags : [],
     categories: Array.isArray(app.categories) ? app.categories : [],
     updatedAt: app.updatedAt || null,
+    deletedAt: app.deletedAt ?? null,
     versions: Array.isArray(app.versions)
       ? app.versions.map((v) => ({
           version: v.version,

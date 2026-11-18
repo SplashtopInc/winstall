@@ -11,6 +11,7 @@ import {
 import AppIcon from "./AppIcon";
 import { timeAgo } from "../utils/helpers";
 import { resolvePackAppVersion } from "../utils/installVersion";
+import { packAppAvailability } from "../utils/isAppRemoved";
 import styles from "../styles/packDetail.module.scss";
 
 function formatVersionLabel(app) {
@@ -33,7 +34,7 @@ export default function PackDetailAppCard({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  const unavailable = Boolean(app.unavailable);
+  const { unavailable, removed } = packAppAvailability(app);
   // API returns versions with tip first — do not re-sort.
   const versions = Array.isArray(app.versions) ? app.versions : [];
 
@@ -51,6 +52,7 @@ export default function PackDetailAppCard({
   const canSelectVersion =
     canManage &&
     !unavailable &&
+    !removed &&
     onVersionChange &&
     (allowUnpinnedVersion ? versions.length >= 1 : versions.length > 1);
 
@@ -110,6 +112,7 @@ export default function PackDetailAppCard({
         {unavailable && (
           <span className={styles.unavailableBadge}>Unavailable</span>
         )}
+        {removed && <span className={styles.removedBadge}>Removed</span>}
       </div>
     </>
   );

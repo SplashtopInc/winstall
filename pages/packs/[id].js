@@ -592,7 +592,7 @@ export default function PackDetailPage() {
   }
 
   const appCount = apps.length;
-  const installableApps = apps.filter((app) => !app.unavailable);
+  const installableApps = apps.filter((app) => !app.unavailable && !app.removed);
   const metaDesc =
     appCount > 0
       ? `${pack.description} Includes ${apps
