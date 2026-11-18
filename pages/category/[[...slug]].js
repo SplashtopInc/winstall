@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 
 import PageWrapper from "../../components/PageWrapper";
 import MetaTags from "../../components/MetaTags";
+import BreadcrumbJsonLd from "../../components/breadcrumbJsonLd";
 import SingleApp from "../../components/SingleApp";
 import DonateCard from "../../components/DonateCard";
 import Error from "../../components/Error";
@@ -185,6 +186,7 @@ function CategoryPage({ categorySlug = DEFAULT_CATEGORY }) {
         desc="Browse Windows apps by category and add them to your install list."
         path={categoryPagePath(activeSlug)}
       />
+      <BreadcrumbJsonLd categorySlug={activeSlug} />
 
       <div className={styles.page}>
         <CategoryTabs

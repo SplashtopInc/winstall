@@ -14,6 +14,7 @@ import {
 
 import PageWrapper from "../../components/PageWrapper";
 import MetaTags from "../../components/MetaTags";
+import BreadcrumbJsonLd from "../../components/breadcrumbJsonLd";
 import Error from "../../components/Error";
 import PackNotFound from "../../components/PackNotFound";
 import PackDetailAppCard from "../../components/PackDetailAppCard";
@@ -607,6 +608,7 @@ export default function PackDetailPage() {
         desc={metaDesc}
         path={`/packs/${pack._id}`}
       />
+      <BreadcrumbJsonLd pack={pack} />
 
       <div className={styles.page}>
         <header className={styles.header}>

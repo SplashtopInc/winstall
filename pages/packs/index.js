@@ -5,6 +5,7 @@ import { FiPlus } from "react-icons/fi";
 
 import PageWrapper from "../../components/PageWrapper";
 import MetaTags from "../../components/MetaTags";
+import BreadcrumbJsonLd from "../../components/breadcrumbJsonLd";
 import PackCard from "../../components/PackCard";
 import CreatePackModal from "../../components/CreatePackModal";
 import PublicPacksSearch from "../../components/PublicPacksSearch";
@@ -472,6 +473,7 @@ export default function PacksPage() {
         desc="Browse community app collections or create and manage your own app packs."
         path="/packs"
       />
+      <BreadcrumbJsonLd variant="packs" />
 
       <div className={styles.page}>
         <div className={styles.tabs} role="tablist" aria-label="Pack views">

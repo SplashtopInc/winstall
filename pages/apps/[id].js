@@ -6,6 +6,7 @@ import styles from "../../styles/home.module.scss";
 import AppDetailPacks from "../../components/appDetailPacks";
 import AppDetailView from "../../components/AppDetailView";
 import AppJsonLd from "../../components/appJsonLd";
+import BreadcrumbJsonLd from "../../components/breadcrumbJsonLd";
 import AppNotFound from "../../components/AppNotFound";
 import DonateCard from "../../components/DonateCard";
 import Footer from "../../components/Footer";
@@ -64,6 +65,7 @@ function AppDetail({ app }) {
               path={`/apps/${app._id}`}
             />
             <AppJsonLd app={app} />
+            <BreadcrumbJsonLd app={app} />
             <AppDetailView app={app} />
           </>
         )}
