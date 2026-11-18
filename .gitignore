@@ -47,3 +47,5 @@ node_modules/
 .*
 
 /third-party
+
+tsconfig.tsbuildinfo
