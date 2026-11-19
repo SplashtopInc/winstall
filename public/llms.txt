@@ -26,10 +26,11 @@ Pick apps in the browser, then generate a winget script from that selection. An 
 
 ## Comparisons
 
-- [Comparisons](https://winstall.app/compare): How winstall differs from Ninite, UniGetUI, and Chocolatey.
+- [Comparisons](https://winstall.app/compare): How winstall differs from Wingetly, Ninite, UniGetUI, and Chocolatey.
 - [winstall vs Ninite](https://winstall.app/compare-ninite): Comparison with Ninite.
 - [winstall vs Chocolatey](https://winstall.app/compare-chocolatey): Comparison with Chocolatey.
 - [winstall vs UniGetUI](https://winstall.app/compare-unigetui): Comparison with UniGetUI.
+- [winstall vs Wingetly](https://winstall.app/compare-wingetly): Comparison with Wingetly.
 
 ## Catalog index
 

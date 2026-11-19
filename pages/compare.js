@@ -25,10 +25,16 @@ function IconZapFill() {
 
 const COMPARISON_CARDS = [
   {
+    competitor: "Wingetly",
+    page: "/compare-wingetly",
+    description: "Wingetly is another browser catalog for winget. Winstall.app uses AI-powered search, favorites, and packs other people can open and share.",
+    highlights: ["AI-powered natural language search", "Favorites for apps and packs", "Create and share public packs"],
+  },
+  {
     competitor: "Ninite",
     page: "/compare-ninite",
-    description: "Ninite popularized one-click app installs, but its closed ecosystem is limited to ~100 curated apps. Winstall.app opens the door to 12,000+ packages through the official Winget repository.",
-    highlights: ["12,000+ packages vs ~100", "Fully open source", "CLI-first, scriptable & automatable"],
+    description: "Ninite popularized one-click app installs, but its closed ecosystem is limited to ~100 curated apps. Winstall.app opens the door to 16,000+ packages through the official Winget repository.",
+    highlights: ["16,000+ packages vs ~100", "Fully open source", "CLI-first, scriptable & automatable"],
   },
   {
     competitor: "UniGetUI",
@@ -45,7 +51,7 @@ const COMPARISON_CARDS = [
 ];
 
 const STATS = [
-  { value: "15k+", label: "Packages" },
+  { value: "16k+", label: "Packages" },
   { value: "100%", label: "Free & Open Source" },
   { value: "0", label: "Installs Required" },
 ];
@@ -79,7 +85,7 @@ export default function Compare() {
       <MetaTags
         title="Compare winstall with alternatives | winstall"
         path="/compare"
-        desc="See how winstall.app compares to Ninite, UniGetUI, and Chocolatey. Discover the modern way to install Windows apps."
+        desc="See how winstall.app compares to Wingetly, Ninite, UniGetUI, and Chocolatey. Discover the modern way to install Windows apps."
       />
 
       <section className={styles.hero}>
@@ -87,7 +93,7 @@ export default function Compare() {
           <h1>See How Winstall.app Compares vs Alternatives</h1>
           <p>
             Thinking about switching to the modern Winget-powered way of installing apps?
-            See how Winstall.app stacks up against the most popular alternatives.
+            See how Winstall.app stacks up against Wingetly, Ninite, UniGetUI, and Chocolatey.
           </p>
         </div>
       </section>
@@ -105,9 +111,9 @@ export default function Compare() {
           <div className={styles.ctaText}>
             <h2>Why developers and IT teams choose Winstall.app</h2>
             <p>
-              Built on Microsoft's official Winget package manager, Winstall.app gives you access to the largest
-              Windows app ecosystem with a modern web interface, shareable install collections, and full CLI
-              automation. No installs, no accounts, no cost.
+              Built on Microsoft's official Winget package manager, Winstall.app gives you a modern web interface,
+              shareable public packs, and full CLI automation. No extra app, no accounts, no cost. Compare that
+              with Wingetly, Ninite, UniGetUI, and Chocolatey.
             </p>
             <a href="/" className={styles.ctaButton}>
               <IconZapFill /> Start Installing Apps

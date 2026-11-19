@@ -461,6 +461,12 @@
     background: color-mix(in srgb, #ef4444 20%, var(--main-bg));
     color: #ef4444;
   }
+
+  &.neutral {
+    background: color-mix(in srgb, var(--textColor) 12%, var(--main-bg));
+    color: var(--textColor);
+    opacity: 0.75;
+  }
 }
 
 .statusText {

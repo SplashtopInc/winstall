@@ -1,30 +1,8 @@
-import Link from "next/link";
 import MetaTags from "../components/MetaTags";
 import Footer from "../components/Footer";
+import CompareTabs from "../components/compareTabs";
 import styles from "../styles/compareDetail.module.scss";
 import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
-
-function CompareTabs({ active }) {
-  const tabs = [
-    { label: "vs Ninite", page: "/compare-ninite" },
-    { label: "vs UniGetUI", page: "/compare-unigetui" },
-    { label: "vs Chocolatey", page: "/compare-chocolatey" },
-  ];
-
-  return (
-    <div className={styles.tabs}>
-      {tabs.map((tab) => (
-        <Link
-          key={tab.label}
-          href={tab.page}
-          className={`${styles.tab} ${tab.page === active ? styles.active : ""}`}
-        >
-          {tab.label}
-        </Link>
-      ))}
-    </div>
-  );
-}
 
 function StatusCell({ text, positive }) {
   return (
@@ -46,17 +24,17 @@ function StatusCell({ text, positive }) {
 }
 
 const NINITE_TABLE = [
-  { feature: "Package Ecosystem", win: "12,000+ packages and growing", other: "Limited, ~100 popular apps" },
+  { feature: "Package Ecosystem", win: "16,000+ packages and growing", other: "Limited, ~100 popular apps" },
   { feature: "Open Source", win: "Fully open source, community driven", other: "Closed source" },
   { feature: "Community Packages", win: "Anyone can contribute packages", other: "No community contributions" },
   { feature: "Automation", win: "Export commands, share collections, scriptable", other: "Manual selections only" },
-  { feature: "Discoverability", win: "Browse, search, filter 20k+ packages", other: "Fixed categories only" },
+  { feature: "Discoverability", win: "Browse, search, filter 16,000+ packages", other: "Fixed categories only" },
   { feature: "Developer Friendly", win: "CLI first, CI/CD ready", other: "Not designed for developers" },
   { feature: "Pricing", win: "Free, forever", other: "Free personal only, paid enterprise" },
 ];
 
 const NINITE_FAQ = [
-  { q: "Is Winstall.app better than Ninite?", a: "Winstall.app offers both the simplicity of Ninite through Express Setup and the flexibility of the modern Winget ecosystem. You get access to 12,000+ packages, open-source transparency, shareable install scripts, and developer-friendly automation, while still supporting quick multi-app installation similar to Ninite." },
+  { q: "Is Winstall.app better than Ninite?", a: "Winstall.app offers both the simplicity of Ninite through Express Setup and the flexibility of the modern Winget ecosystem. You get access to 16,000+ packages, open-source transparency, shareable install scripts, and developer-friendly automation, while still supporting quick multi-app installation similar to Ninite." },
   { q: "Can I switch from Ninite to Winstall.app?", a: "Yes. Most popular apps available on Ninite are also in the Winget repository. Just search for them on Winstall.app, build your collection, and generate the install command. No migration tool needed." },
   { q: "Is Winstall.app free?", a: "Yes, completely free and open source with no paid tiers. Ninite is free for personal use but charges for its enterprise Pro version." },
   { q: "Does Winstall.app require installation?", a: "No. Winstall.app runs entirely in your browser and generates Winget commands for your terminal. No downloads, no extra software. All you need is Windows 10/11 with Winget." },
@@ -162,7 +140,7 @@ export default function CompareNinite() {
               <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
               <line x1="12" y1="22.08" x2="12" y2="12" />
             </svg>
-            <span>12,000+ Packages</span>
+            <span>16,000+ Packages</span>
           </div>
         </div>
       </section>

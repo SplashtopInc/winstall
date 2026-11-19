@@ -58,24 +58,25 @@
 }
 
 .cardsGrid {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
+  align-items: stretch;
 
   @media (max-width: 1024px) {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 }
 
 .comparisonCard {
-  flex: 1;
   min-width: 0;
   border: 2px solid var(--card-bg);
   border-radius: 12px;
-  padding: 37px 33px;
+  padding: 24px 28px;
   display: flex;
   flex-direction: column;
   background: var(--main-bg);
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 
   &:hover {
     border-color: var(--accent);
@@ -83,15 +84,15 @@
   }
 
   @media (max-width: 590px) {
-    padding: 25px 20px;
+    padding: 20px 18px;
   }
 }
 
 .cardHeader {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .vsBadge {
@@ -118,19 +119,14 @@
   line-height: 1.6;
   color: var(--textColor);
   opacity: 0.8;
-  margin-bottom: 24px;
-  min-height: 150px;
+  margin-bottom: 16px;
   font-weight: 400;
-
-  @media (max-width: 1024px) {
-    min-height: auto;
-  }
 }
 
 .highlightsList {
   list-style: none;
   padding: 0;
-  margin: 0 0 28px;
+  margin: 0 0 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;

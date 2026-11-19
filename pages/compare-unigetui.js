@@ -1,30 +1,8 @@
-import Link from "next/link";
 import MetaTags from "../components/MetaTags";
 import Footer from "../components/Footer";
+import CompareTabs from "../components/compareTabs";
 import styles from "../styles/compareDetail.module.scss";
 import { getDocumentShellStaticProps } from "../utils/documentShellStaticProps";
-
-function CompareTabs({ active }) {
-  const tabs = [
-    { label: "vs Ninite", page: "/compare-ninite" },
-    { label: "vs UniGetUI", page: "/compare-unigetui" },
-    { label: "vs Chocolatey", page: "/compare-chocolatey" },
-  ];
-
-  return (
-    <div className={styles.tabs}>
-      {tabs.map((tab) => (
-        <Link
-          key={tab.label}
-          href={tab.page}
-          className={`${styles.tab} ${tab.page === active ? styles.active : ""}`}
-        >
-          {tab.label}
-        </Link>
-      ))}
-    </div>
-  );
-}
 
 function StatusCell({ text, positive }) {
   return (

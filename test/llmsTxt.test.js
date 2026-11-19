@@ -19,6 +19,7 @@ const REQUIRED_LINKS = [
   "https://winstall.app/compare-ninite",
   "https://winstall.app/compare-chocolatey",
   "https://winstall.app/compare-unigetui",
+  "https://winstall.app/compare-wingetly",
   "https://winstall.app/sitemap.xml",
   "https://winstall.app/privacy",
 ];
