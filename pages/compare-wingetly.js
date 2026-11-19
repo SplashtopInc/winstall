@@ -84,7 +84,7 @@ export default function CompareWingetly() {
             <CompareTabs active="/compare-wingetly" />
             <h1>Best Wingetly Alternative - Winstall.app</h1>
             <p>
-              Describe what you need in natural language, save favorites, and create packs other people can open. Wingetly stays a keyword catalog with lists that live in the browser.
+              Go beyond keyword search. Describe what you need in natural language, save your favorite apps, and create shareable packs anyone can open. Wingetly focuses on keyword-based app discovery and browser-stored lists.
             </p>
             <div className={styles.actions}>
               <a href="/" className={styles.btnPrimary}>

@@ -25,16 +25,16 @@ function IconZapFill() {
 
 const COMPARISON_CARDS = [
   {
-    competitor: "Wingetly",
-    page: "/compare-wingetly",
-    description: "Wingetly is another browser catalog for winget. Winstall.app uses AI-powered search, favorites, and packs other people can open and share.",
-    highlights: ["AI-powered natural language search", "Favorites for apps and packs", "Create and share public packs"],
-  },
-  {
     competitor: "Ninite",
     page: "/compare-ninite",
     description: "Ninite popularized one-click app installs, but its closed ecosystem is limited to ~100 curated apps. Winstall.app opens the door to 16,000+ packages through the official Winget repository.",
     highlights: ["16,000+ packages vs ~100", "Fully open source", "CLI-first, scriptable & automatable"],
+  },
+  {
+    competitor: "Wingetly",
+    page: "/compare-wingetly",
+    description: "Wingetly is another browser catalog for winget. Winstall.app uses AI-powered search, favorites, and packs other people can open and share.",
+    highlights: ["AI-powered natural language search", "Favorites for apps and packs", "Create and share public packs"],
   },
   {
     competitor: "UniGetUI",
