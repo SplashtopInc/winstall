@@ -112,7 +112,6 @@ export default function PackDetailAppCard({
         {unavailable && (
           <span className={styles.unavailableBadge}>Unavailable</span>
         )}
-        {removed && <span className={styles.removedBadge}>Removed</span>}
       </div>
     </>
   );
@@ -193,6 +192,8 @@ export default function PackDetailAppCard({
             {headerContent}
           </Link>
         )}
+
+        {removed && <span className={styles.removedBadge}>Removed</span>}
 
         {canManage && (
           <div className={styles.appMenuWrapper} ref={menuRef}>

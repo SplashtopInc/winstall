@@ -7,6 +7,9 @@
   --altAccent: #7214c9;
   --error: maroon;
   --positive-bg: #afffc9;
+  --removed-tag-fg: #b45309;
+  --removed-tag-bg: rgba(245, 158, 11, 0.12);
+  --removed-tag-brd: rgba(180, 83, 9, 0.22);
 
   .sun {
     display: none;
@@ -23,6 +26,9 @@
   --error: rgb(255 149 149);
   --positive-bg: #19a246;
   --detail-brd: #333438;
+  --removed-tag-fg: #fcd34d;
+  --removed-tag-bg: rgba(251, 191, 36, 0.12);
+  --removed-tag-brd: rgba(251, 191, 36, 0.28);
 
   .react-loading-skeleton {
     background-color: #2d2f30 !important;

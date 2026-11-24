@@ -234,7 +234,11 @@ let SingleApp = ({ app, onVersionChange = false, large = false, showTime = false
             )}
           </h3>
         ) : (
-          <div className={styles.identityRow}>
+          <div
+            className={`${styles.identityRow} ${
+              removed ? styles.identityRowFull : ""
+            }`}
+          >
             <Link
               href="/apps/[id]"
               as={`/apps/${app._id}`}

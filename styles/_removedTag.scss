@@ -1,0 +1,30 @@
+// Shared "Removed" status tag for soft-deleted winget apps.
+// Colors come from --removed-tag-* tokens defined per theme in base.scss.
+@mixin removedTag($height: 20px, $fontSize: 11px) {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  height: $height;
+  padding: 0 8px 0 7px;
+  border-radius: 999px;
+  border: 1px solid var(--removed-tag-brd, rgba(180, 83, 9, 0.22));
+  background: var(--removed-tag-bg, rgba(245, 158, 11, 0.12));
+  color: var(--removed-tag-fg, #b45309);
+  font-size: $fontSize;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  box-sizing: border-box;
+  opacity: 1;
+
+  // Status dot
+  &::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}

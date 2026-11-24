@@ -1,3 +1,5 @@
+@use "removedTag" as *;
+
 .pack{
     background-color: transparent !important;
     padding: 0px !important;
@@ -388,6 +390,11 @@
         padding-right: 36px;
     }
 
+    // Removed apps have no select checkbox in the corner, so no gutter is needed
+    .identityRowFull {
+        padding-right: 0;
+    }
+
     .identity {
         display: flex;
         align-items: flex-start;
@@ -461,6 +468,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            width: 100%;
             min-width: 0;
             max-width: 100%;
 
@@ -476,18 +484,8 @@
         }
 
         .removedPill {
-            display: inline-flex;
-            align-items: center;
-            flex-shrink: 0;
-            height: 20px;
-            padding: 0 8px;
-            border-radius: 50px;
-            background: var(--main-bg);
-            color: var(--textColor);
-            font-size: 11px;
-            font-weight: 800;
-            line-height: 1;
-            opacity: 0.7;
+            @include removedTag;
+            margin-left: auto;
         }
 
         small {

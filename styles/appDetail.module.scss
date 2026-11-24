@@ -1,3 +1,5 @@
+@use "removedTag" as *;
+
 .page {
   width: 100%;
   padding: 0;
@@ -58,16 +60,7 @@
 }
 
 .removedPill {
-  display: inline-flex;
-  align-items: center;
-  height: 26px;
-  padding: 0 10px;
-  border-radius: 50px;
-  background: var(--card-bg);
-  color: var(--detail-muted, #5c5c70);
-  font-size: 13px;
-  font-weight: 800;
-  line-height: 1;
+  @include removedTag(24px, 12px);
 }
 
 .notice {
@@ -848,7 +841,6 @@
   .aboutText,
   .relPub,
   .installerTip,
-  .removedPill,
   .noticeDate,
   .noticeText {
     --detail-muted: rgba(255, 255, 255, 0.7);
