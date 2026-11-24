@@ -102,16 +102,14 @@
   line-height: 1.55;
 }
 
-.noticeLink {
-  display: inline-flex;
-  margin-top: 16px;
-  color: var(--accent);
+.notice .noticeBtn {
+  margin-top: 18px;
+  height: 44px;
+  min-width: 0;
   font-size: 15px;
-  font-weight: 800;
-  text-decoration: none;
 
   &:hover {
-    color: var(--altAccent);
+    color: #fff;
   }
 }
 

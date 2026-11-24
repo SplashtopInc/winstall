@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { FiGrid } from "react-icons/fi";
+import { FiGrid, FiSearch } from "react-icons/fi";
 
 import styles from "../styles/appDetail.module.scss";
 import AppIcon from "./AppIcon";
@@ -83,8 +83,9 @@ export default function AppRemovedView({ app }) {
         </p>
         <Link
           href={{ pathname: "/apps", query: { q: app.name } }}
-          className={styles.noticeLink}
+          className={`${styles.btn} ${styles.btnPrimary} ${styles.noticeBtn}`}
         >
+          <FiSearch aria-hidden="true" />
           Search for {app.name}
         </Link>
       </section>
