@@ -713,6 +713,29 @@ export default function AppDetailView({ app }) {
             </a>
           </li>
         </ul>
+
+        <p className={styles.sourceNote}>
+          <FiInfo aria-hidden="true" className={styles.sourceNoteIcon} />
+          <span>
+            App details come from the community{" "}
+            <a
+              href="https://github.com/microsoft/winget-pkgs"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              winget repository
+            </a>
+            , and Winstall doesn&apos;t host installers. Something not right?{" "}
+            <a
+              href="https://github.com/microsoft/winget-pkgs/blob/master/CONTRIBUTING.md"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Update it on winget
+            </a>
+            .
+          </span>
+        </p>
       </section>
 
       <div className={styles.donateWrap}>

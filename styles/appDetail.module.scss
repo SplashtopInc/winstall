@@ -643,6 +643,42 @@
   }
 }
 
+/* Data-source disclaimer under the info links */
+.sourceNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--detail-note-bg, #f6f5f8);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--detail-muted, #5c5c70);
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    /* Keep the underline unbroken under descenders like g/p/y */
+    text-decoration-skip-ink: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+}
+
+.sourceNoteIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  /* Center the icon on the first text line (13px * 1.55 line-height) */
+  margin-top: 2px;
+}
+
 .donateWrap {
   margin-top: 40px;
 }
@@ -842,8 +878,13 @@
   .relPub,
   .installerTip,
   .noticeDate,
-  .noticeText {
+  .noticeText,
+  .sourceNote {
     --detail-muted: rgba(255, 255, 255, 0.7);
+  }
+
+  .sourceNote {
+    --detail-note-bg: rgba(255, 255, 255, 0.06);
   }
 
   .instLabel,
